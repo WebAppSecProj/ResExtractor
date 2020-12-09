@@ -6,7 +6,7 @@
 
 ## 简述
 在使用BSLApp框架快速生成Android应用时，开发者只需要在BSLApp平台上提交自己的网站网址，就可以将自己的网站封装成移动端app。为了还原BSL移动端App加载网站网址的过程，所以我们对整个框架做了逆向分析。
-<div align=center><img src="./image/BSLApp-1.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-1.png"/></div>
 
 以下内容以`和谐医疗`应用为例。
 
@@ -14,23 +14,23 @@
 
 ### 1. App启动时加载的url
 首先获取到apk之后，利用抓包工具（burpsuite）先确定apk在启动时加载的url。通过抓包，我们确定加载的url为 `http://www.lichungang.net` （此时，域名已无法正常访问）。
-<div align=center><img src="./image/BSLApp-2.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-2.png"/></div>
 
 拿到apk加载的url之后，通过jeb工具反编译apk文件，在全局代码中搜索抓包获取的域名，结果并没有搜索到，由此推测，在代码中是通过解码后获得的url。于是从代码入口Application处，分析代码逻辑，看看他是如何获得的url并加载。
 
 在com.bslyun.app.MainApplication中，onCreate()中调用到了a方法
-<div align=center><img src="./image/BSLApp-3.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-3.png"/></div>
 
 在a方法中，由于传入的boolean值为false，所以v2_1的值为`app_config.xml`，然后从Assets目录中打开app_config.xml文件，并每次以 0x400 的大小取出文件内容并拼接到v3。之后，在 g.a() 方法中将v3解密（此处代码中有相关提示字段 “解密错误！”，可判断g.a()中是做了解密的处理），最后将v3的解密结果放入v1。
-<div align=center><img src="./image/BSLApp-4.png"/></div><br>
-<div align=center><img src="./image/BSLApp-5.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-4.png"/></div><br>
+<div align=center><img src="./image/BSLApp/BSLApp-5.png"/></div>
 
 随后在 fromXML() 方法中，将v1解析，转换成 `com.bslyun.app.d.a` 对象，以备后续调用对象中的属性。
-<div align=center><img src="./image/BSLApp-6.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-6.png"/></div>
 
 ### 2. 解密app_config.xml
 定位到 g.a() 方法，代码中以 “AES/CBC/NoPadding” 模式进行解密，且key和iv值，硬编码在代码中。解密后再用Base64解码，就得到了app_config.xml实际的内容。
-<div align=center><img src="./image/BSLApp-7.png"/></div><br>
+<div align=center><img src="./image/BSLApp/BSLApp-7.png"/></div><br>
 
 代码中的key、iv以及解码模式都已经知道了，我们就根据它的逻辑，写python，用于后续批量对BSLApp框架的应用进行处理。代码如下：
 
@@ -403,19 +403,19 @@ def decode(config_str):
 </details>
 
 在解密后的app_config.xml文件中，找到了app在启动时访问的域名，对应的标签为”mainUrl“
-<div align=center><img src="./image/BSLApp-8.png"/></div>
-<div align=center><img src="./image/BSLApp-9.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp/BSLApp-8.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp/BSLApp-9.png"/></div>
 
 ### 3. 解密验证
 这种向平台提交网址就可以快速封装apk的方式，推测后台服务器根据提交的地址自动打包生成apk，那么通过这个方式相应的解密方式也应该都一样。为了验证推测，就以密钥和类名为筛选规则进行apk的筛选，在janus平台上，规则命中的部分结果如下。
-<div align=center><img src="./image/BSLApp-10.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-10.png"/></div>
 
 选取其中几个apk进行验证
 - 网上联盟（SHA1：027b400101de73a226bbe2c3d21d718e11a05515）
-<div align=center><img src="./image/BSLApp-11.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-11.png"/></div>
 
 - 招联金融（SHA1：07c2ea563d779941ce512253b25a791d41d72a2b）
-<div align=center><img src="./image/BSLApp-12.png"/></div>
+<div align=center><img src="./image/BSLApp/BSLApp-12.png"/></div>
 
 ### 结论
 BSLApp框架封装的apk，在Application中提取并解密 assets/app_config.xml 文件，解密后的文件内容转化成对象，后续需要加载时，提取其中的 mainUrl 进行加载。BSLApp框架封装出来的apk，解密使用的是一样的 key 和 iv 。分析到此结束。
