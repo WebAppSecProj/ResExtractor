@@ -5,7 +5,7 @@
 
 ## 简述
 由于在使用APICloud框架生成iOS应用时，开发者可以选择对打包的资源进行加密，这导致我们无法直接获取明文的资源，所以我们对整个框架做了逆向分析，还原了资源的解密过程
-<div align=center><img src="/image/apicloud-1.jpg"/></div>
+<div align=center><img src="docs/image/apicloud-1.jpg"/></div>
 
 以下内容以`朝阳到家`应用为例，该应用可以从`App Store`下载
 
