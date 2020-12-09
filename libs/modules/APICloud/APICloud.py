@@ -4,8 +4,8 @@ import sys
 import logging
 import shutil
 import os
-import json
 
+#import libs.modules.APICloud.uzmap_resource_extractor.tools as tools
 from libs.modules.APICloud.uzmap_resource_extractor import tools
 from libs.modules.BaseModule import BaseModule
 
