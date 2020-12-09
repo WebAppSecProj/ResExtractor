@@ -14,6 +14,6 @@ Config ={
         "libs.modules.BSLApp.BSLApp": "BSLApp",
         "libs.modules.Ionic.Ionic": "Ionic",
         "libs.modules.BufanApp.BufanApp": "BufanApp",
-
+        "libs.modules.Cordova.Cordova": "Cordova",
     },
 }
