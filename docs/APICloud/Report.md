@@ -1,10 +1,7 @@
----
-title: Pangu APICloud iOS Rev
-date: 2020-12-08 19:07:18
-tags:
+# APICloud iOS Rev
+
 ---
 作者：pshad0w，如需转载请注明出处
-
 
 ## 简述
 由于在使用APICloud框架生成iOS应用时，开发者可以选择对打包的资源进行加密，这导致我们无法直接获取明文的资源，所以我们对整个框架做了逆向分析，还原了资源的解密过程
