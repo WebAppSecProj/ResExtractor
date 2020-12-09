@@ -1,0 +1,76 @@
+# Module list
+
+| # |  Framework   | Local Resource (Android)  | Remote Resource (Android) | Local Resource (iOS) | Remote Resource (iOS) | Prerequisites |
+| ---- |  :----:  | :----:  | :----:  | :----:  | :----: | :----: |
+|1| [DCloud](https://dcloud.io/)  | Y | - | - | - | 
+|2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - |
+|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - | 
+|4| [Cordova](https://www.appbsl.cn/)  | - | - | - | - | 
+|5| [Ionic](https://ionicframework.com/)  | Y | N | - | - | AngularJS (optional) |
+|6| [Onsen UI](https://onsen.io/)  | Y | N | - | - | AngularJS (optional) |
+|7| [Framework 7](http://www.idangero.us/framework7)  | - | - | - | - | HTML, CSS and JS only |
+|8| [React Native](http://www.reactnative.com/)  | - | - | - | - | React | 
+|9| [jQuery Mobile](https://jquerymobile.com/)  | - | - | - | - | HTML5, jQuery | 
+|10| [Native Script](https://www.nativescript.org/)  | - | - | - | - | JavaScript |
+|11| [Famous](http://famous.org/)  | - | - | - | - | WebGL, AngularJS |
+|12| [Intel XDK](https://software.intel.com/en-us/intel-xdk)  | - | - | - | - | depreciated |
+|13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | - | - | - | - | 
+|14| [Kendo UI](http://www.telerik.com/kendo-ui)  | - | - | - | - | 
+|15| [Mobile Angular UI](http://mobileangularui.com/)  | - | - | - | - | 
+|16| [Monaca](https://monaca.io/)  | - | - | - | - | 
+|17| [Trigger.IO](https://trigger.io/)  | - | - | - | - | 
+|18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - | 
+|19| [Andromo](http://www.andromo.com/)  | - | - | - | - | 
+|20| [Apps Geyser](http://www.appsgeyser.com/)  | - | - | - | - | 
+|21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - | 
+|22| [Appinventor](http://appinventor.mit.edu/explore/)  | - | - | - | - | 
+|23| [AppYet](http://www.appyet.com/)  | - | - | - | - | 
+|24| [Como](http://www.como.com/)  | - | - | - | - | 
+|25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - | 
+|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - | 
+|27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - | 
+|28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - | 
+|29| [Good Barber](http://www.goodbarber.com/)  | - | - | - | - | 
+|30| [Shoutem](http://www.shoutem.com/)  | - | - | - | - | 
+|31| [App Yourself](http://appyourself.net/)  | - | - | - | - | 
+|32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - | 
+|33| [Apps Builder](http://www.apps-builder.com/)  | - | - | - | - | 
+|34| [Appmakr](http://appmakr.com/)  | - | - | - | - | 
+|35| [appery.io](https://appery.io/)  | - | - | - | - | 
+|36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - | 
+|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - | 
+|38| [App Gyver](http://www.appgyver.io)  | - | - | - | - | 
+|39| [Appconfector](http://www.appconfector.de)  | - | - | - | - | 
+|40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - | 
+|41| [Appsme](http://www.appsme.com/)  | - | - | - | - | 
+|42| [App Titan](http://www.apptitan.de/)  | - | - | - | - | 
+|43| [Applicationcraft](http://www.applicationcraft.com/)  | - | - | - | - | 
+|44| [Paradise Apps](http://www.paradiseapps.net/)  | - | - | - | - | 
+|45| [Eachscape](http://eachscape.com/)  | - | - | - | - | 
+|46| [Xamarin](https://docs.microsoft.com/zh-cn/xamarin/)  | - | - | - | - | .NET |
+|47| [PhoneGap](https://phonegap.com/)  | - | - | - | - | HTML, CSS and JavaScript |
+|48| [Ionic Capacitor](https://capacitorjs.com/)  | - | - | - | - |  |
+|49| [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)  | - | - | - | - |  |
+|50| [bufanapp](https://www.bufanapp.com/)  | N | Y (E) | - | - |  |
+
+
+```
+Y: Module available.
+N: The framework doesn't support such scheme.
+-: Unknown yet.
+E: Resource a.k.a. app is encrypted.
+```
+
+```buildoutcfg
+Reference:
+1. https://noeticforce.com/best-hybrid-mobile-app-ui-frameworks-html5-js-css
+2. https://tutorialzine.com/2015/10/comparing-the-top-frameworks-for-building-hybrid-mobile-apps
+3. https://blog.phonegap.com/update-for-customers-using-phonegap-and-phonegap-build-cc701c77502c
+4. https://www.businessofapps.com/guide/app-builders-makers/
+5. https://www.werockyourweb.com/mobile-app-builder/
+6. https://www.quora.com/What-are-the-best-mobile-app-creators-for-non-coders-both-free-and-paid
+7. https://www.business.com/categories/app-maker-development-software/
+8. Marten Oltrogge, Erik Derr, Christian Stransky, Yasemin Acar, Sascha Fahl, Christian Rossow, Giancarlo Pellegrino, Sven Bugiel, Michael Backes:
+The Rise of the Citizen Developer: Assessing the Security Impact of Online App Generators. IEEE Symposium on Security and Privacy 2018: 634-647
+```
+

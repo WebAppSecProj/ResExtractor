@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+import sys
+import logging
+import shutil
+import os
+
+from libs.modules.BaseModule import BaseModule
+
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+log = logging.getLogger(__name__)
+
+'''
+Framework info: https://ionicframework.com/getting-started/
+'''
+
+
+class Ionic(BaseModule):
+
+    def doSigCheck(self):
+        if self.host_os == "android":
+            return self._find_main_activity("io.ionic.starter.MainActivity")
+        elif self.host_os == "ios":
+            log.error("not support yet.")
+            return False
+        return False
+
+    def doExtract(self, working_folder):
+
+        extract_folder = self._format_working_folder(working_folder)
+
+        if os.access(extract_folder, os.R_OK):
+            shutil.rmtree(extract_folder)
+        # os.makedirs(extract_folder, exist_ok=True)
+
+        tmp_folder = os.path.join(extract_folder, "tmp")
+        # os.makedirs(tmp_folder, exist_ok=True)
+
+        self._apktool(tmp_folder)
+
+        # copy resource dir ("assets/www/") to working_folder
+        resource_path = os.path.join(tmp_folder, "assets/www/")
+        # if os.path.exists(resource_path):
+        #     shutil.rmtree(extract_folder)
+        shutil.copytree(resource_path, extract_folder, dirs_exist_ok=True)
+
+        # get res/xml/config.xml
+        # read content tag
+        t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
+        root = t.getroot()
+        for child in root:
+            if child.tag == "{http://www.w3.org/ns/widgets}content":
+                content = child.attrib['src']
+        launch_path = "assets/www/" + content # default content in res/xml/config.xml
+        self._dump_info(extract_folder, launch_path)
+
+        # clean env
+        shutil.rmtree(tmp_folder)
+
+        return extract_folder, launch_path
+
+
+def main():
+    f = "./test_case/Ionic/小租贝贝.apk"
+    ionic = Ionic(f, "android")
+    if ionic.doSigCheck():
+        logging.info("Ionic signature Match")
+    extract_folder, launch_path = ionic.doExtract("./working_folder")
+    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+    return
+
+
+if __name__ == "__main__":
+    sys.exit(main())
