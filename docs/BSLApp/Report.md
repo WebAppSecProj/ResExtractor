@@ -6,7 +6,7 @@
 
 ## 简述
 在使用BSLApp框架快速生成Android应用时，开发者只需要在BSLApp平台上提交自己的网站网址，就可以将自己的网站封装成移动端app。为了还原BSL移动端App加载网站网址的过程，所以我们对整个框架做了逆向分析。
-<div align=center><img src="[/ResExtractor/blob/master/docs/image/bslapp-1.png](https://github.com/WebAppSecProj/ResExtractor/blob/master/docs/image/BSLApp-1.png)"/></div>
+<div align=center><img src="https://github.com/WebAppSecProj/ResExtractor/blob/master/docs/image/BSLApp-1.png"/></div>
 
 以下内容以`和谐医疗`应用为例。
 
