@@ -1,0 +1,3 @@
+[submodule "libs/modules/APICloud"]
+	path = libs/modules/APICloud
+	url = https://github.com/WebAppSecProj/uzmap-resource-extractor.git
