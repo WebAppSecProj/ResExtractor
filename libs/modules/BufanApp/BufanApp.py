@@ -58,8 +58,9 @@ class BufanApp(BaseModule):
             output: (String) JSONString
         """
         jwtclass = jpype.JClass("com.decode.JwtUtils")
-        print(jwtclass.mainDecode(jclass.readJSON(config_file)))
+        log.info(jwtclass.mainDecode(jclass.readJSON(config_file)))
 
+        self._dump_info(extract_folder, appUrl)
         # jpype.shutdownJVM()
         return extract_folder, appUrl
 
@@ -69,8 +70,8 @@ def main():
     bufan = BufanApp(f, "android")
     if bufan.doSigCheck():
         logging.info("BufanApp signature Match")
-    extract_folder, launch_path = bufan.doExtract("./working_folder")
-    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+        extract_folder, launch_path = bufan.doExtract("./working_folder")
+        log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
     return
 
 

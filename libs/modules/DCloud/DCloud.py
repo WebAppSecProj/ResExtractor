@@ -87,8 +87,8 @@ def main():
     if dCloud.doSigCheck():
         logging.info("DCloud signature Match")
 
-    extract_folder, launch_path = dCloud.doExtract("./working_folder")
-    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+        extract_folder, launch_path = dCloud.doExtract("./working_folder")
+        log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
 
     return
 

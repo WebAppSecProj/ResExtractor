@@ -72,8 +72,8 @@ def main():
     onsen = OnsenUI(f, "android")
     if onsen.doSigCheck():
         logging.info("OnsenUI signature Match")
-    extract_folder, launch_path = onsen.doExtract("./working_folder")
-    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+        extract_folder, launch_path = onsen.doExtract("./working_folder")
+        log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
     return
 
 

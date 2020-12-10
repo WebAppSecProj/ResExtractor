@@ -70,8 +70,8 @@ def main():
     ionic = Ionic(f, "android")
     if ionic.doSigCheck():
         logging.info("Ionic signature Match")
-    extract_folder, launch_path = ionic.doExtract("./working_folder")
-    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+        extract_folder, launch_path = ionic.doExtract("./working_folder")
+        log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
     return
 
 
