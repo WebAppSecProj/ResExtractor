@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+
 import sys
 import logging
 import shutil
 import os
 
-#import libs.modules.APICloud.uzmap_resource_extractor.tools as tools
+import libs.modules.APICloud.uzmap_resource_extractor.tools as tools
 from libs.modules.APICloud.uzmap_resource_extractor import tools
 from libs.modules.BaseModule import BaseModule
 

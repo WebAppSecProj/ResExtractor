@@ -29,7 +29,8 @@ Reference:
 class Cordova(BaseModule):
     def doSigCheck(self):
         if self.host_os == "android":
-            return self._find_main_activity("org.apache.cordova.CordovaActivity")
+            # FIXME: wrong signature
+            return self._find_main_activity("cordova.MainActivity")
         elif self.host_os == "ios":
             log.error("not support yet.")
             return False
@@ -85,8 +86,8 @@ def main():
     if cordova.doSigCheck():
         logging.info("cordova signature Match")
 
-    extract_folder, launch_path = cordova.doExtract("working_folder")
-    log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
+        extract_folder, launch_path = cordova.doExtract("working_folder")
+        log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
 
     return
 

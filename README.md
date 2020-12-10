@@ -8,5 +8,5 @@ Check the Module list [here](https://github.com/WebAppSecProj/ResExtractor/tree/
 
 ```
 $ git clone --recurse-submodules https://github.com/WebAppSecProj/ResExtractor.git
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
