@@ -1,4 +1,5 @@
 <!-- docs/_sidebar.md -->
 
-* [APICloud](APICloud/Report)
-* [BSLApp](BSLApp/Report)
+* [APICloud](APICloud)
+* [BSLApp](BSLApp)
+* [AppCan](AppCan)
