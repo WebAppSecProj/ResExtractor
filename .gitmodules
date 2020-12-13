@@ -1,3 +1,6 @@
 [submodule "libs/modules/APICloud/uzmap_resource_extractor"]
 	path = libs/modules/APICloud/uzmap_resource_extractor
 	url = https://github.com/WebAppSecProj/uzmap-resource-extractor.git
+[submodule "libs/ExAndroidNativeEmu"]
+	path = libs/ExAndroidNativeEmu
+	url = https://github.com/WebAppSecProj/ExAndroidNativeEmu.git

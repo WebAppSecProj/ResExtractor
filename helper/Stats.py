@@ -2,8 +2,7 @@
 
 import sys
 
-# The scanner is used to scan the app by using signature of the HybridApp and WebApp
-# Then invoke the related module to retrieve resource of the app.
+# log error, information, etc.
 
 def main():
     return
