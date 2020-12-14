@@ -52,6 +52,8 @@
 |48| [Ionic Capacitor](https://capacitorjs.com/)  | - | - | - | - |  |
 |49| [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)  | - | - | - | - |  |
 |50| [bufanapp](https://www.bufanapp.com/)  | N | Y (E) | - | - |  |
+|51| [AppCan](http://www.appcan.cn/)  | Y (E) | Y (E) | - | - |  |
+
 
 
 ```
@@ -61,7 +63,7 @@ N: The framework doesn't support such scheme.
 E: Resource a.k.a. app is encrypted.
 ```
 
-```buildoutcfg
+```
 Reference:
 1. https://noeticforce.com/best-hybrid-mobile-app-ui-frameworks-html5-js-css
 2. https://tutorialzine.com/2015/10/comparing-the-top-frameworks-for-building-hybrid-mobile-apps
