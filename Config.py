@@ -4,6 +4,7 @@
 
 Config ={
     "aapt": "./libs/bin/aapt-30.0.1",
+    "aapt_ubuntu": "../../bin/ubuntu_aapt",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
     "logging_file": "extract_info.json",
     "working_folder": "working_folder",

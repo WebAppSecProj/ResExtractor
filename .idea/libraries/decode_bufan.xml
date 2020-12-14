@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="decode_bufan">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/modules/BufanApp/resource/DecodeBufan/out/artifacts/decode_bufan/decode_bufan.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

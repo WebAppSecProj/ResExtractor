@@ -27,7 +27,7 @@ class BaseModule(metaclass=abc.ABCMeta):
     def _apktool(self, extract_folder):
         proc = subprocess.Popen("java -jar '{}' d '{}' -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        _ = (proc.communicate()[0]).decode()
+        r = (proc.communicate()[0]).decode()
         # log.info(r)
         return
 
@@ -49,7 +49,7 @@ class BaseModule(metaclass=abc.ABCMeta):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()
-        # print(r)
+        print("'{}' dump badging '{}'".format(Config.Config["aapt"], self.detect_file))
         # print(e)
         if r.find(sig) != -1:
             return True
@@ -60,6 +60,7 @@ class BaseModule(metaclass=abc.ABCMeta):
             sha1obj = hashlib.sha1()
             sha1obj.update(frh.read())
             return sha1obj.hexdigest()
+
 
     def __str__(self):
         return "{} file: {}".format(self.host_os, self.detect_file)
