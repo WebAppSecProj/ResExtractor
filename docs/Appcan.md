@@ -266,7 +266,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/>
 
 ## 资源数据提取
-资源数据是指应用的web页面、JS、CSS、图片等资源。对于Appcan第一种开发方式，只需要对/assets/widget/config.xml文件进行解析，读取其中content标签项的属性src值，如`<`content encoding="utf-8" src="https://www.appscan.io/" / `>`，src值定义了加载资源数据时的起始页。对于Appcan第二种开发方式，app应用文件中还有开发人员编写的网页资源文件，这些文件分析保存在assets/widget目录下，因此也需要对该目录下的文件进行提取。<br>
+资源数据是指应用的web页面、JS、CSS、图片等资源。对于Appcan第一种开发方式，只需要对/assets/widget/config.xml文件进行解析，读取其中content标签项的属性src值，如`<`content encoding="utf-8" src="https://www.appscan.io/" />，src值定义了加载资源数据时的起始页。对于Appcan第二种开发方式，app应用文件中还有开发人员编写的网页资源文件，这些文件分析保存在assets/widget目录下，因此也需要对该目录下的文件进行提取。<br>
 考虑到Appcan框架提供了加密功能，所以在提取这些信息时，需要对文件解密，解密算法如上所属。判断文件是否进行了加密，是通过读取文件最后17位是否为“3G2WIN Safe Guard”。如果满足，则对文件进行解密，反之则直接提取信息即可。
 
 ## 结论
