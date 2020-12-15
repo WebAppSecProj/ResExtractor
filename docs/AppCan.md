@@ -1,4 +1,4 @@
-# Appcan Android Rev
+# AppCan Android Rev
 作者：beizishaozi，如需转载请注明出处
 ## 目录
 + 简述
