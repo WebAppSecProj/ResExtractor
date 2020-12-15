@@ -38,11 +38,16 @@ class AndroidApplicationDownloader:
     def generateTime(self):
         self.cur_time = str(int(time.time()))
 
-    def generateDate(self):
+    def generatequery(self):
         cur_date = datetime.datetime.strptime(self.target_date,"%Y-%M-%d")
         before_date = cur_date - datetime.timedelta(days = 1)
-        Date_str = "stime:\"{}\" and etime:\"{}\"".format(before_date,cur_date)
-        self.date_str = Date_str
+        #the main.py will check if config["market"]has at least one market
+        query_str = "stime:\"{}\" and etime:\"{}\" and market:\"".format(before_date,cur_date)
+        for tmp_market in self.Config["market"]:
+            query_str += (tmp_market+",")
+        query_str = query_str[:-1]
+        query_str = query_str + "\""
+        self.date_str = query_str
 
 
     
@@ -55,7 +60,7 @@ class AndroidApplicationDownloader:
         self.generateTime()
         request_content["time"] = self.cur_time
         request_content["version"] = "1.0"
-        self.generateDate()
+        self.generatequery()
         request_content["query"] = self.date_str
         self.generateSign(request_content)
 

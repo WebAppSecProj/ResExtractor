@@ -18,6 +18,9 @@ Config ={
         "apk_folder": os.path.join(os.getcwd(),"apks"),
         "res_output_folder": os.path.join(os.getcwd(),"res_output")
     },
+    "market":["huawei"],
+    "market_list":["googleplay","apkpure","yandex","uptodown","wandoujia","baidu","360","qq","appchina","eoe","huawei","anzhi","yidong","meizu","xiaomi","lianxiang","kupai","jinli","hiapk","ppzhushou","nduo","mumayi","dianxin","sogou","liqu","zol"
+],
     "secret_key": "",
     "user_id":"bxmwr91j04t1121c",
     "server_port": 8081,

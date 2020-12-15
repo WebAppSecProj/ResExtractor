@@ -94,8 +94,15 @@ def checkTargetDateInQueryRange(target_date):
 
 
 def parseArgs(argv):
+    if len(argv)==1:
+        print("useage:")
+        print("python main.py --secret-key=[secret key for connect to janus]")
+        print("               --target-date=[target date to query, default today, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
+        print("               --market=[target market to query, default huawei,use , to split market; no blank space]")
+        print("               --show-market   [show all the market that can query]")
+        sys.exit()
     for args in argv[1:]:
-        if args.startswith("--secret-keys="):
+        if args.startswith("--secret-key="):
             main_config.Config["secret_key"] = args.split("=")[1]
         elif args.startswith("--target-date="):
             target_date_str = args.split("=")[1]
@@ -111,9 +118,31 @@ def parseArgs(argv):
             print("python main.py --secret-keys=[secret key for connect to janus]")
             print("               --target-date=[target date to query, default today, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
             sys.exit()
+        elif args.startswith("--show-market"):
+            print("market list:")
+            print("{}".format(main_config.Config["market_list"]))
+            sys.exit()
+        elif args.startswith("--market="):
+            tmp_markets = args.split("=")[1]
+            tmp_market_list = tmp_markets.split(",")
+            main_config.Config["market"] = []
+            for tmp_market in tmp_market_list:
+                if tmp_market not in main_config.Config["market_list"]:
+                    print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
+                    sys.exit()
+                main_config.Config["market"].append(tmp_market)
+            if main_config.Config["market"] == []:
+                print("no market is choosen")
+                sys.exit()
+
         else:
             log.error("no arg {} ".format(args))
             sys.exit()
+        
+        if main_config.Config["secret_key"]=="":
+            print("there must be a secret_key")
+            sys.exit()
+
 
 
 def checkEnv():
