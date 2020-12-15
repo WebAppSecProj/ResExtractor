@@ -2,5 +2,5 @@
 
 * [APICloud](APICloud)
 * [BSLApp](BSLApp)
-* [AppCan](Appcan)
+* [AppCan](AppCan)
 * [Cordova](Cordova)
