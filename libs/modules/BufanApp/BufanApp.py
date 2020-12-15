@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 class BufanApp(BaseModule):
     def doSigCheck(self):
         if self.host_os == "android":
-            return self._find_main_activity("com.bufan.app.SplashActivity")
+            return self._find_main_activity("com.bufan.app")
         elif self.host_os == "ios":
             log.error("not support yet.")
             return False
@@ -49,7 +49,7 @@ class BufanApp(BaseModule):
             jpype.startJVM(jvmPath, '-ea', '-Djava.class.path={0}:{1}'.format(decode_jar_path, MyJSON_jar_path),
                            convertStrings=False)
         jclass = jpype.JClass("com.decode.Main")()
-        appUrl = jclass.get_appUrl(config_file)
+        appUrl = str(jclass.get_appUrl(config_file))  # cast to str
 
         """
         decode JSONString
@@ -59,7 +59,6 @@ class BufanApp(BaseModule):
         """
         jwtclass = jpype.JClass("com.decode.JwtUtils")
         log.info(jwtclass.mainDecode(jclass.readJSON(config_file)))
-
 
         self._dump_info(extract_folder, appUrl)
         # jpype.shutdownJVM()
