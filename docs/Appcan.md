@@ -8,9 +8,10 @@
 + 解密验证
 + 资源数据提取
 + 结论
+
 ## 简述
 AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
-对于第一种开发方式，只需要提供一个url地址即可，该地址保存在assets/widget/config.xml文件的`<`content encoding="utf-8" src="http://example.com" /`> `条目属性src中。 需要注意的是，该地址不一定保存在assets/widget/config.xml文件，因为从逆向分析来看，它还支持保存在文件assets/widget/{*appid*}/config.xml和assets/widget/plugin/{*appid*}/config.xml，但是从测试apk分析默认就保存在assets/widget/config.xml。除此之外，也可以从sdcard上"myspace/plugin/{*appid*}/config.xml"文件中读取。代码截图如下：
+对于第一种开发方式，只需要提供一个url地址即可，该地址保存在assets/widget/config.xml文件的`<`content encoding="utf-8" src="http://example.com" /`> `条目属性src中。 需要注意的是，该地址不一定保存在assets/widget/config.xml文件，因为从逆向分析来看，它还支持保存在文件assets/widget/{*appid*}/config.xml和assets/widget/plugin/{*appid*}/config.xml，但是从测试apk分析默认就保存在assets/widget/config.xml。除此之外，也可以从sdcard的"myspace/plugin/{*appid*}/config.xml"文件中读取。代码截图如下：
 <div align=left><img src="./image/Appcan/config_store.png"/></div>
 对于第二种开发方式，则需要下载appcan IDE开发工具，支持本地编写js、css等文件。这些文件都保存在apk文件的assets目录下。此时，config.xml文件中起始页src的值为存储在assets/widget下的某一页面的文件名，默认src的值为index.html。
 具体开发参考：
@@ -19,7 +20,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/> 
 
 ## 应用特征描述
-分析应用特征是为了从海量apk数据中快速筛选出从应用apk特征分析，其主Activity名字为“org.zywx.wbpalmstar.engine.LoadingActivity”。通过搜索该特征就可以定位哪些应用使用了appcan框架进行开发。
+分析应用特征是为了从海量apk数据中快速筛选出基于AppCan框架开发的应用。从应用apk特征分析，其主Activity名字为“org.zywx.wbpalmstar.engine.LoadingActivity”。通过搜索该特征就可以定位哪些应用使用了appcan框架进行开发。
 <div align=left><img src="./image/Appcan/mainactivity.png"/></div>
 <br/>  
 <br/> 
@@ -35,15 +36,15 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/>
 第二个参数是加密文件的名字，如对于assets/widget/config.xml文件，其名字为config；
 <br/>
-第三个参数是第一个参数字节数组长度减去0x111（273）的值，之所以要减去273个字节，我这边猜测是一方面是为了隐藏加密算法，因为RC4明文和密文是一样长度，另外每个加密文件最后17位是一个固定字符串“3G2WIN Safe Guard”，应用就是通过这个来判断文件有无加密，解密时也需要减去这17个字符；
+第三个参数是第一个参数字节数组长度减去0x111（273）的值，之所以要减去273个字节，我这边猜测是一方面是为了隐藏加密算法，因为流加密算法的明文和密文是一样长度，另外每个加密文件最后17位是一个固定字符串“3G2WIN Safe Guard”，应用就是通过这个来判断文件有无加密，解密时也需要减去这17个字符；
 <br/>
-第四个参数是从res/values/strings.xml中读取标签为appkey的值（如887b9563-b0ef-2f07-bb41-4b5e85e3e95d），然后通过一个java函数运算得到与appkey具有相同形式与长度的不同数值。
+第四个参数是从res/values/strings.xml中读取标签为appkey的值（如887b9563-b0ef-2f07-bb41-4b5e85e3e95d），然后通过相关运算得到与appkey具有相同形式与长度的不同值。
 <br/>
 <br/>
 
 ## 解密算法解析
 因为解密算法在so文件中，所以就通过IDA动态调试+F5静态静态反编译来分析，并将算法重新实现即可。为了便于逆向，直接用了C语言实现。<br>
-总得来说，appcan框架采用了RC4加密算法。只是密钥生成部分是通过对加密文件的密文长度、文件名以及应用appkey进行MD5处理得到16为签名值，通过十六进制转换以及不停循环最终得到256位初始密码。具体实现，参考以下三部分代码实现即可。
+总得来说，appcan框架采用了RC4加密算法。只是密钥生成部分是通过对加密文件的密文长度、文件名以及应用appkey进行MD5处理得到16位签名值，通过十六进制转换以及不停循环最终得到256位初始密码。具体实现，参考以下三部分代码实现即可。
 <br>
 **代码1如下:**
 ```
@@ -145,7 +146,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 数组vunk是RC4算法的256位初始化状态向量。
 <br/>
 
-这段代码就是将字符数组的MD5值不停循环，直至满足256，作为RC4解密的初始密钥。例如，如果字符数组的MD5值为6fe41cff2a7f993169717563d947c1f，那么v52[] = 
+这段代码就是将字符数组的MD5值不停循环，直至满足256位，作为RC4解密的初始密钥。例如，如果字符数组的MD5值为6fe41cff2a7f993169717563d947c1f，那么v52[] = 
 <br/>
 6fe41cff2a7f993169717563d947c1f
 <br/>
@@ -254,7 +255,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/>
 <br/>
 ## 解密验证
-最后，我将java层的处理和C层的解密操作都实现在一个android应用中，然后用appcan提供的在线打包功能，分别构造出了加密的config.xml和test.js，经测试，均能成功解密。
+最后，我将java层的处理和C层的解密操作都实现在一个android应用中，然后用AppCan提供的在线打包功能，分别构造出了加密的config.xml和test.js，经测试，均能成功解密。
 <br>
 例如，对于加密的test.js文件，其文件内容为"abcdefghijklmnop"，长度为16，密文如下图所示
 <div align=left><img src="./image/Appcan/encryptfile.png"/></div>
@@ -267,7 +268,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 
 ## 资源数据提取
 资源数据是指应用的web页面、JS、CSS、图片等资源。对于Appcan第一种开发方式，只需要对/assets/widget/config.xml文件进行解析，读取其中content标签项的属性src值，如`<`content encoding="utf-8" src="https://www.appscan.io/" />，src值定义了加载资源数据时的起始页。对于Appcan第二种开发方式，app应用文件中还有开发人员编写的网页资源文件，这些文件分析保存在assets/widget目录下，因此也需要对该目录下的文件进行提取。<br>
-考虑到Appcan框架提供了加密功能，所以在提取这些信息时，需要对文件解密，解密算法如上所属。判断文件是否进行了加密，是通过读取文件最后17位是否为“3G2WIN Safe Guard”。如果满足，则对文件进行解密，反之则直接提取信息即可。
+考虑到Appcan框架提供了加密功能，所以在提取这些信息时，需要对文件解密，解密算法如上所述。判断文件是否进行了加密，是通过读取文件最后17位是否为“3G2WIN Safe Guard”。如果满足，则对文件进行解密，反之则直接提取信息即可。
 
 ## 结论
-appcan框架支持APP快速开发，其框架提供了对应用网页资源(html,css,js等)加密的功能。利用appcan.py脚本可以快速定位基于appcan框架开发的应用，以及对应用中网页资源进行解密存储。
+AppCan框架支持APP快速开发，其框架提供了对应用网页资源(html,css,js等)加密的功能。利用appcan.py脚本可以快速定位基于AppCan框架开发的应用，以及对应用中网页资源进行解密存储。
