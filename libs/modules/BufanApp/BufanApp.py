@@ -60,8 +60,13 @@ class BufanApp(BaseModule):
         jwtclass = jpype.JClass("com.decode.JwtUtils")
         log.info(jwtclass.mainDecode(jclass.readJSON(config_file)))
 
+
         self._dump_info(extract_folder, appUrl)
         # jpype.shutdownJVM()
+
+        # clean env
+        shutil.rmtree(tmp_folder)
+
         return extract_folder, appUrl
 
 

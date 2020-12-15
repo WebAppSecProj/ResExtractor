@@ -16,5 +16,6 @@ Config ={
         "libs.modules.Ionic.Ionic": "Ionic",
         "libs.modules.BufanApp.BufanApp": "BufanApp",
         "libs.modules.Cordova.Cordova": "Cordova",
+        "libs.modules.AppCan.AppCan": "AppCan",
     },
 }

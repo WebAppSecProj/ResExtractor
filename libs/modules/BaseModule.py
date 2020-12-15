@@ -10,6 +10,7 @@ import json
 import os
 
 import Config as Config
+import platform
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -25,10 +26,11 @@ class BaseModule(metaclass=abc.ABCMeta):
         self.hash = self._gethash()
 
     def _apktool(self, extract_folder):
-        proc = subprocess.Popen("java -jar '{}' d '{}' -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("java -jar '{}' d '{}' -f -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
-        # log.info(r)
+        #log.info(r)
+
         return
 
     def _format_working_folder(self, working_folder):
@@ -45,7 +47,12 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     # find signature
     def _find_main_activity(self, sig):
-        proc = subprocess.Popen("'{}' dump badging '{}'".format(Config.Config["aapt"], self.detect_file), shell=True, stdin=subprocess.PIPE,
+        if platform.system() == 'Darwin':
+            aapt = Config.Config["aapt"]
+        else:
+            aapt = Config.Config["aapt_ubuntu"]
+
+        proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()

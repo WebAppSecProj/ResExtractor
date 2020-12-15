@@ -59,6 +59,9 @@ class BSLApp(BaseModule):
 
         self._dump_info(extract_folder, launch_path)
 
+        # clean env
+        shutil.rmtree(tmp_folder)
+
         return extract_folder, launch_path
 
 
