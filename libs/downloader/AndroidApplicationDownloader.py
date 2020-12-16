@@ -22,11 +22,15 @@ class AndroidApplicationDownloader:
     cur_time = None
     date_str = None
     thread_num_lock = None
+    result_write_lock = threading.Lock()
+    result_write_file_path = None
     def __init__(self,main_config):
         self.Config = main_config
         self.secret_key = self.Config["secret_key"]
         self.userid = self.Config["user_id"]
         self.thread_num_lock = threading.Semaphore(self.Config["max_thread"])
+        self.result_write_file_path = self.Config["workfile"]["res_output_list_file"]
+
     
     def generateNonce(self):
         sample_str = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
@@ -131,11 +135,33 @@ class AndroidApplicationDownloader:
                 target_framework_check_class = getattr(importlib.import_module(to_check_module_name),self.Config["modules"][to_check_module_name])
                 target_check = target_framework_check_class(tar_apk_path,"android")
                 if target_check.doSigCheck():
-                    tar_extract_folder = os.path.join(os.getcwd(),self.Config["workdir"]["res_output_folder"],app_sha1)
+                    tar_module_folder = os.path.join(os.getcwd(),self.Config["workdir"]["res_output_folder"],self.Config["modules"][to_check_module_name])
+                    if not os.path.exists(tar_module_folder):
+                        os.mkdir(tar_module_folder)
+                    tar_extract_folder = os.path.join(tar_module_folder,app_sha1)
                     log.info("module {} found in this application".format(self.Config["modules"][to_check_module_name]))
                     if not os.path.exists(tar_extract_folder):
                         os.mkdir(tar_extract_folder)
+                    else:
+                        continue
                     target_check.doExtract(tar_extract_folder)
+                    #extract_info.json
+                    extract_info_path = os.path.join(tar_extract_folder,tar_app_sha1,self.Config["extract_info_file"])
+                    if os.path.exists(extract_info_path):
+                        extract_info_file = open(extract_info_path,"r")
+                        result = json.load(extract_info_file)
+                        result["apkname"] = tar_app_info["name"]
+                        result["apksha1"] = tar_app_sha1
+                        result["modulename"] = self.Config["modules"][to_check_module_name]
+                        extract_info_file.close()
+                        json.dump(result,open(extract_info_path,"w",encoding='utf-8'),ensure_ascii=False)
+                    #write apk name and its module to file 
+                    if self.result_write_lock.acquire():
+                        tmp_file = open(self.result_write_file_path,"a")
+                        tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"],tar_app_sha1,self.Config["modules"][to_check_module_name]))
+                        tmp_file.close()
+                        self.result_write_lock.release()
+
             #else:
                 #log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
         
