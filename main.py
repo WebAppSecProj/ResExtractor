@@ -11,7 +11,7 @@ from libs.downloader.AndroidApplicationDownloader import AndroidApplicationDownl
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
-thread_num_lock = threading.Semaphore(main_config.Config["max_thread"])
+
 
 
 
@@ -92,13 +92,46 @@ def checkTargetDateInQueryRange(target_date):
         log.error("query too long till today")
         sys.exit()
 
+def checkAndSetDate(start_date_str, end_date_str):
+    if (start_date_str == None) & (end_date_str == None):
+        return 
+    if (start_date_str == None):
+        log.error("if you set end date, you must set start date")
+        sys.exit()
+    if (end_date_str == None):
+        log.error("if you set start date, you must set end date")
+        sys.exit()
+    try:
+        start_date = datetime.datetime.strptime(start_date_str,"%Y-%M-%d")
+    except ValueError:
+        log.error("date format for --start-date is wrong, sholuld be year-month-day")
+        sys.exit()
+    
+    try:
+        end_date = datetime.datetime.strptime(end_date_str,"%Y-%M-%d")
+    except ValueError:
+        log.error("date format for --end-date is wrong, sholuld be year-month-day")
+        sys.exit()
+
+    if start_date>end_date:
+        log.error("start date must be erlier than end date")
+        sys.exit()
+    
+    main_config.Config["start_date"] = start_date_str
+    main_config.Config["end_date"] = end_date_str
+        
+    
 
 def parseArgs(argv):
+    start_date_str = None
+    end_date_str = None
     if len(argv)==1:
         print("useage:")
         print("python main.py --secret-key=[secret key for connect to janus]")
-        print("               --target-date=[target date to query, default today, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
-        print("               --market=[target market to query, default huawei,use , to split market; no blank space]")
+        print("               --target-date=[target date to query, default yesturday, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
+        print("               --start-date=[start date toquery, must be with end date. cover target-date]")
+        print("               --end-date=[end date toquery, must be with start date. cover target-date]")
+        print("               --market=[target market to query, default huawei,use , to split market; no blank space ; all means all market is selected]")
         print("               --show-market   [show all the market that can query]")
         sys.exit()
     for args in argv[1:]:
@@ -112,7 +145,9 @@ def parseArgs(argv):
                 log.error("date format for --target-date is wrong, sholuld be year-month-day")
                 sys.exit()
             checkTargetDateInQueryRange(target_date.date())
-            main_config.Config["target_date"] = target_date_str 
+            checkTargetDateInQueryRange(target_date.date() - datetime.timedelta(days = 1))
+            main_config.Config["end_date"] = target_date_str 
+            main_config.Config["start_date"] = target_date.date() - datetime.timedelta(days = 1)
         elif args.startswith("--help"):
             print("useage:")
             print("python main.py --secret-keys=[secret key for connect to janus]")
@@ -126,22 +161,34 @@ def parseArgs(argv):
             tmp_markets = args.split("=")[1]
             tmp_market_list = tmp_markets.split(",")
             main_config.Config["market"] = []
+            if "all" in tmp_market_list:
+                main_config.Config["market"]=main_config.Config["market_list"]
+                continue
             for tmp_market in tmp_market_list:
                 if tmp_market not in main_config.Config["market_list"]:
                     print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
                     sys.exit()
                 main_config.Config["market"].append(tmp_market)
             if main_config.Config["market"] == []:
-                print("no market is choosen")
+                log.error("no market is choosen")
                 sys.exit()
-
+            
+        elif args.startswith("--start-date="):
+            start_date_str = args.split("=")[1] 
+        elif args.startswith("--end-date="):
+            end_date_str = args.split("=")[1]
         else:
             log.error("no arg {} ".format(args))
             sys.exit()
+
+    if main_config.Config["secret_key"]=="":
+        log.error("there must be a secret_key")
+        sys.exit()  
+    log.info(start_date_str)     
+    log.info(end_date_str)
+    checkAndSetDate(start_date_str,end_date_str)
         
-        if main_config.Config["secret_key"]=="":
-            print("there must be a secret_key")
-            sys.exit()
+        
 
 
 
@@ -152,7 +199,7 @@ def checkEnv():
     cleanTmpDir()
 
 
-
+'''
 def downloadAppAndExtractRes(tar_app_sha1,tar_app_info):
     with thread_num_lock:
         app_sha1 = tar_app_sha1
@@ -167,32 +214,36 @@ def downloadAppAndExtractRes(tar_app_sha1,tar_app_info):
             target_check = target_framework_check_class(tar_apk_path,"android")
             if target_check.doSigCheck():
                 tar_extract_folder = os.path.join(os.getcwd(),main_config.Config["workdir"]["res_output_folder"],app_sha1)
+                log.info("module {} found in this application".format(main_config.Config["modules"][to_check_module_name]))
                 if not os.path.exists(tar_extract_folder):
                     os.mkdir(tar_extract_folder)
                 target_check.doExtract(tar_extract_folder)
-            else:
-                log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
+            #else:
+                #log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
         
         if main_config.Config["need_to_delete_apk"]:
             os.remove(tar_apk_path)
-
+'''
 
 def startToWork():
     apk_downloader = AndroidApplicationDownloader(main_config.Config)
-    target_date_application_list = apk_downloader.queryTargetDateApplications()
-    sub_thread_list = []
+    #target_date_application_list = apk_downloader.queryTargetDateApplications()
+    apk_downloader.downloadAndExtractApplications()
+    #sub_thread_list = []
+    '''
     for target_app_sha1 in target_date_application_list:
         log.info("start new thread to download and extract res of {}".format(target_app_sha1))
         sub_thread = threading.Thread(target=downloadAppAndExtractRes,args = (target_app_sha1,target_date_application_list[target_app_sha1]))
         sub_thread_list.append(sub_thread)
         sub_thread.start()
-    
+     
     log.info("wait till all sub thread finish its download and extract job")
 
     for sub_thread in sub_thread_list:
         sub_thread.join()
     
     log.info("finish all the job")
+    '''
     
 
 
