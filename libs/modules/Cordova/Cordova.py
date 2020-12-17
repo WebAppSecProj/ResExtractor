@@ -81,10 +81,13 @@ class Cordova(BaseModule):
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 r = (proc.communicate()[0]).decode()
                 #只匹配标签src可能存在多个答案，因此还需要配合标签content来确定，应该是标签content之后的第一个src的值才是起始页真正地址
-                contid = r.index("E: :content")
-                cont = r[contid:]
-                srcid = cont.index("A: src")
-                launch_path = (cont[srcid:].split("\""))[1]
+                launch_path = "no found"
+                contid = r.find("E: :content")
+                if contid >= 0:
+                    cont = r[contid+11:]
+                    srcid = cont.find("A: src")
+                    if srcid >= 0:
+                        launch_path = (cont[srcid:].split("\""))[1]
 
                 #只匹配标签src可能存在多个答案
                 #matchObj = re.match(r'(.*)A: src=\"(.*?)\" \((.*)', r, re.S)
@@ -100,7 +103,7 @@ class Cordova(BaseModule):
 
 
 def main():
-    f = "./test_case/Cordova/as.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+    f = "./test_case/Cordova/bjgas.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
     cordova = Cordova(f, "android")
     if cordova.doSigCheck():
         logging.info("cordova signature Match")
