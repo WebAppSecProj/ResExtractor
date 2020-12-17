@@ -18,7 +18,7 @@
 |14| [Kendo UI](http://www.telerik.com/kendo-ui)  | - | - | - | - | 
 |15| [Mobile Angular UI](http://mobileangularui.com/)  | - | - | - | - | 
 |16| [Monaca](https://monaca.io/)  | - | - | - | - | 
-|17| [Trigger.IO](https://trigger.io/)  | - | - | - | - | 
+|17| [Trigger.IO](https://trigger.io/)  | Y | Y | - | - | 
 |18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - | 
 |19| [Andromo](http://www.andromo.com/)  | - | - | - | - | 
 |20| [Apps Geyser](http://www.appsgeyser.com/)  | - | - | - | - | 
