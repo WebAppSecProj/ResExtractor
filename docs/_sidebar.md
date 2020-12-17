@@ -5,3 +5,4 @@
 * [AppCan](AppCan)
 * [Cordova](Cordova)
 * [BunfanApp](BufanApp)
+* [Trigger](Trigger)
