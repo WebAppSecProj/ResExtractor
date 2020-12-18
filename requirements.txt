@@ -4,3 +4,4 @@ jpype1>=0.5.4
 unicorn==1.0.2
 capstone==4.0.1
 chardet
+requests
