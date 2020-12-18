@@ -56,7 +56,7 @@ class BaseModule(metaclass=abc.ABCMeta):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()
-        print("'{}' dump badging '{}'".format(Config.Config["aapt"], self.detect_file))
+        # print("'{}' dump badging '{}'".format(Config.Config["aapt"], self.detect_file))
         # print(e)
         if r.find(sig) != -1:
             return True

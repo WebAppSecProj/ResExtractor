@@ -174,8 +174,8 @@ class AndroidApplicationDownloader:
         target_application_sha1_list = self.queryApplicationList()
 
         sub_thread_list = []
-        
         for tmp_sha1 in target_application_sha1_list:
+            log.info("{}/{}: processing {}".format(len(sub_thread_list), len(target_application_sha1_list), tmp_sha1))
             download_request_content = {}
             download_request_content["userid"] = self.userid
             self.generateNonce()
@@ -213,7 +213,6 @@ class AndroidApplicationDownloader:
         for tmp_sub_thread in sub_thread_list:
             tmp_sub_thread.join()
 
-        log.info("Total apk files: " + len(target_application_sha1_list))
 
 
 
