@@ -8,16 +8,15 @@ import Config
 import os
 
 class WebServerHelper:
-    def __init__(self, root_path):
-        self.web_server_root = root_path
+    def __init__(self):
+        pass
 
-
-    # return the ip and port
+    # unfortunately, we can't manipulate SimpleHTTPRequestHandler to list files if there is an `index.html' or `index.htm' file in current folder.
     def startService(self):
         Handler = http.server.SimpleHTTPRequestHandler
 
         t = os.getcwd()
-        web_dir = os.path.join(os.getcwd(), self.web_server_root)
+        web_dir = os.path.join(os.getcwd(), Config.Config["working_folder"])
         os.chdir(web_dir)
 
         self.httpd = socketserver.TCPServer(("", Config.Config["server_port"]), Handler)
@@ -32,8 +31,7 @@ class WebServerHelper:
         return
 
 def main():
-    # webServerHelper = WebServerHelper("../libs/modules/DCloud/./working_folder/103a97f1a8cdbe9a4f80187279f3b78f9e0e7acd")
-    webServerHelper = WebServerHelper("../libs/modules/APICloud/./working_folder/0c8b013e173768eabf68fead38f4a1c17b949d1a")
+    webServerHelper = WebServerHelper()
     webServerHelper.startService()
 
     return

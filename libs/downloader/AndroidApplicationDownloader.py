@@ -212,7 +212,9 @@ class AndroidApplicationDownloader:
         
         for tmp_sub_thread in sub_thread_list:
             tmp_sub_thread.join()
-        
-            
+
+        log.info("Total apk files: " + len(target_application_sha1_list))
+
+
 
 
