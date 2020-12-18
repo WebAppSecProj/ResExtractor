@@ -7,13 +7,11 @@ import _thread
 import threading
 import requests
 import importlib
+import argparse
+
 from libs.downloader.AndroidApplicationDownloader import AndroidApplicationDownloader
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
-
-
-
-
 
 def checkPythonVersion():
     log.info("start to check python version")
@@ -122,75 +120,64 @@ def checkAndSetDate(start_date_str, end_date_str):
         
     
 
-def parseArgs(argv):
+def parseArgs():
     start_date_str = None
     end_date_str = None
-    if len(argv)==1:
-        print("useage:")
-        print("python main.py --secret-key=[secret key for connect to janus]")
-        print("               --target-date=[target date to query, default yesturday, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
-        print("               --start-date=[start date toquery, must be with end date. cover target-date]")
-        print("               --end-date=[end date toquery, must be with start date. cover target-date]")
-        print("               --market=[target market to query, default huawei,use , to split market; no blank space ; all means all market is selected]")
-        print("               --show-market   [show all the market that can query]")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--secret-key', required=True, help="Secret key for connecting janus.")
+    parser.add_argument('--target-date', help="Target date to query, default is yesterday, a query period exceeding {} days is not allowed.".format(main_config.Config["max_query_days"]))
+    parser.add_argument('--start-date', help="Start date of the query.")
+    parser.add_argument('--end-date', help="End date of the query.")
+    parser.add_argument('--market', type=str, help="APP market in query. Huawei APP market is set if no argument supplemented; Use `,' to split multiple markets; Use `all' to query all markets.")
+    parser.add_argument('--show-market', action='store_true', help="To list supported APP markets.")
+
+    args = parser.parse_args()
+    main_config.Config["secret_key"] = args.secret_key
+
+    if args.target_date and (args.start_date or args.end_date):
+        log.error("overlapping data setting")
         sys.exit()
-    for args in argv[1:]:
-        if args.startswith("--secret-key="):
-            main_config.Config["secret_key"] = args.split("=")[1]
-        elif args.startswith("--target-date="):
-            target_date_str = args.split("=")[1]
-            try:
-                target_date = datetime.datetime.strptime(target_date_str,"%Y-%M-%d")
-            except ValueError:
-                log.error("date format for --target-date is wrong, sholuld be year-month-day")
+
+    if args.target_date:
+        try:
+            target_date = datetime.datetime.strptime(args.target_date,"%Y-%M-%d")
+        except ValueError:
+            log.error("date format for --target-date is wrong, sholuld be year-month-day")
+            sys.exit()
+        checkTargetDateInQueryRange(target_date.date())
+        checkTargetDateInQueryRange(target_date.date() - datetime.timedelta(days = 1))
+        main_config.Config["end_date"] = args.target_date
+        main_config.Config["start_date"] = target_date.date() - datetime.timedelta(days = 1)
+
+    if args.show_market:
+        print("market list:")
+        print("{}".format(main_config.Config["market_list"]))
+        sys.exit()
+    if args.market:
+        main_config.Config["market"] = []
+        lst_market = args.market.split(",")
+
+        if "all" in lst_market:
+            main_config.Config["market"]=main_config.Config["market_list"]
+        for tmp_market in lst_market:
+            if tmp_market not in main_config.Config["market_list"]:
+                print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
                 sys.exit()
-            checkTargetDateInQueryRange(target_date.date())
-            checkTargetDateInQueryRange(target_date.date() - datetime.timedelta(days = 1))
-            main_config.Config["end_date"] = target_date_str 
-            main_config.Config["start_date"] = target_date.date() - datetime.timedelta(days = 1)
-        elif args.startswith("--help"):
-            print("useage:")
-            print("python main.py --secret-keys=[secret key for connect to janus]")
-            print("               --target-date=[target date to query, default today, cannot query more than {} days ago]".format(main_config.Config["max_query_days"]))
+            main_config.Config["market"].append(tmp_market)
+        if main_config.Config["market"] == []:
+            log.error("no market is choosen")
             sys.exit()
-        elif args.startswith("--show-market"):
-            print("market list:")
-            print("{}".format(main_config.Config["market_list"]))
-            sys.exit()
-        elif args.startswith("--market="):
-            tmp_markets = args.split("=")[1]
-            tmp_market_list = tmp_markets.split(",")
-            main_config.Config["market"] = []
-            if "all" in tmp_market_list:
-                main_config.Config["market"]=main_config.Config["market_list"]
-                continue
-            for tmp_market in tmp_market_list:
-                if tmp_market not in main_config.Config["market_list"]:
-                    print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
-                    sys.exit()
-                main_config.Config["market"].append(tmp_market)
-            if main_config.Config["market"] == []:
-                log.error("no market is choosen")
-                sys.exit()
-            
-        elif args.startswith("--start-date="):
-            start_date_str = args.split("=")[1] 
-        elif args.startswith("--end-date="):
-            end_date_str = args.split("=")[1]
-        else:
-            log.error("no arg {} ".format(args))
-            sys.exit()
+    else:
+        main_config.Config["market"].append("huawei")
 
-    if main_config.Config["secret_key"]=="":
-        log.error("there must be a secret_key")
-        sys.exit()  
-    log.info(start_date_str)     
-    log.info(end_date_str)
-    checkAndSetDate(start_date_str,end_date_str)
-        
-        
-
-
+    if args.start_date and args.end_date:
+        start_date_str = args.start_date
+        end_date_str = args.end_date
+        checkAndSetDate(start_date_str, end_date_str)
+    elif args.start_date or args.end_date:
+        log.error("provide target-date and end-date in a pair.")
+        sys.exit()
 
 def checkEnv():
     checkPythonVersion()
@@ -249,12 +236,14 @@ def startToWork():
 
 
 
-def main(argv):
-    parseArgs(argv)
+def main():
+
+
+    parseArgs()
     checkEnv()
     startToWork()
 
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

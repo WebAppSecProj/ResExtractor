@@ -27,7 +27,7 @@ Config ={
     "user_id":"bxmwr91j04t1121c",
     "server_port": 8081,
     "max_query_days":364,
-    "max_thread":256,
+    "max_thread":6,
     "need_to_delete_apk":True,
     "max_request_page_size":100,
     "janus_url":"http://priv.api.appscan.io",

@@ -162,6 +162,8 @@ class AndroidApplicationDownloader:
                         tmp_file.close()
                         self.result_write_lock.release()
 
+                # del(to_check_module_name)
+
             #else:
                 #log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
         
@@ -194,7 +196,8 @@ class AndroidApplicationDownloader:
 
             if "status" not in result_content:
                 log.error("request result no status for {} : {}".format(request_json,result_content))
-                sys.exit()
+                #sys.exit()
+                continue
             
             if result_content["status"]!=200:
                 print("cannot request download address for {} reson : {}".format(target_application_sha1_list[tmp_sha1]["name"],result_content["msg"]))
@@ -202,13 +205,15 @@ class AndroidApplicationDownloader:
             
             if "download_url" not in result_content:
                 log.error("request result no download_url for {} : {}".fomat(request_json,result_content))
-                sys.exit()
+                #sys.exit()
+                continue
 
             target_application_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
             sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
             sub_thread_list.append(sub_thread)
             sub_thread.start()
-            time.sleep(1.4)
+            # janus allows 4 queries per minute
+            time.sleep(1.5)
         
         for tmp_sub_thread in sub_thread_list:
             tmp_sub_thread.join()
