@@ -13,6 +13,7 @@ import logging
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
+# TODO: I prefer to use queue of redis but not threading.
 
 class AndroidApplicationDownloader:
     Config = None
