@@ -4,13 +4,14 @@ import sys
 import Config
 import importlib
 import logging
+import os
+import zipfile
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-def main():
-
+def doCheck(file_in_check):
     distill_modules = []
     # load each module
     for m in Config.Config["modules"].keys():
@@ -21,17 +22,32 @@ def main():
 
         # TODO:: verify each module
         if getattr(module, "doSigCheck") and getattr(module, "doExtract"):
-            distill_modules.append(module(sys.argv[1], "android"))
+            distill_modules.append(module(file_in_check, "android"))
 
     for m in distill_modules:
         if m.doSigCheck():
             logging.info("{} signature Match".format(m.__class__))
             extract_folder, launch_path = m.doExtract(Config.Config["working_folder"])
-            log.info("{} is extracted to {}, the start page is {}".format(sys.argv[1], extract_folder, launch_path))
+            log.info("{} is extracted to {}, the start page is {}".format(file_in_check, extract_folder, launch_path))
 
     # fork the service ?
     # fork the webdriver
     return
+
+def main():
+
+    for dirpath, dirnames, ifilenames in os.walk(sys.argv[1]):
+        for fs in ifilenames:
+            file_in_check = os.path.join(dirpath, fs)
+            if not os.path.isfile(file_in_check):
+                continue
+            print(file_in_check)
+            try:
+                zf = zipfile.ZipFile(file_in_check, "r")
+            except:
+                continue
+            if "AndroidManifest.xml" in zf.namelist():
+                doCheck(file_in_check)
 
 
 if __name__ == "__main__":

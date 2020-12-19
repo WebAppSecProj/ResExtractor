@@ -31,7 +31,6 @@ class AndroidApplicationDownloader:
         self.thread_num_lock = threading.Semaphore(self.Config["max_thread"])
         self.result_write_file_path = self.Config["workfile"]["res_output_list_file"]
 
-    
     def generateNonce(self):
         sample_str = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
         rand_length = random.randint(5,30)
@@ -130,7 +129,6 @@ class AndroidApplicationDownloader:
             tar_apk_path = os.path.join(self.Config["workdir"]["apk_folder"],app_sha1+".apk")
             with open(tar_apk_path,"wb") as apk:
                 apk.write(request.content)
-            log.info("end download")
             for to_check_module_name in self.Config["modules"]:
                 target_framework_check_class = getattr(importlib.import_module(to_check_module_name),self.Config["modules"][to_check_module_name])
                 target_check = target_framework_check_class(tar_apk_path,"android")
@@ -144,7 +142,11 @@ class AndroidApplicationDownloader:
                         os.mkdir(tar_extract_folder)
                     else:
                         continue
-                    target_check.doExtract(tar_extract_folder)
+                    try:
+                        target_check.doExtract(tar_extract_folder)
+                    except:
+                        log.error("processing {} error".format(tar_app_sha1))
+                        pass
                     #extract_info.json
                     extract_info_path = os.path.join(tar_extract_folder,tar_app_sha1,self.Config["extract_info_file"])
                     if os.path.exists(extract_info_path):
@@ -175,9 +177,12 @@ class AndroidApplicationDownloader:
 
         target_application_sha1_list = self.queryApplicationList()
 
-        sub_thread_list = []
+        # sub_thread_list = []
+        counter = 0
+
         for tmp_sha1 in target_application_sha1_list:
-            log.info("{}/{}: processing {}".format(len(sub_thread_list), len(target_application_sha1_list), tmp_sha1))
+            counter += 1
+            log.info("{}/{}: processing {}".format(counter, len(target_application_sha1_list), tmp_sha1))
             download_request_content = {}
             download_request_content["userid"] = self.userid
             self.generateNonce()
@@ -190,7 +195,10 @@ class AndroidApplicationDownloader:
 
             request_json = json.dumps(download_request_content)
             result_json = requests.post(self.Config["janus_url"] + self.Config["apk_download_address"],data=request_json)
-            result_content = json.loads(result_json.text)
+            try:
+                result_content = json.loads(result_json.text)
+            except:
+                continue
             log.info("download url : {}".format(request_json))
             log.info("download result : {}".format(result_content))
 
@@ -209,14 +217,16 @@ class AndroidApplicationDownloader:
                 continue
 
             target_application_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
-            sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
-            sub_thread_list.append(sub_thread)
-            sub_thread.start()
-            # janus allows 4 queries per minute
-            time.sleep(1.5)
+            threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1])).start()
+
+            # sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
+            # sub_thread_list.append(sub_thread)
+            # sub_thread.start()
+            # janus allows 40 queries per minute
+            time.sleep(5)
         
-        for tmp_sub_thread in sub_thread_list:
-            tmp_sub_thread.join()
+        # for tmp_sub_thread in sub_thread_list:
+        #     tmp_sub_thread.join()
 
 
 

@@ -30,6 +30,10 @@ In another thread, use the following command to observe the result.
 $ python3 ./loader/WebServerHelper.py
 ```
 
+Or use local apk files for analyzing.
+```
+$ python3 CheckerBatch.py path_to_the_directory
+```
 
 # HOWTO Develop
 
