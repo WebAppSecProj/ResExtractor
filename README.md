@@ -15,12 +15,25 @@ $ pip3 install -r requirements.txt
 ```
 In one thread, use the following command to parse apk files from [janus](https://www.appscan.io).
 ```
-$ python3 main.py --secret-key=[secret key for connect to janus]
-        		  --target-date=[target date to query, default yesturday, ]
-        		  --start-date=[start date toquery, must be with end date. cover target-date]
-        		  --end-date=[end date toquery, must be with start date. cover target-date]
-        		  --market=[target market to query, default huawei,use , to split market; no blank space ; all means all market is selected]
-        		  --show-market   [show all the market that can query]
+$ usage: main.py [-h] --secret-key SECRET_KEY [--target-date TARGET_DATE]
+               [--start-date START_DATE] [--end-date END_DATE]
+               [--market MARKET] [--show-market]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --secret-key SECRET_KEY
+                        Secret key for connecting janus.
+  --target-date TARGET_DATE
+                        Target date to query, default is yesterday, a query
+                        period exceeding 364 days is not allowed.
+  --start-date START_DATE
+                        Start date of the query.
+  --end-date END_DATE   End date of the query.
+  --market MARKET       APP market in query. Huawei APP market is set if no
+                        argument supplemented; Use `,' to split multiple
+                        markets; Use `all' to query all markets.
+  --show-market         To list supported APP markets.
+
 e.g., :
 $ python3 main.py --secret-key=123456 --start-date=2020-10-01 --end-date=2020-10-02
 ```
@@ -35,6 +48,7 @@ Or use local apk files for analyzing.
 $ python3 CheckerBatch.py path_to_the_directory
 ```
 
-# HOWTO Develop
 
-
+# HOWTO Debug
+1. Use main.py and keep all apk files (set `need_to_delete_apk' flag to True)
+2. Use CheckerBatch.py to find bugs and then fix them.
