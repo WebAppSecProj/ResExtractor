@@ -160,14 +160,15 @@ def parseArgs():
 
         if "all" in lst_market:
             main_config.Config["market"]=main_config.Config["market_list"]
-        for tmp_market in lst_market:
-            if tmp_market not in main_config.Config["market_list"]:
-                print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
+        else:
+            for tmp_market in lst_market:
+                if tmp_market not in main_config.Config["market_list"]:
+                    print("market {} not in market list, use --show-market to show the market list ".format(tmp_market))
+                    sys.exit()
+                main_config.Config["market"].append(tmp_market)
+            if main_config.Config["market"] == []:
+                log.error("no market is choosen")
                 sys.exit()
-            main_config.Config["market"].append(tmp_market)
-        if main_config.Config["market"] == []:
-            log.error("no market is choosen")
-            sys.exit()
     else:
         main_config.Config["market"].append("huawei")
 
