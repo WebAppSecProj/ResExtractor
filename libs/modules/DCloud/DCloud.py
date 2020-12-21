@@ -71,14 +71,20 @@ class DCloud(BaseModule):
                     fwh.write(zf.read(f))
 
         # extracting the starting page
-        j = json.load(open(os.path.join(extract_folder, "manifest.json"),'r'))
-
-        self._dump_info(extract_folder, j['launch_path'])
+        launch_path = ""
+        try:
+            j = json.load(open(os.path.join(extract_folder, "manifest.json"),'r'))
+            launch_path = j['launch_path']
+            self._dump_info(extract_folder, j['launch_path'])
+        except:
+            with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+                fwh.write(self.detect_file)
+            fwh.close()
 
         # clean env
         shutil.rmtree(tmp_folder)
 
-        return extract_folder, j['launch_path']
+        return extract_folder, launch_path
 
 
 def main():

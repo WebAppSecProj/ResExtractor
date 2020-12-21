@@ -2,13 +2,8 @@
 
 import logging
 import sys
-import zipfile
 import shutil
-import subprocess
-import Config as Config
 import hashlib
-import base64
-import chardet
 import re
 
 try:
@@ -238,7 +233,7 @@ class AppCan(BaseModule):
                             plain = self.decryptFile(f, key)
                         else:                       # no encrypt
                             # ugly coding
-                            fp = open(f, "rb")
+                            fp = open(f, "r")
                             plain = fp.read()
                             fp.close()
                         results = re.findall('(?<=<)content.*(?=>)', plain)

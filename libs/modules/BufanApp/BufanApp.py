@@ -57,7 +57,12 @@ class BufanApp(BaseModule):
                 jpype.startJVM(jvmPath, '-ea', '-Djava.class.path={0}:{1}'.format(decode_jar_path, MyJSON_jar_path),
                                convertStrings=False)
             jclass = jpype.JClass("com.decode.Main")()
-            appUrl = str(jclass.get_appUrl(config_file))  # cast to str
+            try:
+                appUrl = str(jclass.get_appUrl(config_file))  # cast to str
+            except:
+                with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+                    fwh.write(self.detect_file)
+                fwh.close()
 
             """
             decode JSONString

@@ -50,11 +50,16 @@ class APICloud(BaseModule):
 
         # parse the xml file, construct the path of app code, and extract
         launch_path = ""
-        t = ET.ElementTree(file=os.path.join(extract_folder, "config.xml"))
-        for elem in t.iter(tag='content'):
-            launch_path = elem.attrib['src']
+        try:
+            t = ET.ElementTree(file=os.path.join(extract_folder, "config.xml"))
+            for elem in t.iter(tag='content'):
+                launch_path = elem.attrib['src']
 
-        self._dump_info(extract_folder, launch_path)
+            self._dump_info(extract_folder, launch_path)
+        except:
+            with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+                fwh.write(self.detect_file)
+            fwh.close()
 
         return extract_folder, launch_path
 
