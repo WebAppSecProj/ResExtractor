@@ -53,6 +53,16 @@
 |49| [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)  | - | - | - | - |  |
 |50| [bufanapp](https://www.bufanapp.com/)  | N | Y (E) | - | - |  |
 |51| [AppCan](http://www.appcan.cn/)  | Y (E) | Y (E) | - | - |  |
+|52| [Dibaqu](https://www.dibaqu.com/)  | - | - | - | - |  |
+|53| [Pgyer](https://www.pgyer.com/)  | - | - | - | - |  |
+|54| [ofcms](https://www.ofcms.com/)  | - | - | - | - |  |
+|55| [ChuXueYun](https://www.chuxueyun.com/)  | - | - | - | - |  |
+|56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
+|57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
+|58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
+|59| [SuishouApp](http://www.suishouapp.com/)  | - | - | - | - |  |
+|60| [Hema](https://hema.im/)  | - | - | - | - |  |
+|61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
 
 
 
