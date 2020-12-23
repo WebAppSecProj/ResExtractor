@@ -45,5 +45,7 @@ Config ={
         "libs.modules.AppCan.AppCan": "AppCan",
         "libs.modules.Trigger.Trigger": "Trigger",
         "libs.modules.OnsenUI.OnsenUI": "OnsenUI",
+        "libs.modules.Andromo.Andromo": "Andromo",
+        "libs.modules.AppsGeyser.AppsGeyser": "AppsGeyser",
     },
 }
