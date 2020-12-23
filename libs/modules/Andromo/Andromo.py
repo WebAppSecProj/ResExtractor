@@ -86,6 +86,9 @@ class Andromo(BaseModule):
                         if value.startswith("Website") and value.endswith("_webview_content"):
                             launch_path = launch_path+"  "
                             launch_path = launch_path + elem.text
+                        elif value.startswith("Rss_") and value.endswith("rss_feed_url"):
+                            launch_path = launch_path+"  "
+                            launch_path = launch_path + elem.text
 
         # clean env
         shutil.rmtree(tmp_folder)

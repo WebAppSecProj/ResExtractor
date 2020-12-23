@@ -11,7 +11,7 @@ Andromo框架只支持Android应用开发，不支持iOS应用。该框架支持
 <div align=left><img src="./image/Andromo/Andromo_activities.png"/></div>
 其中Custom Page是用于创建页面，创建的页面也是保存在assets目录下。<br>
 HTML Archive是上传网页信息，它会保存在assets目录下。<br>
-Website,About,RSS则是通过填入URL链接进行加载，URL链接保存在res/values/strings.xml文件中。<br>
+Website,About,RSS则是通过填入URL链接进行加载，URL链接保存在res/values/strings.xml文件中。但是About模块的URL都是通过浏览器打开，并不是由应用打开，因此这部分URL不再提取范围内。后续视情况可添加<br>
 Photo gallery和PDF document则是上传照片和PDF文件。<br>
 另外开发应用时，不支持对这些资源信息进行加密处理。
 Andromo相关信息参考：http://www.andromo.com/。
