@@ -13,8 +13,6 @@ import logging
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# TODO: I prefer to use queue of redis but not threading.
-
 class AndroidApplicationDownloader:
     Config = None
     secret_key = None
@@ -123,55 +121,57 @@ class AndroidApplicationDownloader:
         return target_application_sha1_list
 
     def downloadAppAndExtractRes(self,tar_app_sha1,tar_app_info):
-        with self.thread_num_lock:
-            app_sha1 = tar_app_sha1
-            app_download_url = tar_app_info["download"]
-            request = requests.get(app_download_url)
-            tar_apk_path = os.path.join(self.Config["workdir"]["apk_folder"],app_sha1+".apk")
-            with open(tar_apk_path,"wb") as apk:
-                apk.write(request.content)
-            for to_check_module_name in self.Config["modules"]:
-                target_framework_check_class = getattr(importlib.import_module(to_check_module_name),self.Config["modules"][to_check_module_name])
-                target_check = target_framework_check_class(tar_apk_path,"android")
-                if target_check.doSigCheck():
-                    tar_module_folder = os.path.join(os.getcwd(),self.Config["workdir"]["res_output_folder"],self.Config["modules"][to_check_module_name])
-                    if not os.path.exists(tar_module_folder):
-                        os.mkdir(tar_module_folder)
-                    tar_extract_folder = os.path.join(tar_module_folder,app_sha1)
-                    log.info("module {} found in this application".format(self.Config["modules"][to_check_module_name]))
-                    if not os.path.exists(tar_extract_folder):
-                        os.mkdir(tar_extract_folder)
-                    else:
-                        continue
-                    try:
-                        target_check.doExtract(tar_extract_folder)
-                    except:
-                        log.error("processing {} error".format(tar_app_sha1))
-                        pass
-                    #extract_info.json
-                    extract_info_path = os.path.join(tar_extract_folder,tar_app_sha1,self.Config["extract_info_file"])
-                    if os.path.exists(extract_info_path):
-                        extract_info_file = open(extract_info_path,"r")
-                        result = json.load(extract_info_file)
-                        result["apkname"] = tar_app_info["name"]
-                        result["apksha1"] = tar_app_sha1
-                        result["modulename"] = self.Config["modules"][to_check_module_name]
-                        extract_info_file.close()
-                        json.dump(result,open(extract_info_path,"w",encoding='utf-8'),ensure_ascii=False)
-                    #write apk name and its module to file 
-                    if self.result_write_lock.acquire():
-                        tmp_file = open(self.result_write_file_path,"a")
-                        tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"],tar_app_sha1,self.Config["modules"][to_check_module_name]))
-                        tmp_file.close()
-                        self.result_write_lock.release()
+        app_sha1 = tar_app_sha1
+        app_download_url = tar_app_info["download"]
+        request = requests.get(app_download_url)
+        tar_apk_path = os.path.join(self.Config["workdir"]["apk_folder"],app_sha1+".apk")
+        with open(tar_apk_path,"wb") as apk:
+            apk.write(request.content)
+        for to_check_module_name in self.Config["modules"]:
+            target_framework_check_class = getattr(importlib.import_module(to_check_module_name),self.Config["modules"][to_check_module_name])
+            target_check = target_framework_check_class(tar_apk_path,"android")
+            if target_check.doSigCheck():
+                log.info("module {} found in this application".format(self.Config["modules"][to_check_module_name]))
+                tar_module_folder = os.path.join(os.getcwd(),self.Config["workdir"]["res_output_folder"],self.Config["modules"][to_check_module_name])
+                if not os.path.exists(tar_module_folder):
+                    os.mkdir(tar_module_folder)
+                tar_extract_folder = os.path.join(tar_module_folder,app_sha1)
+                if not os.path.exists(tar_extract_folder):
+                    os.mkdir(tar_extract_folder)
+                else:
+                    self.thread_num_lock.release()
+                    return
+                try:
+                    target_check.doExtract(tar_extract_folder)
+                except:
+                    log.error("processing {} error".format(tar_app_sha1))
+                    self.thread_num_lock.release()
+                    return
+                #extract_info.json
+                extract_info_path = os.path.join(tar_extract_folder,tar_app_sha1,self.Config["extract_info_file"])
+                if os.path.exists(extract_info_path):
+                    extract_info_file = open(extract_info_path,"r")
+                    result = json.load(extract_info_file)
+                    result["apkname"] = tar_app_info["name"]
+                    result["apksha1"] = tar_app_sha1
+                    result["modulename"] = self.Config["modules"][to_check_module_name]
+                    extract_info_file.close()
+                    json.dump(result,open(extract_info_path,"w",encoding='utf-8'),ensure_ascii=False)
+                #write apk name and its module to file
+                if self.result_write_lock.acquire():
+                    tmp_file = open(self.result_write_file_path,"a")
+                    tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"],tar_app_sha1,self.Config["modules"][to_check_module_name]))
+                    tmp_file.close()
+                    self.result_write_lock.release()
 
-                # del(to_check_module_name)
+            del(to_check_module_name)
 
             #else:
                 #log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
         
-            if self.Config["need_to_delete_apk"]:
-                os.remove(tar_apk_path)
+        if self.Config["need_to_delete_apk"]:
+            os.remove(tar_apk_path)
+        self.thread_num_lock.release()
 
 
     def downloadAndExtractApplications(self):
@@ -182,6 +182,8 @@ class AndroidApplicationDownloader:
         counter = 0
 
         for tmp_sha1 in target_application_sha1_list:
+            self.thread_num_lock.acquire()
+
             counter += 1
             log.info("{}/{}: processing {}".format(counter, len(target_application_sha1_list), tmp_sha1))
             download_request_content = {}
@@ -207,24 +209,22 @@ class AndroidApplicationDownloader:
                 log.error("request result no status for {} : {}".format(request_json,result_content))
                 #sys.exit()
                 continue
-            
+
             if result_content["status"]!=200:
                 print("cannot request download address for {} reson : {}".format(target_application_sha1_list[tmp_sha1]["name"],result_content["msg"]))
                 continue
-            
+
             if "download_url" not in result_content:
                 log.error("request result no download_url for {} : {}".fomat(request_json,result_content))
                 #sys.exit()
                 continue
 
             target_application_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
-            threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1])).start()
+            t = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
+            t.start()
 
-            # sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
-            # sub_thread_list.append(sub_thread)
-            # sub_thread.start()
             # janus allows 40 queries per minute
-            time.sleep(5)
+            time.sleep(2)
         
         # for tmp_sub_thread in sub_thread_list:
         #     tmp_sub_thread.join()
