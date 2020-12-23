@@ -6,3 +6,5 @@
 * [Cordova](Cordova)
 * [BunfanApp](BufanApp)
 * [Trigger](Trigger)
+* [Andromo](Andromo)
+* [Apps Geyser](AppsGeyser)

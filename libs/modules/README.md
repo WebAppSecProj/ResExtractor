@@ -20,8 +20,8 @@
 |16| [Monaca](https://monaca.io/)  | - | - | - | - | 
 |17| [Trigger.IO](https://trigger.io/)  | Y | Y | - | - | 
 |18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - | 
-|19| [Andromo](http://www.andromo.com/)  | Y | Y | - | - | 
-|20| [Apps Geyser](http://www.appsgeyser.com/)  | - | - | - | - | 
+|19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N | 
+|20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N | 
 |21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - | 
 |22| [Appinventor](http://appinventor.mit.edu/explore/)  | - | - | - | - | 
 |23| [AppYet](http://www.appyet.com/)  | - | - | - | - | 

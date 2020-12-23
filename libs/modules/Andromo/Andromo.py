@@ -90,6 +90,7 @@ class Andromo(BaseModule):
                             launch_path = launch_path+"  "
                             launch_path = launch_path + elem.text
 
+        self._dump_info(extract_folder, launch_path)
         # clean env
         shutil.rmtree(tmp_folder)
         return extract_folder, launch_path
