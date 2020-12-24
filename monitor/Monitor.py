@@ -11,6 +11,7 @@ import time
 import re
 import requests
 from Url_base import HTML
+from Wappalyzer import Wappalyzer,WebPage
 
 def check_domain(ip):
     """
@@ -52,6 +53,15 @@ def Domain_get_IP(ip):
         print("Check domain Error",e)
     return dicts
 
+def WappalyzerCheck(url):
+    if not url.startswith('http'):
+        url = "http://" + url
+    try:
+        wappalyzer = Wappalyzer.latest()
+        webpage = WebPage.new_from_url(url)
+        return list(wappalyzer.analyze(webpage))
+    except:
+        return []
 
 def WebMonitor(url,storage_path,appname):
     pwd = os.path.join(storage_path,appname)
@@ -73,7 +83,7 @@ def WebMonitor(url,storage_path,appname):
             "Img_change_date":[],
             "Math_place":info["math_location"],
             "Phsical_place":info["location"],
-            "Server_type":"unknow",
+            "Server_type":WappalyzerCheck(url),
             "Monitor_begin":time.asctime(),
             "Monitor_end":"unknow",
             "Super_change":[]
