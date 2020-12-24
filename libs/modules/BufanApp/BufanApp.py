@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import json
 import logging
+import re
 import shutil
 import sys
 
@@ -49,6 +50,27 @@ class BufanApp(BaseModule):
             appUrl = config_json["url"]
             log.info(config_json)
         else:
+            # get keys from smali code
+            #   com.bufan.util.JwtUtils
+            self._apktool(tmp_folder)
+            JwtUtilsPath = os.path.join(tmp_folder, "smali/com/bufan/utils/JwtUtils.smali")
+            JwtUtilsFile = open(JwtUtilsPath, "r+")
+            JwtUtilsStr = JwtUtilsFile.read()
+            keys = []
+            patterns = [".field public static final TAG:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key1:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key2:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key3:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key4:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key5:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key6:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key7:Ljava/lang/String; = \"(.*?)\"",
+                        ".field public static final key8:Ljava/lang/String; = \"(.*?)\""]
+            for pattern in patterns:
+                pt = re.findall(pattern, JwtUtilsStr)
+                keys.extend(pt)
+            JwtUtilsFile.close()
+
             config_file = zf.extract("assets/source/config.json", tmp_folder)
             decode_jar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "decode_bufan.jar")
             MyJSON_jar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "MyJSON.jar")
@@ -57,21 +79,19 @@ class BufanApp(BaseModule):
                 jpype.startJVM(jvmPath, '-ea', '-Djava.class.path={0}:{1}'.format(decode_jar_path, MyJSON_jar_path),
                                convertStrings=False)
             jclass = jpype.JClass("com.decode.Main")()
-            try:
-                appUrl = str(jclass.get_appUrl(config_file))  # cast to str
-            except:
-                with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
-                    fwh.write(self.detect_file)
-                fwh.close()
 
             """
-            decode JSONString
-                method: com.decode.JwtUtils.mainDecode
-                input: (String) encoded JSONString
-                output: (String) JSONString
+            get appUrl
+                method: com.decode.JwtUtils.get_appUrl
+                input: (String) encoded JSONString, (String[]) keys
+                output: (String) url
             """
-            jwtclass = jpype.JClass("com.decode.JwtUtils")
-            log.info(jwtclass.mainDecode(jclass.readJSON(config_file)))
+            try:
+                appUrl = str(jclass.get_appUrl(config_file, keys))  # cast to str
+            except:
+                with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+                    fwh.write(self.detect_file + "\n")
+                fwh.close()
 
         self._dump_info(extract_folder, appUrl)
         # jpype.shutdownJVM()
@@ -83,7 +103,10 @@ class BufanApp(BaseModule):
 
 
 def main():
-    f = "./test_case/BufanApp/世耀国际_bufan.apk"
+    f = "./test_case/bugs/14b03ed97138c6f99f71f5bd633548c4.apk"  # need decode
+    # f = "./test_case/BufanApp/世耀国际_bufan.apk"
+    # f = "./test_case/BufanApp/惠普分期_bufan.apk"  # need decode
+    # f = "./test_case/BufanApp/淘客_bufan.apk"
     bufan = BufanApp(f, "android")
     if bufan.doSigCheck():
         logging.info("BufanApp signature Match")

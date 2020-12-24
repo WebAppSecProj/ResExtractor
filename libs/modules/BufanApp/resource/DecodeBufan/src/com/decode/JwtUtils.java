@@ -12,25 +12,45 @@ import java.util.Collections;
 
 
 public class JwtUtils {
-    public static final String TAG = "JwtUtils";
-    public static final String key1 = "U2xkVQ";
-    public static final String key2 = "VFVRMQ";
-    public static final String key3 = "czIwMT";
-    public static final String key4 = "kwNTIw";
-    public static final String key5 = "MWtOTD";
-    public static final String key6 = "V4UEdMRTlOU3paSA";
-    public static final String key7 = "H3kTiX";
-    public static final String key8 = "keyW3ABy46";
+    public static String TAG = "JwtUtils";
+    public static String key1 = "U2xkVQ";
+    public static String key2 = "VFVRMQ";
+    public static String key3 = "czIwMT";
+    public static String key4 = "kwNTIw";
+    public static String key5 = "MWtOTD";
+    public static String key6 = "V4UEdMRTlOU3paSA";
+    public static String key7 = "H3kTiX";
+    public static String key8 = "keyW3ABy46";
 
-    public static final String KEY(String str) {
+    public JwtUtils(String[] keys) {
+        if (keys.length != 9) {
+            System.out.println("Keys' Num ERROR! Use Default Keys");
+            return;
+        }
+        TAG = keys[0];
+        key1 = keys[1];
+        key2 = keys[2];
+        key3 = keys[3];
+        key4 = keys[4];
+        key5 = keys[5];
+        key6 = keys[6];
+        key7 = keys[7];
+        key8 = keys[8];
+    }
+
+    public JwtUtils() {
+
+    }
+
+    public static String KEY(String str) {
         return key3 + str;
     }
 
-    public static final String KEY2(String str) {
+    public static String KEY2(String str) {
         return key5 + str;
     }
 
-    public static final String KEY3(String str) {
+    public static String KEY3(String str) {
         return key7 + str;
     }
 
@@ -100,6 +120,10 @@ public class JwtUtils {
 
     public static JSONObject mainDecode(String str) {
         return jwtDecode(rc4Decode(str));
+    }
+
+    public static void setKey(String[] keys) {
+
     }
 
     public static String mainEncode(JSONObject jSONObject) {
