@@ -27,8 +27,8 @@ Config ={
     "user_id":"bxmwr91j04t1121c",
     "server_port": 8081,
     "max_query_days":364,
-    "max_thread":20,
-    "need_to_delete_apk":False,
+    "max_thread":10,
+    "need_to_delete_apk":True,
     "max_request_page_size":100,
     "janus_url":"http://priv.api.appscan.io",
     "apk_query_address":"/apk/query",
@@ -45,7 +45,5 @@ Config ={
         "libs.modules.AppCan.AppCan": "AppCan",
         "libs.modules.Trigger.Trigger": "Trigger",
         "libs.modules.OnsenUI.OnsenUI": "OnsenUI",
-        "libs.modules.Andromo.Andromo": "Andromo",
-        "libs.modules.AppsGeyser.AppsGeyser": "AppsGeyser",
     },
 }

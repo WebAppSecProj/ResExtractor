@@ -136,19 +136,20 @@ def parseArgs():
     main_config.Config["secret_key"] = args.secret_key
 
     if args.target_date and (args.start_date or args.end_date):
-        log.error("overlapping data setting")
+        log.error("overlapping date setting")
         sys.exit()
 
     if args.target_date:
         try:
-            target_date = datetime.datetime.strptime(args.target_date,"%Y-%M-%d")
+            format_target_date = datetime.datetime.strptime(args.target_date,"%Y-%m-%d")
         except ValueError:
             log.error("date format for --target-date is wrong, sholuld be year-month-day")
             sys.exit()
-        checkTargetDateInQueryRange(target_date.date())
-        checkTargetDateInQueryRange(target_date.date() - datetime.timedelta(days = 1))
+        checkTargetDateInQueryRange(format_target_date.date())
+        checkTargetDateInQueryRange(format_target_date.date() - datetime.timedelta(days = 1))
+
         main_config.Config["end_date"] = args.target_date
-        main_config.Config["start_date"] = target_date.date() - datetime.timedelta(days = 1)
+        main_config.Config["start_date"] = format_target_date.date() - datetime.timedelta(days = 1)
 
     if args.show_market:
         print("market list:")
@@ -167,7 +168,7 @@ def parseArgs():
                     sys.exit()
                 main_config.Config["market"].append(tmp_market)
             if main_config.Config["market"] == []:
-                log.error("no market is choosen")
+                log.error("no market set")
                 sys.exit()
     else:
         main_config.Config["market"].append("huawei")
@@ -177,7 +178,7 @@ def parseArgs():
         end_date_str = args.end_date
         checkAndSetDate(start_date_str, end_date_str)
     elif args.start_date or args.end_date:
-        log.error("provide target-date and end-date in a pair.")
+        log.error("should provide target-date and end-date in a pair.")
         sys.exit()
 
 def checkEnv():
