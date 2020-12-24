@@ -23,7 +23,7 @@
 |19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N | 
 |20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N | 
 |21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - | 
-|22| [Appinventor](http://appinventor.mit.edu/explore/)  | - | - | - | - | 
+|22| [Appinventor](http://appinventor.mit.edu/explore/)  | Y | Y | N | N | 
 |23| [AppYet](http://www.appyet.com/)  | - | - | - | - | 
 |24| [Como](http://www.como.com/)  | - | - | - | - | 
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - | 

@@ -4,8 +4,10 @@ import logging
 import sys
 import zipfile
 import shutil
-import subprocess
-import Config as Config
+import binascii
+import base64
+import datetime
+from apkutils import APK
 import re
 
 try:
@@ -19,15 +21,35 @@ from libs.modules.BaseModule import BaseModule
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
+#在主Activity的smali文件中做扫描，获取起始页地址，因为所有创建的组件都在主Activity中
+#起始页地址分别可能以http://,https://和file:///android_asset开始
+def extract_startpage(mainactivityfile):
+    launch_path = []
+    fp = open(mainactivityfile)
+    data = fp.read()
+    m = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', data)
+    if m:
+        for tmp in m:
+            if tmp not in launch_path:
+                launch_path.append(tmp)
+    k = re.findall('file:///android_asset/(?:[-\w.]|(?:%[\da-fA-F]{2}))+', data)
+    if k:
+        for tmp in k:
+            if tmp not in launch_path:
+                launch_path.append(tmp)
+    fp.close()
+    return " ".join(launch_path)
 
-class AppsGeyser(BaseModule):
+class AppInventor(BaseModule):
     def doSigCheck(self):
         if self.host_os == "android":
-            return self._find_main_activity('com.appsgeyser.multiTabApp.MainNavigationActivity')
+            #com.google.appinventor.components.runtime.multidex.MultiDexApplication is application name
+            apk = APK(self.detect_file)  #ference "https://github.com/TheKingOfDuck/ApkAnalyser"
+            if apk.get_manifest()['application']['@android:name'] == "com.google.appinventor.components.runtime.multidex.MultiDexApplication":
+                return True
         elif self.host_os == "ios":
             log.error("not support yet.")
             return False
-
         return False
 
     def doExtract(self, working_folder):
@@ -40,15 +62,12 @@ class AppsGeyser(BaseModule):
         self._apktool(tmp_folder)
 
         launch_path = ""
+        apk = APK(self.detect_file)
+        package = str(apk.get_manifest()['@package'])
+        mainactivity = str(apk.get_manifest()['application']['activity']['@android:name'])  #app only contain one activity, name is ".xxx"
         for dirpath, dirnames, ifilenames in os.walk(tmp_folder):
-            #audience_network.dex文件是框架自带的，经过apktool反编译之后在assets下会有一个文件夹，这部分信息没有必要提取
-            if dirpath.find("audience_network") != -1:
-                continue
             if dirpath.find("assets") != -1:   # store web resource
                 for fs in ifilenames:
-                    #这三个文件是框架自带的，没有必要提取
-                    if fs == "audience_network.dex" or fs == "splash_screen.png" or fs == "user_custom_script.js":
-                        continue
                     f = os.path.join(dirpath, fs)
                     matchObj = re.match(r'(.*)assets/(.*)', f, re.S)
                     newRP = matchObj.group(2)
@@ -63,15 +82,12 @@ class AppsGeyser(BaseModule):
                         fp.close()
                         fwh.write(c)
                     fwh.close()
-            elif dirpath.endswith("res/raw") != -1:
+            #extract the launch path
+            elif dirpath.find(package.replace(".", "/")) != -1:
                 for fs in ifilenames:
-                    if fs != "configuration.xml":  #在configuration.xml里配置了起始页链接
+                    if fs.split(".")[0] != mainactivity[1:]:   #必须是文件名相同，不可以用包含这种关系来判断
                         continue
-                    t = ET.ElementTree(file=os.path.join(dirpath, fs))
-                    for elem in t.iter(tag='fullScreenMode'):
-                        for subelem in elem.iter(tag='content'):
-                            for linkelem in subelem.iter(tag='link'):
-                                launch_path = linkelem.text
+                    launch_path = extract_startpage(os.path.join(dirpath, fs))
 
         self._dump_info(extract_folder, launch_path)
         # clean env
@@ -80,12 +96,12 @@ class AppsGeyser(BaseModule):
 
 
 def main():
-    f = "./test_case/AppsGeyser/examplehtmlzip.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
-    appsgeyser = AppsGeyser(f, "android")
-    if appsgeyser.doSigCheck():
-        logging.info("Andromo signature Match")
+    f = "./test_case/AppInventor/test.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+    appinventor = AppInventor(f, "android")
+    if appinventor.doSigCheck():
+        logging.info("App Inventor signature Match")
 
-        extract_folder, launch_path = appsgeyser.doExtract("working_folder")
+        extract_folder, launch_path = appinventor.doExtract("working_folder")
         log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
 
     return
