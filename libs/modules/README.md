@@ -5,7 +5,7 @@
 |1| [DCloud](https://dcloud.io/)  | Y | - | - | - | 
 |2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - |
 |3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - | 
-|4| [Cordova](https://www.appbsl.cn/)  | Y | N | - | - | 
+|4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - | 
 |5| [Ionic](https://ionicframework.com/)  | Y | N | - | - | AngularJS (optional) |
 |6| [Onsen UI](https://onsen.io/)  | Y | N | - | - | AngularJS (optional) |
 |7| [Framework 7](http://www.idangero.us/framework7)  | - | - | - | - | HTML, CSS and JS only |
@@ -53,6 +53,16 @@
 |49| [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)  | - | - | - | - |  |
 |50| [bufanapp](https://www.bufanapp.com/)  | N | Y (E) | - | - |  |
 |51| [AppCan](http://www.appcan.cn/)  | Y (E) | Y (E) | - | - |  |
+|52| [Dibaqu](https://www.dibaqu.com/)  | - | - | - | - |  |
+|53| [Pgyer](https://www.pgyer.com/)  | - | - | - | - |  |
+|54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
+|55| [ChuXueYun](https://www.chuxueyun.com/)  | - | - | - | - |  |
+|56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
+|57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
+|58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
+|59| [SuishouApp](http://www.suishouapp.com/)  | - | - | - | - |  |
+|60| [Hema](https://hema.im/)  | - | - | - | - |  |
+|61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
 
 
 

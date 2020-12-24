@@ -10,10 +10,12 @@ import datetime
 import hashlib
 import sys
 import logging
-logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+from contextlib import closing
+import zipfile
+
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
-# TODO: I prefer to use queue of redis but not threading.
 
 class AndroidApplicationDownloader:
     Config = None
@@ -25,7 +27,8 @@ class AndroidApplicationDownloader:
     thread_num_lock = None
     result_write_lock = threading.Lock()
     result_write_file_path = None
-    def __init__(self,main_config):
+
+    def __init__(self, main_config):
         self.Config = main_config
         self.secret_key = self.Config["secret_key"]
         self.userid = self.Config["user_id"]
@@ -34,22 +37,25 @@ class AndroidApplicationDownloader:
 
     def generateNonce(self):
         sample_str = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()"
-        rand_length = random.randint(5,30)
-        self.nonce = "".join(random.sample(sample_str,rand_length))
-    
-    def generateSign(self,request_content):
-        sign = hashlib.md5(("".join([str(request_content[i]) for i in sorted(request_content.keys())])+self.secret_key).encode("utf-8")).hexdigest()
+        rand_length = random.randint(5, 30)
+        self.nonce = "".join(random.sample(sample_str, rand_length))
+
+    def generateSign(self, request_content):
+        sign = hashlib.md5(
+            ("".join([str(request_content[i]) for i in sorted(request_content.keys())]) + self.secret_key).encode(
+                "utf-8")).hexdigest()
         request_content["sign"] = sign
-    
+
     def generateTime(self):
         self.cur_time = str(int(time.time()))
 
     def generatequery(self):
-        
-        #the main.py will check if config["market"]has at least one market
-        query_str = "stime:\"{}\" and etime:\"{}\" and market:\"".format(self.Config["start_date"],self.Config["end_date"])
+
+        # the main.py will check if config["market"]has at least one market
+        query_str = "stime:\"{}\" and etime:\"{}\" and market:\"".format(self.Config["start_date"],
+                                                                         self.Config["end_date"])
         for tmp_market in self.Config["market"]:
-            query_str += (tmp_market+",")
+            query_str += (tmp_market + ",")
         query_str = query_str[:-1]
         query_str = query_str + "\""
         self.date_str = query_str
@@ -72,14 +78,15 @@ class AndroidApplicationDownloader:
         self.constructBasicRequest(request_content)
         page_size_request_json = json.dumps(request_content)
         log.info("page size request : {}".format(page_size_request_json))
-        result_json = requests.post(self.Config["janus_url"]+self.Config["apk_query_address"],data=page_size_request_json)
+        result_json = requests.post(self.Config["janus_url"] + self.Config["apk_query_address"],
+                                    data=page_size_request_json)
         result_content = json.loads(result_json.text)
         log.info("result : {}".format(result_content))
         time.sleep(1.5)
         if "status" not in result_content:
             log.error("no status in request result : {}".format(result_json))
             sys.exit()
-        if result_content["status"]!=200:
+        if result_content["status"] != 200:
             log.error("request result error : {}".format(result_json))
             sys.exit()
         if 'paging' not in result_content:
@@ -90,20 +97,21 @@ class AndroidApplicationDownloader:
                 if ("sha1" not in tmp_app) | ("name" not in tmp_app):
                     log.error("request result no sha1 {}".format(tmp_app))
                     sys.exit()
-                target_application_sha1_list[tmp_app["sha1"]] = {"name":tmp_app["name"]} 
+                target_application_sha1_list[tmp_app["sha1"]] = {"name": tmp_app["name"]}
             return target_application_sha1_list
-        if "page_total" not in  result_content["paging"]:
+        if "page_total" not in result_content["paging"]:
             log.error("no page total in request paging {}".format(result_json))
             sys.exit()
         page_total = result_content["paging"]["page_total"]
 
         for cur_page in range(page_total):
             request_content = {}
-            request_content["page"] = cur_page+1
+            request_content["page"] = cur_page + 1
             self.constructBasicRequest(request_content)
             application_request_json = json.dumps(request_content)
             log.info("each page request : {}".format(application_request_json))
-            result_json = requests.post(self.Config["janus_url"]+self.Config["apk_query_address"],data=application_request_json)
+            result_json = requests.post(self.Config["janus_url"] + self.Config["apk_query_address"],
+                                        data=application_request_json)
             result_content = json.loads(result_json.text)
             log.info("result json : {}".format(result_content))
             if "data" not in result_content:
@@ -113,77 +121,97 @@ class AndroidApplicationDownloader:
                 if ("sha1" not in tmp_app) | ("name" not in tmp_app):
                     log.error("request result no sha1 {}".format(tmp_app))
                     sys.exit()
-                target_application_sha1_list[tmp_app["sha1"]] = {"name":tmp_app["name"]} 
+                target_application_sha1_list[tmp_app["sha1"]] = {"name": tmp_app["name"]}
             time.sleep(1.5)
 
+        # log.info(request_content)
+        # log.info(request_json)
 
-        #log.info(request_content)
-        #log.info(request_json)
-        
         return target_application_sha1_list
 
-    def downloadAppAndExtractRes(self,tar_app_sha1,tar_app_info):
+    def downloadAppAndExtractRes(self, tar_app_sha1, tar_app_info, index, total):
         with self.thread_num_lock:
-            app_sha1 = tar_app_sha1
-            app_download_url = tar_app_info["download"]
-            request = requests.get(app_download_url)
-            tar_apk_path = os.path.join(self.Config["workdir"]["apk_folder"],app_sha1+".apk")
-            with open(tar_apk_path,"wb") as apk:
-                apk.write(request.content)
+
+            log.info("{}/{}: processing {}".format(index, total, tar_app_sha1))
+
+            tar_apk_path = os.path.join(self.Config["workdir"]["apk_folder"], tar_app_sha1 + ".apk")
+
+            r = requests.get(url=tar_app_info["download"], verify=False, stream=True)
+            if r.status_code != 200:
+                return
+
+            with closing(r) as res:
+                with open(tar_apk_path, 'wb') as fd:
+                    for chunk in res.iter_content(chunk_size=10*1024*1024):
+                        if chunk:
+                            fd.write(chunk)
+                    fd.flush()
+
+            try:
+                zf = zipfile.ZipFile(tar_apk_path, "r")
+            except:
+                return
+            if "AndroidManifest.xml" not in zf.namelist():
+                return
+
             for to_check_module_name in self.Config["modules"]:
-                target_framework_check_class = getattr(importlib.import_module(to_check_module_name),self.Config["modules"][to_check_module_name])
-                target_check = target_framework_check_class(tar_apk_path,"android")
+                target_framework_check_class = getattr(importlib.import_module(to_check_module_name),
+                                                       self.Config["modules"][to_check_module_name])
+                target_check = target_framework_check_class(tar_apk_path, "android")
                 if target_check.doSigCheck():
-                    tar_module_folder = os.path.join(os.getcwd(),self.Config["workdir"]["res_output_folder"],self.Config["modules"][to_check_module_name])
+                    log.info("module {} found in this application".format(self.Config["modules"][to_check_module_name]))
+
+                    tar_module_folder = os.path.join(os.getcwd(), self.Config["workdir"]["res_output_folder"],
+                                                     self.Config["modules"][to_check_module_name])
                     if not os.path.exists(tar_module_folder):
                         os.mkdir(tar_module_folder)
-                    tar_extract_folder = os.path.join(tar_module_folder,app_sha1)
-                    log.info("module {} found in this application".format(self.Config["modules"][to_check_module_name]))
+
+                    tar_extract_folder = os.path.join(tar_module_folder, tar_app_sha1)
                     if not os.path.exists(tar_extract_folder):
                         os.mkdir(tar_extract_folder)
-                    else:
-                        continue
+
                     try:
                         target_check.doExtract(tar_extract_folder)
                     except:
                         log.error("processing {} error".format(tar_app_sha1))
-                        pass
-                    #extract_info.json
-                    extract_info_path = os.path.join(tar_extract_folder,tar_app_sha1,self.Config["extract_info_file"])
+                        # exit(0)
+                        continue
+                    # extract_info.json
+                    extract_info_path = os.path.join(tar_extract_folder, tar_app_sha1, self.Config["extract_info_file"])
                     if os.path.exists(extract_info_path):
-                        extract_info_file = open(extract_info_path,"r")
+                        extract_info_file = open(extract_info_path, "r")
                         result = json.load(extract_info_file)
                         result["apkname"] = tar_app_info["name"]
                         result["apksha1"] = tar_app_sha1
                         result["modulename"] = self.Config["modules"][to_check_module_name]
                         extract_info_file.close()
-                        json.dump(result,open(extract_info_path,"w",encoding='utf-8'),ensure_ascii=False)
-                    #write apk name and its module to file 
+                        json.dump(result, open(extract_info_path, "w", encoding='utf-8'), ensure_ascii=False)
+                    # write apk name and its module to file
                     if self.result_write_lock.acquire():
-                        tmp_file = open(self.result_write_file_path,"a")
-                        tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"],tar_app_sha1,self.Config["modules"][to_check_module_name]))
+                        tmp_file = open(self.result_write_file_path, "a")
+                        tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"], tar_app_sha1,
+                                                                               self.Config["modules"][
+                                                                                   to_check_module_name]))
                         tmp_file.close()
                         self.result_write_lock.release()
 
                 # del(to_check_module_name)
 
-            #else:
-                #log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
-        
+            # else:
+            # log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
+
             if self.Config["need_to_delete_apk"]:
                 os.remove(tar_apk_path)
-
 
     def downloadAndExtractApplications(self):
 
         target_application_sha1_list = self.queryApplicationList()
 
-        # sub_thread_list = []
+        sub_thread_list = []
         counter = 0
 
         for tmp_sha1 in target_application_sha1_list:
             counter += 1
-            log.info("{}/{}: processing {}".format(counter, len(target_application_sha1_list), tmp_sha1))
             download_request_content = {}
             download_request_content["userid"] = self.userid
             self.generateNonce()
@@ -195,41 +223,40 @@ class AndroidApplicationDownloader:
             self.generateSign(download_request_content)
 
             request_json = json.dumps(download_request_content)
-            result_json = requests.post(self.Config["janus_url"] + self.Config["apk_download_address"],data=request_json)
+            result_json = requests.post(self.Config["janus_url"] + self.Config["apk_download_address"],
+                                        data=request_json)
+
             try:
                 result_content = json.loads(result_json.text)
             except:
                 continue
-            log.info("download url : {}".format(request_json))
-            log.info("download result : {}".format(result_content))
+
+            #log.info("download url : {}".format(request_json))
+            #log.info("download result : {}".format(result_content))
 
             if "status" not in result_content:
-                log.error("request result no status for {} : {}".format(request_json,result_content))
-                #sys.exit()
+                log.error("request result no status for {} : {}".format(request_json, result_content))
+                # sys.exit()
                 continue
-            
-            if result_content["status"]!=200:
-                print("cannot request download address for {} reson : {}".format(target_application_sha1_list[tmp_sha1]["name"],result_content["msg"]))
+
+            if result_content["status"] != 200:
+                print("cannot request download address for {} reson : {}".format(
+                    target_application_sha1_list[tmp_sha1]["name"], result_content["msg"]))
                 continue
-            
+
             if "download_url" not in result_content:
-                log.error("request result no download_url for {} : {}".fomat(request_json,result_content))
-                #sys.exit()
+                log.error("request result no download_url for {} : {}".fomat(request_json, result_content))
+                # sys.exit()
                 continue
 
             target_application_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
-            threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1])).start()
-
-            # sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1,target_application_sha1_list[tmp_sha1]))
-            # sub_thread_list.append(sub_thread)
-            # sub_thread.start()
+            # threading.Thread(target=self.downloadAppAndExtractRes,
+            #                  args=(tmp_sha1, target_application_sha1_list[tmp_sha1])).start()
+            sub_thread = threading.Thread(target=self.downloadAppAndExtractRes,args = (tmp_sha1, target_application_sha1_list[tmp_sha1], counter, len(target_application_sha1_list)))
+            sub_thread_list.append(sub_thread)
+            sub_thread.start()
             # janus allows 40 queries per minute
-            time.sleep(5)
-        
-        # for tmp_sub_thread in sub_thread_list:
-        #     tmp_sub_thread.join()
+            time.sleep(2)
 
-
-
-
-
+        for tmp_sub_thread in sub_thread_list:
+            tmp_sub_thread.join()

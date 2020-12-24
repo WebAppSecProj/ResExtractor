@@ -8,12 +8,15 @@ import java.io.InputStream;
 public class Main {
 
     public static void main(String[] args) {
+        String path = "/Users/fy/JavaProjects/DecodeBufan/src/config.json";
+        String[] keys = {"JwtUtils", "U2xkVQ", "VFVRMQ", "czIwMj", "AwNTEy", "dWc3d3", "A5ekV5Yk9LNjBvYw", "knRe6O", "Fw8dA9Hi7C"};
         System.out.println("-->in decodeBufan");
-        System.out.println(getUrl(readJSON(args[0])));
+//        System.out.println(getUrl(readJSON(args[0])));
+        System.out.println(getUrl(readJSON(path), keys));
     }
 
-    public static String get_appUrl(String filepath) {
-        return getUrl(readJSON(filepath));
+    public static String get_appUrl(String filepath, String[] keys) {
+        return getUrl(readJSON(filepath), keys);
     }
 
     public static String readJSON(String jsonFile) {
@@ -43,7 +46,7 @@ public class Main {
         return configStr.toString();
     }
 
-    public static String getUrl(String jsonFile) {
-        return JwtUtils.mainDecode(jsonFile).get("appUrl").toString();
+    public static String getUrl(String jsonFile, String[] keys) {
+        return new JwtUtils(keys).mainDecode(jsonFile).get("appUrl").toString();
     }
 }
