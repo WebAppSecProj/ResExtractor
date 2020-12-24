@@ -49,7 +49,7 @@ class BaseModule(metaclass=abc.ABCMeta):
     def _find_main_activity(self, sig):
         if platform.system() == 'Darwin':
             aapt = Config.Config["aapt"]
-        else:
+        elif platform.system() == 'Linux':
             aapt = Config.Config["aapt_ubuntu"]
 
         proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
