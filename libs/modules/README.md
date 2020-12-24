@@ -55,7 +55,7 @@
 |51| [AppCan](http://www.appcan.cn/)  | Y (E) | Y (E) | - | - |  |
 |52| [Dibaqu](https://www.dibaqu.com/)  | - | - | - | - |  |
 |53| [Pgyer](https://www.pgyer.com/)  | - | - | - | - |  |
-|54| [ofcms](https://www.ofcms.com/)  | - | - | - | - |  |
+|54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
 |55| [ChuXueYun](https://www.chuxueyun.com/)  | - | - | - | - |  |
 |56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
 |57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
