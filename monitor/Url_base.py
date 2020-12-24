@@ -9,14 +9,12 @@ from treelib import Tree
 from bs4 import BeautifulSoup
 from multimethod import multimethod
 import bs4
-import time
 import ssl
 import urllib.request
 import urllib.parse
 import re
 import sys
 import os
-import csv
 
 
 class Converter:
