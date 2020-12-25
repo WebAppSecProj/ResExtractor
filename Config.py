@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
+'''
+common config, app specific configuration should reside in related module.
+'''
 
 Config ={
     "aapt": "./libs/bin/aapt-30.0.1",
