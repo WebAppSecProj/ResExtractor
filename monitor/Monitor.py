@@ -10,7 +10,7 @@ import json
 import time
 import re
 import requests
-from Url_base import HTML
+from monitor.Url_base import HTML
 from Wappalyzer import Wappalyzer,WebPage
 
 def check_domain(ip):
@@ -180,7 +180,7 @@ def WebMonitor(url,storage_path,appname):
 if __name__ == "__main__":
     begin = time.time()
     WebMonitor(r"https://blog.csdn.net/qq_40965177/article/details/88086592",
-               r'C:\Users\hypo\Desktop\黑灰产paper\monitor',
+               r'/home/demo/Desktop/WebAppSec/ResExtractor/',
                r"baidu")
     end = time.time()
     print(end-begin)

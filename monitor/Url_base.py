@@ -484,7 +484,7 @@ def test():
     #print(htest.regexcheck(r'www\.(.*?).com'))
     #htest.download_img(r'C:\Users\hypo\Desktop\黑灰产paper\monitor')
     #htest.download_file('http://www.runoob.com/wp-content/themes/w3cschool.cc/assets/img/qrcode.jpg',r'C:\Users\hypo\Desktop\黑灰产paper\monitor')
-    htest.scarpy_web("baidu",r'C:\Users\hypo\Desktop\黑灰产paper\monitor')
+    htest.scarpy_web("baidu",r'/home/demo/Desktop/WebAppSec/ResExtractor/')
 
 if __name__== "__main__":
     sys.exit(test())
