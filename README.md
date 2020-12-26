@@ -51,5 +51,5 @@ $ python3 Extractor.py path_to_the_file
 
 
 # HOWTO Debug
-1. Use main.py and keep all apk files (set `need_to_delete_apk' flag to True)
-2. Use CheckerBatch.py to find bugs and then fix them.
+1. Use ExtractorJanus.py and keep all apk files (set `need_to_delete_apk' flag to True)
+2. Use ExtractorBatch.py to find bugs and then fix them.
