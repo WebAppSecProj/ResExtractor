@@ -24,6 +24,6 @@ Config ={
         "libs.modules.OnsenUI.OnsenUI": "OnsenUI",
         "libs.modules.Andromo.Andromo": "Andromo",
         "libs.modules.AppsGeyser.AppsGeyser": "AppsGeyser",
-        "libs.modules.AppsGeyser.AppInventor": "AppInventor",
+        "libs.modules.AppInventor.AppInventor": "AppInventor",
     },
 }

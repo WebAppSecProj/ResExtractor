@@ -8,6 +8,8 @@ import os
 import zipfile
 import helper.Stats as Stats
 
+import EnvChecker
+
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -39,6 +41,8 @@ def doCheck(file_in_check):
     return
 
 def main():
+    if EnvChecker.doCheck() == False:
+        sys.exit(1)
 
     for dirpath, dirnames, ifilenames in os.walk(sys.argv[1]):
         for fs in ifilenames:
