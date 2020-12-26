@@ -141,7 +141,7 @@ class DownloadAndExtract:
             result_json = requests.post(self._janus_url + self._apk_query_address,
                                         data=application_request_json)
             result_content = json.loads(result_json.text)
-            log.info("file list request result: {}".format(result_content))
+            log.info("page list request result: {}".format(result_content))
 
             if "data" not in result_content:
                 log.error("get nothing from janus, response: {}".format(result_content))
@@ -218,9 +218,10 @@ class DownloadAndExtract:
                         result["modulename"] = Config["modules"][to_check_module_name]
                         extract_info_file.close()
                         json.dump(result, open(extract_info_path, "w", encoding='utf-8'), ensure_ascii=False)
+
                     # write apk name and its module to file
                     if self._result_write_lock.acquire():
-                        tmp_file = open(self._file_info_logger, "a")
+                        tmp_file = open(self._file_list_info_logger, "a")
                         tmp_file.write("apk: {} sha1 {} module : {} \n".format(tar_app_info["name"],
                                                                                tar_app_sha1,
                                                                                Config["modules"][to_check_module_name]))
