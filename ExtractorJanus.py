@@ -15,9 +15,12 @@ import zipfile
 
 from Config import Config
 import EnvChecker
+import libs.Stats as Stats
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
+
+stats = Stats.Stats()
 
 JanusConfig = {
     "janus_output_dir": os.path.join(os.getcwd(), "janusLogger"),
@@ -97,7 +100,7 @@ class DownloadAndExtract:
         result_json = requests.post(self._janus_url + self._apk_query_address,
                                     data=list_request_json)
         result_content = json.loads(result_json.text)
-        log.info("result : {}".format(result_content))
+        log.info("list response: {}".format(result_content))
         time.sleep(1.5)
 
         if ("status" not in result_content) \
@@ -180,12 +183,15 @@ class DownloadAndExtract:
             if "AndroidManifest.xml" not in zf.namelist():
                 return
 
+            stats.add_entity()
             for to_check_module_name in Config["modules"]:
                 target_framework_check_class = getattr(importlib.import_module(to_check_module_name),
                                                        Config["modules"][to_check_module_name])
                 target_check = target_framework_check_class(tar_apk_path, "android")
                 if target_check.doSigCheck():
+
                     log.info("module {} found in this application".format(Config["modules"][to_check_module_name]))
+                    stats.add_entity(target_check.__class__)
 
                     tar_module_folder = os.path.join(os.getcwd(), Config["working_folder"],
                                                      Config["modules"][to_check_module_name])
@@ -405,6 +411,7 @@ def main():
     parse_args()
     check_env()
     go()
+    stats.doState()
 
 if __name__ == "__main__":
     sys.exit(main())
