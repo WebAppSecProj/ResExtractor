@@ -24,7 +24,7 @@ class Stats():
         for k in self.entity_map.keys():
             if k != "All":
                 c += self.entity_map[k]
-                print("Total {} module {}, takes {}% of whole dataset".format(
+                print("Total {} apps match module {}, takes {}% of whole dataset".format(
                     self.entity_map[k],
                     k,
                     float(self.entity_map[k])/self.entity_map["All"] * 100)
