@@ -1,14 +1,14 @@
 import os 
 import sys 
-import logging
+import time
 import datetime
+import logging
 import threading
 import requests
 import importlib
 import argparse
 import json
 import random
-import time
 import hashlib
 from contextlib import closing
 import zipfile
@@ -17,7 +17,7 @@ from Config import Config
 import EnvChecker
 import libs.Stats as Stats
 
-logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
 stats = Stats.Stats()
@@ -26,7 +26,7 @@ JanusConfig = {
     "janus_output_dir": os.path.join(os.getcwd(), "janusLogger"),
     "file_list_info_logger": os.path.join(os.getcwd(), "janusLogger", "file_list_info.txt"),
     "apk_folder": os.path.join(os.getcwd(), "janusLogger", "apks"),
-
+    "size_threshold": 100,      # the threshold of the apk file, file size over this quota will not be downloaded.
     "market": ["huawei"],
     "market_list": ["googleplay", "apkpure", "yandex", "uptodown", "wandoujia", "baidu", "360", "qq", "appchina", "eoe",
                     "huawei", "anzhi", "yidong", "meizu", "xiaomi", "lianxiang", "kupai", "jinli", "hiapk", "ppzhushou",
@@ -40,7 +40,7 @@ JanusConfig = {
     "janus_url": "http://priv.api.appscan.io",
     "apk_query_address": "/apk/query",
     "apk_download_address": "/apk/download",
-    "start_date": str(datetime.date.today() - datetime.timedelta(days=2)),
+    "start_date": str(datetime.date.today() - datetime.timedelta(days=1)),
     "end_date": str(datetime.date.today() - datetime.timedelta(days=1)),
 }
 
@@ -117,12 +117,16 @@ class DownloadAndExtract:
                 if ("sha1" not in tmp_app) | ("name" not in tmp_app):
                     log.error("no sha1 in request response: {}".format(tmp_app))
                     sys.exit(1)
-                target_application_sha1_list[tmp_app["sha1"]] = {"name": tmp_app["name"]}
+                target_application_sha1_list[tmp_app["sha1"]] = {
+                    "name": tmp_app["name"],
+                    "appid": tmp_app["appid"],
+                    "size": tmp_app["size"]
+                }
             return target_application_sha1_list
 
 
         if "page_total" not in result_content["paging"]:
-            log.error("no page total in request paging: {}".format(result_json))
+            log.error("no page_total in response: {}".format(result_json))
             sys.exit(1)
         page_total = result_content["paging"]["page_total"]
 
@@ -148,9 +152,16 @@ class DownloadAndExtract:
                 sys.exit(1)
             for tmp_app in result_content["data"]:
                 if ("sha1" not in tmp_app) | ("name" not in tmp_app):
-                    log.error("no sha1 in request response: {}".format(tmp_app))
+                    log.error("no sha1 in response: {}".format(tmp_app))
                     sys.exit(1)
-                target_application_sha1_list[tmp_app["sha1"]] = {"name": tmp_app["name"]}
+                # if target_application_sha1_list.__contains__(tmp_app["sha1"]):
+                #     log.info("duplicate sha1")
+                target_application_sha1_list[tmp_app["sha1"]] = {
+                    "name": tmp_app["name"],
+                    "appid": tmp_app["appid"],
+                    "size": tmp_app["size"]
+                }
+
             time.sleep(1.5)
 
         # log.info(request_content)
@@ -167,6 +178,7 @@ class DownloadAndExtract:
 
             r = requests.get(url=tar_app_info["download"], verify=False, stream=True)
             if r.status_code != 200:
+                log.error("{}: download error".format(tar_app_sha1))
                 return
 
             with closing(r) as res:
@@ -179,6 +191,7 @@ class DownloadAndExtract:
             try:
                 zf = zipfile.ZipFile(tar_apk_path, "r")
             except:
+                log.error("{}: invalid format".format(tar_app_sha1))
                 return
             if "AndroidManifest.xml" not in zf.namelist():
                 return
@@ -244,6 +257,11 @@ class DownloadAndExtract:
 
         for tmp_sha1 in app_sha1_list:
             counter += 1
+
+            if app_sha1_list[tmp_sha1]["size"] > JanusConfig["size_threshold"] * 1024 * 1024:
+                log.info("file: {} exceed the quota, process next one".format(tmp_sha1))
+                continue
+
             download_request_content = {}
             download_request_content["userid"] = self._user_id
             download_request_content["nonce"] = self._generate_nonce()
@@ -259,6 +277,7 @@ class DownloadAndExtract:
             try:
                 result_content = json.loads(result_json.text)
             except:
+                log.error("can't retrieve download address for {}".format(tmp_sha1))
                 continue
 
             #log.info("download url : {}".format(request_json))
@@ -268,7 +287,7 @@ class DownloadAndExtract:
                 or (result_content["status"] != 200) \
                 or ("download_url" not in result_content):
 
-                print("can't retrieve download address for {}".format(
+                log.error("can't retrieve download address for {}".format(
                     app_sha1_list[tmp_sha1]["name"]))
                 continue
 
@@ -335,7 +354,8 @@ def parse_args():
         check_target_date_in_range(format_target_date.date() - datetime.timedelta(days = 1))
 
         JanusConfig["end_date"] = args.target_date
-        JanusConfig["start_date"] = format_target_date.date() - datetime.timedelta(days = 1)
+        JanusConfig["start_date"] = datetime.datetime.strftime(format_target_date.date() - datetime.timedelta(days = 1),'%Y-%m-%d')
+
 
     if args.show_market:
         print("market list:")
@@ -362,8 +382,8 @@ def parse_args():
         JanusConfig["market"].append("huawei")
 
     if args.start_date and args.end_date:
-        check_target_date_in_range(datetime.datetime.strptime(args.start_date, "%Y-%m-%d"))
-        check_target_date_in_range(datetime.datetime.strptime(args.end_date, "%Y-%m-%d"))
+        check_target_date_in_range(datetime.datetime.strptime(args.start_date, "%Y-%m-%d").date())
+        check_target_date_in_range(datetime.datetime.strptime(args.end_date, "%Y-%m-%d").date())
 
         try:
             start_date = datetime.datetime.strptime(args.start_date, "%Y-%m-%d")
