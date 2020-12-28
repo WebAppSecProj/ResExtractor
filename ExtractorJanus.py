@@ -34,7 +34,7 @@ JanusConfig = {
     "secret_key": "",
     "user_id": "bxmwr91j04t1121c",
     "max_query_days": 364,
-    "max_thread": 5,
+    "max_thread": 20,
     "need_to_delete_apk": True,
     "max_request_page_size": 100,
     "janus_url": "http://priv.api.appscan.io",
@@ -176,9 +176,14 @@ class DownloadAndExtract:
 
             tar_apk_path = os.path.join(self._apk_folder, tar_app_sha1 + ".apk")
 
-            r = requests.get(url=tar_app_info["download"], verify=False, stream=True)
+            try:
+                r = requests.get(url=tar_app_info["download"], verify=False, stream=True)
+            except:
+                log.error("[1] download error: {}".format(tar_app_sha1))
+                return
+
             if r.status_code != 200:
-                log.error("{}: download error".format(tar_app_sha1))
+                log.error("[2] download error: {}".format(tar_app_sha1))
                 return
 
             with closing(r) as res:
@@ -191,9 +196,10 @@ class DownloadAndExtract:
             try:
                 zf = zipfile.ZipFile(tar_apk_path, "r")
             except:
-                log.error("{}: invalid format".format(tar_app_sha1))
+                log.error("invalid file: {}".format(tar_app_sha1))
                 return
             if "AndroidManifest.xml" not in zf.namelist():
+                log.error("invalid file: {}".format(tar_app_sha1))
                 return
 
             stats.add_entity()
@@ -218,7 +224,7 @@ class DownloadAndExtract:
                     try:
                         target_check.doExtract(tar_extract_folder)
                     except:
-                        log.error("process {} error".format(tar_app_sha1))
+                        log.error("process error: {}".format(tar_app_sha1))
                         # exit(0)
                         continue
                     # extract_info.json
@@ -259,7 +265,7 @@ class DownloadAndExtract:
             counter += 1
 
             if app_sha1_list[tmp_sha1]["size"] > JanusConfig["size_threshold"] * 1024 * 1024:
-                log.info("file: {} exceed the quota, process next one".format(tmp_sha1))
+                log.info("file: {} exceeds the quota, process the next one".format(tmp_sha1))
                 continue
 
             download_request_content = {}
@@ -271,13 +277,17 @@ class DownloadAndExtract:
             download_request_content["sign"] = self._generate_sign(download_request_content)
 
             request_json = json.dumps(download_request_content)
-            result_json = requests.post(self._janus_url + self._apk_download_address,
-                                        data=request_json)
+            try:
+                result_json = requests.post(self._janus_url + self._apk_download_address,
+                                            data=request_json)
+            except:
+                log.error("[1] can't retrieve download address for {}".format(tmp_sha1))
+                continue
 
             try:
                 result_content = json.loads(result_json.text)
             except:
-                log.error("can't retrieve download address for {}".format(tmp_sha1))
+                log.error("[2] can't retrieve download address for {}".format(tmp_sha1))
                 continue
 
             #log.info("download url : {}".format(request_json))
@@ -287,7 +297,7 @@ class DownloadAndExtract:
                 or (result_content["status"] != 200) \
                 or ("download_url" not in result_content):
 
-                log.error("can't retrieve download address for {}".format(
+                log.error("[3] can't retrieve download address for {}".format(
                     app_sha1_list[tmp_sha1]["name"]))
                 continue
 
@@ -328,7 +338,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--secret-key', required=True, help="Secret key for connecting janus.")
-    parser.add_argument('--target-date', help="Target date to query, default is yesterday, a query period exceeding {} days is not allowed.".format(JanusConfig["max_query_days"]))
+    parser.add_argument('--target-date', help="Target date to query, default date is yesterday, a query period exceeding {} days is not allowed.".format(JanusConfig["max_query_days"]))
     parser.add_argument('--start-date', help="Start date of the query.")
     parser.add_argument('--end-date', help="End date of the query.")
     parser.add_argument('--market', type=str, help="APP market in query. Huawei APP market is set if no argument supplemented; Use `,' to split multiple markets; Use `all' to query all markets.")
