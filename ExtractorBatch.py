@@ -10,7 +10,7 @@ import libs.Stats as Stats
 
 import EnvChecker
 
-logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
 stats = Stats.Stats()
@@ -49,13 +49,14 @@ def main():
             file_in_check = os.path.join(dirpath, fs)
             if not os.path.isfile(file_in_check):
                 continue
-            print(file_in_check)
+            # print(file_in_check)
             try:
                 zf = zipfile.ZipFile(file_in_check, "r")
             except:
                 continue
             if "AndroidManifest.xml" in zf.namelist():
                 stats.add_entity()
+                logging.info(file_in_check)
                 doCheck(file_in_check)
 
     stats.doState()

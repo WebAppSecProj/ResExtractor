@@ -4,11 +4,11 @@ import sys
 import logging
 import subprocess
 
-logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
 '''
-common evn checker, app specific checking should reside in related module.
+common env checker, app specific checking should reside in related module.
 '''
 
 def doCheck():
