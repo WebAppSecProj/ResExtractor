@@ -8,6 +8,6 @@ requests
 treelib
 bs4
 multimethod
-urllib
-ssl
-json
+lxml
+apkutils
+Wappalyzer

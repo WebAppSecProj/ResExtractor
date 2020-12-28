@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
+'''
+common config, app specific configuration should reside in related module.
+'''
 
 Config ={
     "aapt": "./libs/bin/aapt-30.0.1",
@@ -21,6 +24,6 @@ Config ={
         "libs.modules.OnsenUI.OnsenUI": "OnsenUI",
         "libs.modules.Andromo.Andromo": "Andromo",
         "libs.modules.AppsGeyser.AppsGeyser": "AppsGeyser",
-        "libs.modules.AppsGeyser.AppInventor": "AppInventor",
+        "libs.modules.AppInventor.AppInventor": "AppInventor",
     },
 }

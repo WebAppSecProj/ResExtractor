@@ -13,9 +13,11 @@ $ virtualenv -p python3 venv
 $ source venv/bin/activate
 $ pip3 install -r requirements.txt
 ```
-In one thread, use the following command to parse apk files from [janus](https://www.appscan.io).
+
+## 3 ways to extract the low-code
+1. Use the following command to retrieve and parse apk files from [janus](https://www.appscan.io).
 ```
-$ usage: main.py [-h] --secret-key SECRET_KEY [--target-date TARGET_DATE]
+$ usage: ExtractorJanus.py [-h] --secret-key SECRET_KEY [--target-date TARGET_DATE]
                [--start-date START_DATE] [--end-date END_DATE]
                [--market MARKET] [--show-market]
 
@@ -33,22 +35,21 @@ optional arguments:
                         argument supplemented; Use `,' to split multiple
                         markets; Use `all' to query all markets.
   --show-market         To list supported APP markets.
-
+```
 e.g., :
-$ python3 main.py --secret-key=123456 --start-date=2020-10-01 --end-date=2020-10-02
 ```
-
-In another thread, use the following command to observe the result.
+$ python3 ExtractorJanus.py --secret-key=123456 --start-date=2020-10-01 --end-date=2020-10-02
 ```
-$ python3 ./loader/WebServerHelper.py
+2. use a bunch of local apk files for analyzing.
 ```
-
-Or use local apk files for analyzing.
+$ python3 ExtractorBatch.py path_to_the_directory
 ```
-$ python3 CheckerBatch.py path_to_the_directory
+3. to process a single instance.
+```
+$ python3 Extractor.py path_to_the_file
 ```
 
 
 # HOWTO Debug
-1. Use main.py and keep all apk files (set `need_to_delete_apk' flag to True)
-2. Use CheckerBatch.py to find bugs and then fix them.
+1. Use ExtractorJanus.py and keep all apk files (set `need_to_delete_apk' flag to True)
+2. Use ExtractorBatch.py to find bugs and then fix them.

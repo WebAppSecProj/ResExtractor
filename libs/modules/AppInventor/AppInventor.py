@@ -49,7 +49,10 @@ class AppInventor(BaseModule):
         if self.host_os == "android":
             #com.google.appinventor.components.runtime.multidex.MultiDexApplication is application name
             apk = APK(self.detect_file)  #ference "https://github.com/TheKingOfDuck/ApkAnalyser"
-            if apk.get_manifest()['application']['@android:name'] == "com.google.appinventor.components.runtime.multidex.MultiDexApplication":
+            if apk.get_manifest() \
+                and 'application' in apk.get_manifest() \
+                and '@android:name' in apk.get_manifest()['application'] \
+                and apk.get_manifest()['application']['@android:name'] == "com.google.appinventor.components.runtime.multidex.MultiDexApplication":
                 return True
         elif self.host_os == "ios":
             log.error("not support yet.")
