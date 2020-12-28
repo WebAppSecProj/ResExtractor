@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""
+Created on Wed Dec 25 2020
+
+@author: beizishaozi
+"""
 
 import logging
 import sys
@@ -55,7 +60,7 @@ class Andromo(BaseModule):
         os.makedirs(tmp_folder, exist_ok = True)
         self._apktool(tmp_folder)
 
-        launch_path = ""
+        launch_path=[]
         for dirpath, dirnames, ifilenames in os.walk(tmp_folder):
             if dirpath.find("assets") != -1:   # store web resource  and f != "assets/widget/config.xml"
                 for fs in ifilenames:
@@ -84,13 +89,11 @@ class Andromo(BaseModule):
                     for elem in t.iter(tag='string'):
                         value = elem.attrib['name']
                         if value.startswith("Website") and value.endswith("_webview_content"):
-                            launch_path = launch_path+"  "
-                            launch_path = launch_path + elem.text
+                            launch_path.append(elem.text)
                         elif value.startswith("Rss_") and value.endswith("rss_feed_url"):
-                            launch_path = launch_path+"  "
-                            launch_path = launch_path + elem.text
+                            launch_path.append(elem.text)
 
-        self._dump_info(extract_folder, launch_path)
+        self._dump_info(extract_folder, "".join(launch_path))
         # clean env
         shutil.rmtree(tmp_folder)
         return extract_folder, launch_path

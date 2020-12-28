@@ -33,6 +33,14 @@ class BaseModule(metaclass=abc.ABCMeta):
 
         return
 
+    def _apktool_no_decode_source(self, extract_folder):
+        proc = subprocess.Popen("java -jar '{}' d '{}' -f -s -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        r = (proc.communicate()[0]).decode()
+        #log.info(r)
+
+        return
+
     def _format_working_folder(self, working_folder):
         if os.path.isabs(working_folder):
             extract_folder = os.path.join(working_folder, self.hash)
