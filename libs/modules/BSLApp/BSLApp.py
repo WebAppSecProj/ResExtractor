@@ -81,7 +81,7 @@ class BSLApp(BaseModule):
 
 
 def main():
-    f = "/Users/panmac/Desktop/ChameleonAppProj/code/test_case/com.bslyun.app.activity.MainActivity/94d0252039215d056bcd2bc41077596579b4b81778174acd6400eefd01c683cd"
+    f = "./test_case/com.bslyun.app.activity.MainActivity/suishou.apk"
     bsl = BSLApp(f, "android")
     if bsl.doSigCheck():
         logging.info("BSLApp signature Match")
