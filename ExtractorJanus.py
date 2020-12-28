@@ -34,7 +34,7 @@ JanusConfig = {
     "secret_key": "",
     "user_id": "bxmwr91j04t1121c",
     "max_query_days": 364,
-    "max_thread": 20,
+    "max_thread": 5,
     "need_to_delete_apk": True,
     "max_request_page_size": 100,
     "janus_url": "http://priv.api.appscan.io",
@@ -173,7 +173,7 @@ class DownloadAndExtract:
 
         return target_application_sha1_list
 
-    def _work_thread(self, tar_app_sha1, cur_date, tar_app_info, index, total):
+    def _work_thread(self, tar_app_sha1, tar_app_info, cur_date, index, total):
         with self._thread_num_lock:
 
             log.info("{}: {}/{}: processing {}".format(cur_date, index, total, tar_app_sha1))
@@ -264,8 +264,8 @@ class DownloadAndExtract:
         # janus return 100 pages in total per query.
         # so I split the query into day.
         format_end_date = datetime.datetime.strptime(self._end_date, "%Y-%m-%d")
-
         format_cur_date = datetime.datetime.strptime(self._start_date, "%Y-%m-%d")
+
         while format_cur_date <= format_end_date:
             cur_date = datetime.datetime.strftime(format_cur_date, '%Y-%m-%d')
 
