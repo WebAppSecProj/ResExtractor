@@ -76,13 +76,13 @@ class DownloadAndExtract:
 
         return sign
 
-    def _generate_query(self):
-        query_str = "stime:\"{}\" and etime:\"{}\" and market:\"{}\"".format(self._start_date,
-                                                                             self._end_date,
+    def _generate_query(self, cur_date):
+        query_str = "stime:\"{}\" and etime:\"{}\" and market:\"{}\"".format(cur_date,
+                                                                             cur_date,
                                                                              ",".join(self._market))
         return query_str
 
-    def _query_app_list(self):
+    def _query_app_list(self, cur_date):
 
         request_content = {}
         target_application_sha1_list = {}
@@ -91,7 +91,7 @@ class DownloadAndExtract:
         request_content["nonce"] = self._generate_nonce()
         request_content["time"] = str(int(time.time()))
         request_content["version"] = "1.0"
-        request_content["query"] = self._generate_query()
+        request_content["query"] = self._generate_query(cur_date)
         request_content["pagesize"] = self._max_request_page_size
         request_content["sign"] = self._generate_sign(request_content)
 
@@ -130,15 +130,19 @@ class DownloadAndExtract:
             sys.exit(1)
         page_total = result_content["paging"]["page_total"]
 
-        for cur_page in range(page_total):
+        if page_total > 100:
+            log.error("response over 100 pages, reset to 100")
+            page_total = 100
+
+        for cur_page in range(1, page_total + 1):
             request_content = {}
             request_content["userid"] = self._user_id
             request_content["nonce"] = self._generate_nonce()
             request_content["time"] = str(int(time.time()))
             request_content["version"] = "1.0"
-            request_content["query"] = self._generate_query()
+            request_content["query"] = self._generate_query(cur_date)
             request_content["pagesize"] = self._max_request_page_size
-            request_content["page"] = cur_page + 1          # add an additional arg
+            request_content["page"] = cur_page          # add an additional arg
             request_content["sign"] = self._generate_sign(request_content)
 
             application_request_json = json.dumps(request_content)
@@ -169,10 +173,10 @@ class DownloadAndExtract:
 
         return target_application_sha1_list
 
-    def _work_thread(self, tar_app_sha1, tar_app_info, index, total):
+    def _work_thread(self, tar_app_sha1, cur_date, tar_app_info, index, total):
         with self._thread_num_lock:
 
-            log.info("{}/{}: processing {}".format(index, total, tar_app_sha1))
+            log.info("{}: {}/{}: processing {}".format(cur_date, index, total, tar_app_sha1))
 
             tar_apk_path = os.path.join(self._apk_folder, tar_app_sha1 + ".apk")
 
@@ -257,64 +261,75 @@ class DownloadAndExtract:
 
     def doDownloadAndExtract(self):
 
-        app_sha1_list = self._query_app_list()
-        sub_thread_list = []
-        counter = 0
+        # janus return 100 pages in total per query.
+        # so I split the query into day.
+        format_end_date = datetime.datetime.strptime(self._end_date, "%Y-%m-%d")
 
-        for tmp_sha1 in app_sha1_list:
-            counter += 1
+        format_cur_date = datetime.datetime.strptime(self._start_date, "%Y-%m-%d")
+        while format_cur_date <= format_end_date:
+            cur_date = datetime.datetime.strftime(format_cur_date, '%Y-%m-%d')
 
-            if app_sha1_list[tmp_sha1]["size"] > JanusConfig["size_threshold"] * 1024 * 1024:
-                log.info("file: {} exceeds the quota, process the next one".format(tmp_sha1))
-                continue
+            app_sha1_list = self._query_app_list(cur_date)
 
-            download_request_content = {}
-            download_request_content["userid"] = self._user_id
-            download_request_content["nonce"] = self._generate_nonce()
-            download_request_content["time"] = str(int(time.time()))
-            download_request_content["version"] = "1.0"
-            download_request_content["sha1"] = tmp_sha1
-            download_request_content["sign"] = self._generate_sign(download_request_content)
+            sub_thread_list = []
+            counter = 0
 
-            request_json = json.dumps(download_request_content)
-            try:
-                result_json = requests.post(self._janus_url + self._apk_download_address,
-                                            data=request_json)
-            except:
-                log.error("[1] can't retrieve download address for {}".format(tmp_sha1))
-                continue
+            for tmp_sha1 in app_sha1_list:
+                counter += 1
 
-            try:
-                result_content = json.loads(result_json.text)
-            except:
-                log.error("[2] can't retrieve download address for {}".format(tmp_sha1))
-                continue
+                if app_sha1_list[tmp_sha1]["size"] > JanusConfig["size_threshold"] * 1024 * 1024:
+                    log.info("file: {} exceeds the quota, process the next one".format(tmp_sha1))
+                    continue
 
-            #log.info("download url : {}".format(request_json))
-            #log.info("download result : {}".format(result_content))
+                download_request_content = {}
+                download_request_content["userid"] = self._user_id
+                download_request_content["nonce"] = self._generate_nonce()
+                download_request_content["time"] = str(int(time.time()))
+                download_request_content["version"] = "1.0"
+                download_request_content["sha1"] = tmp_sha1
+                download_request_content["sign"] = self._generate_sign(download_request_content)
 
-            if ("status" not in result_content) \
-                or (result_content["status"] != 200) \
-                or ("download_url" not in result_content):
+                request_json = json.dumps(download_request_content)
+                try:
+                    result_json = requests.post(self._janus_url + self._apk_download_address,
+                                                data=request_json)
+                except:
+                    log.error("[1] can't retrieve download address of {}".format(tmp_sha1))
+                    continue
 
-                log.error("[3] can't retrieve download address for {}".format(
-                    app_sha1_list[tmp_sha1]["name"]))
-                continue
+                try:
+                    result_content = json.loads(result_json.text)
+                except:
+                    log.error("[2] can't retrieve download address of {}".format(tmp_sha1))
+                    continue
 
-            app_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
+                # log.info("download url : {}".format(request_json))
+                # log.info("download result : {}".format(result_content))
 
-            sub_thread = threading.Thread(
-                target=self._work_thread,
-                args=(tmp_sha1, app_sha1_list[tmp_sha1], counter, len(app_sha1_list))
-            )
+                if ("status" not in result_content) \
+                        or (result_content["status"] != 200) \
+                        or ("download_url" not in result_content):
+                    log.error("[3] can't retrieve download address of {}".format(
+                        app_sha1_list[tmp_sha1]["name"]))
+                    continue
 
-            sub_thread_list.append(sub_thread)
-            sub_thread.start()
-            # janus allows 40 queries per minute
-            time.sleep(2)
+                app_sha1_list[tmp_sha1]["download"] = result_content["download_url"]
 
-        for tmp_sub_thread in sub_thread_list:
-            tmp_sub_thread.join()
+                sub_thread = threading.Thread(
+                    target=self._work_thread,
+                    args=(tmp_sha1, app_sha1_list[tmp_sha1], cur_date, counter, len(app_sha1_list))
+                )
+
+                sub_thread_list.append(sub_thread)
+                sub_thread.start()
+                # janus allows 40 queries per minute
+                time.sleep(2)
+
+            for tmp_sub_thread in sub_thread_list:
+                tmp_sub_thread.join()
+
+            # move to the next day
+            format_cur_date += datetime.timedelta(days=1)
 
 
 # check the validation of the query
