@@ -4,15 +4,20 @@ import sys
 import Config
 import importlib
 import logging
-import EnvChecker
+import Checker
+import zipfile
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
 def main():
-    if EnvChecker.doCheck() == False:
+    if Checker.doEnvCheck() == False:
         sys.exit(1)
+
+    if Checker.doAPKCheck(sys.argv[1]) == False:
+        sys.exit(1)
+
 
     distill_modules = []
     # load each module

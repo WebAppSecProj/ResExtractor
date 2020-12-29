@@ -8,7 +8,7 @@ import os
 import zipfile
 import libs.Stats as Stats
 
-import EnvChecker
+import Checker
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def doCheck(file_in_check):
     return
 
 def main():
-    if EnvChecker.doCheck() == False:
+    if Checker.doEnvCheck() == False:
         sys.exit(1)
 
     for dirpath, dirnames, ifilenames in os.walk(sys.argv[1]):
@@ -49,12 +49,8 @@ def main():
             file_in_check = os.path.join(dirpath, fs)
             if not os.path.isfile(file_in_check):
                 continue
-            print(file_in_check)
-            try:
-                zf = zipfile.ZipFile(file_in_check, "r")
-            except:
-                continue
-            if "AndroidManifest.xml" in zf.namelist():
+            log.info(file_in_check)
+            if Checker.doAPKCheck(file_in_check):
                 stats.add_entity()
                 doCheck(file_in_check)
 
