@@ -24,7 +24,7 @@
 |20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N | 
 |21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - | 
 |22| [Appinventor](http://appinventor.mit.edu/explore/)  | Y | Y | N | N | 
-|23| [AppYet](http://www.appyet.com/)  | - | - | - | - | 
+|23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N | 
 |24| [Como](http://www.como.com/)  | - | - | - | - | 
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - | 
 |26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - | 
@@ -56,11 +56,11 @@
 |52| [Dibaqu](https://www.dibaqu.com/)  | - | - | - | - |  |
 |53| [Pgyer](https://www.pgyer.com/)  | - | - | - | - |  |
 |54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
-|55| [ChuXueYun](https://www.chuxueyun.com/)  | - | - | - | - |  |
+|55| [ChuXueYun](https://www.chuxueyun.com/)  | - | Y(E) same to BSL | - | - |  |
 |56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
 |57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
 |58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
-|59| [SuishouApp](http://www.suishouapp.com/)  | - | - | - | - |  |
+|59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
 |61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
 
