@@ -5,7 +5,7 @@ import logging
 import subprocess
 import zipfile
 
-logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
 '''
