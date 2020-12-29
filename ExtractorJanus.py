@@ -14,7 +14,7 @@ from contextlib import closing
 import zipfile
 
 from Config import Config
-import EnvChecker
+import Checker
 import libs.Stats as Stats
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
@@ -197,13 +197,7 @@ class DownloadAndExtract:
                             fd.write(chunk)
                     fd.flush()
 
-            try:
-                zf = zipfile.ZipFile(tar_apk_path, "r")
-            except:
-                log.error("invalid file: {}".format(tar_app_sha1))
-                return
-            if "AndroidManifest.xml" not in zf.namelist():
-                log.error("invalid file: {}".format(tar_app_sha1))
+            if Checker.doAPKCheck(tar_apk_path) == False:
                 return
 
             stats.add_entity()
@@ -439,7 +433,7 @@ def parse_args():
 
 def check_env():
     # common checker
-    if EnvChecker.doCheck() == False:
+    if Checker.doEnvCheck() == False:
         sys.exit(1)
 
     if not os.access(JanusConfig["janus_output_dir"], os.R_OK):

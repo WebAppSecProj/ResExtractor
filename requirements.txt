@@ -11,3 +11,4 @@ multimethod
 lxml
 apkutils
 Wappalyzer
+pyDes

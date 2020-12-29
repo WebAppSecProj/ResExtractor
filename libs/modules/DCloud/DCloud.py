@@ -48,6 +48,9 @@ class DCloud(BaseModule):
 
         # extract the assets/data/dcloud_control.xml to get appid
         zf = zipfile.ZipFile(self.detect_file, 'r')
+        if "assets/data/dcloud_control.xml" not in zf.namelist():
+            log.error("DCloud module error")
+            return None, None
         config_file = zf.extract("assets/data/dcloud_control.xml", tmp_folder)
 
         # parse the xml file, construct the path of app code, and extract
