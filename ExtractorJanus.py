@@ -433,7 +433,7 @@ def parse_args():
 
 def check_env():
     # common checker
-    if Checker.doCheck() == False:
+    if Checker.doEnvCheck() == False:
         sys.exit(1)
 
     if not os.access(JanusConfig["janus_output_dir"], os.R_OK):
