@@ -45,14 +45,13 @@ It is equivalent to creating a new label folder under the local web resource fol
 ```python
 from demo import *
 if __name__ == "__main__":
-    a = Runner(r'The file path that stores the URL,only support csv type')
+    a = Runner()
     a.add_websource(DirInput(r'folder that stores local web resources'),"The tag you want to set")
     a.add_filter(r'CN.csv')
     a.add_filter(r'my_filter.txt')
     #a.add_filter('any filter your want')
     a.parser(r'The specified storage path')
-    a.run()
-    a.add_monitorfile(r'Another file path that stores the URLS')
+    a.add_monitorfile(r'The file path that stores the URL,only support csv type'')
     a.run()
 ```
 
