@@ -65,7 +65,7 @@ class Runner():
         self.pwd.append(inp)
         self.label.append(label)
         
-    def parser(self,dst_file=self.monitor[0]):
+    def parser(self,dst_file):
         for i in range(0,len(self.pwd)):
             inp = self.pwd[i]
             label = self.label[i]
