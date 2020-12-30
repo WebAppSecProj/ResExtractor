@@ -65,7 +65,7 @@ class Runner():
         self.pwd.append(inp)
         self.label.append(label)
         
-    def parser(self,dst_file):
+    def parser(self,dst_file=self.monitor[0]):
         for i in range(0,len(self.pwd)):
             inp = self.pwd[i]
             label = self.label[i]
@@ -121,10 +121,10 @@ class Runner():
 if __name__ == "__main__":
     begin=time.time()
     a = Runner(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url.csv')
-    #a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'),"test")
-    a.add_filter(r'G:\涉案APK\CN.csv')
-    a.add_filter(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\my_filter.txt')
-    #a.parser(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
+    a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'),"test")
+    a.add_filter(r'CN.csv')
+    a.add_filter(r'my_filter.txt')
+    a.parser(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
     a.run()
     #a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
     #a.run()
