@@ -6,29 +6,30 @@ Web Monitor is designed for download remote source, query sever information and 
 
 Total wen resource
 
-├─00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8
-│  ├─cordova-js-src
-│  │  ├─android
-│  │  └─plugin
-│  │      └─android
-│  ├─icons
-│  ├─plugins
-│  │  ├─cordova-plugin-appminimize
-│  │  │  └─www
-│  │  └─cordova-plugin-camera
-│  │      └─www
-│  └─**Remote**(**where we store remote web resource**)
-│      ├─03ba67568336c85bac3d47a80a924181
-│      ├─4c705510d041a366fbe25996e1c40e85
-│      ├─5fc05ef60c578d22d1eee6b6a34aa853
-│      └─dd90e725166065b8e428c5e05a9c6d16
-└─0b69ea19490b407537175575a717d6a7fd5bd696
-    ├─css
-    ├─html
-    ├─script
-    └─**Remote**
+'''
+├─00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8  
+│  ├─cordova-js-src  
+│  │  ├─android  
+│  │  └─plugin  
+│  │      └─android  
+│  ├─icons  
+│  ├─plugins  
+│  │  ├─cordova-plugin-appminimize  
+│  │  │  └─www  
+│  │  └─cordova-plugin-camera  
+│  │      └─www  
+│  └─**Remote**(**where we store remote web resource**)  
+│      ├─03ba67568336c85bac3d47a80a924181  
+│      ├─4c705510d041a366fbe25996e1c40e85  
+│      ├─5fc05ef60c578d22d1eee6b6a34aa853  
+│      └─dd90e725166065b8e428c5e05a9c6d16  
+└─0b69ea19490b407537175575a717d6a7fd5bd696  
+    ├─css  
+    ├─html  
+    ├─script  
+    └─**Remote**  
         └─fd96577ee1ca9b82c8ce1d57c753b3a3(**where we store remote web resource**)
-
+'''
 
 
 It is equivalent to creating a new label folder under the local web resource folder, and use md5 for each URL to create a URL folder to store remote information.
