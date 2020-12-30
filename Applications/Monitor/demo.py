@@ -33,9 +33,9 @@ class DirInput(InputBase):
     """
     def __init__(self, folder: str):
         self.folder = folder
-        self.iter = self.get_iter()
+        self.iter = self._get_iter()
 
-    def get_iter(self):
+    def _get_iter(self):
         """
         The main entry is get_iter that returns an iterator of First level subdirectory.
         """
@@ -48,38 +48,37 @@ class DirInput(InputBase):
         return file_name
 
 class Runner():
-    def __init__(self):
-        self.monitor = []
-        self.pwd = []
-        self.label = []
-        self.filter =[]
+    def __init__(self, filePath):
+        self._monitor = [filePath]
+        self._pwd = []
+        self._label = []
+        self._filter =[]
         
-    def add_monitorfile(self,filePath):
-        self.monitor.append(filePath)
+    def _add_monitorfile(self, filePath):
+        self._monitor.append(filePath)
     
-    def add_filter(self,filters):
-        self.filter.append(filters)
+    def _add_filter(self, filters):
+        self._filter.append(filters)
         
         
-    def add_websource(self,inp:InputBase,label):
-        self.pwd.append(inp)
-        self.label.append(label)
+    def _add_websource(self, inp: InputBase, label):
+        self._pwd.append(inp)
+        self._label.append(label)
         
-    def parser(self,dst_file):
-        for i in range(0,len(self.pwd)):
-            inp = self.pwd[i]
-            label = self.label[i]
+    def _parser(self, dst_file=self.monitor[0]):
+        for i in range(0, len(self._pwd)):
+            inp = self._pwd[i]
+            label = self._label[i]
             for folder in inp:
                 print(folder)
-                a = Web_source(folder,label)
-                for i in self.filter:
+                a = Web_source(folder, label)
+                for i in self._filter:
                     a.del_top(i)
                 a.dump(dst_file)
-
         
-    def run(self,monitor = "all"):
+    def run(self, monitor = "all"):
         if monitor == "all":
-            for monitor in self.monitor.copy():
+            for monitor in self._monitor.copy():
                 if not os.path.exists(monitor):
                     continue
                 try:
@@ -95,7 +94,7 @@ class Runner():
                         writer.writerow(['appname','URL','folder'])
                         writer.writerows([i["appname"],i["URL"],i["folder"]]for i in new_dict)
                     #检查完删除monitor列表
-                    self.monitor.remove(monitor)
+                    self._monitor.remove(monitor)
                 except Exception as e:
                     print("Monitor {} Error".format(e))
         else:
@@ -120,12 +119,13 @@ class Runner():
     
 if __name__ == "__main__":
     begin=time.time()
-    a = Runner()
-    a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'),"test")
+    a = Runner(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url.csv')
+    a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'), "test")
+    # eh.., I find aliyun.com etc. in this list.
     a.add_filter(r'CN.csv')
     a.add_filter(r'my_filter.txt')
     a.parser(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
     a.run()
-    a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
-    a.run()
+    #a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
+    #a.run()
     print(time.time()-begin)
