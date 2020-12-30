@@ -33,13 +33,56 @@ Total wen resource
 
 It is equivalent to creating a new label folder under the local web resource folder, and use md5 for each URL to create a URL folder to store remote information.
 
+### URL storage X.csv format:
+
+| appname | URL               | folder                                                       |
+| ------- | ----------------- | ------------------------------------------------------------ |
+| test    | https://wqmjz.com | G:\APK\working_folder\test_folder\00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8 |
+| test    | https://wjzyg.com | G:\APK\\working_folder\test_folder\00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8 |
+
+### Record.txt format:
+
+```json
+{
+    "URL":"https://mathiasbynens.be/notes/javascript-encoding",
+    "IP":"39.174.145.179",
+    "State":"alive",
+    "Alive_days":3,
+    "HTML_change_date":[
+        "Tue Dec 29 20:11:41 2020"
+    ],
+    "CSS_change_date":[
+        "Tue Dec 29 20:11:41 2020"
+    ],
+    "Js_change_date":[
+        "Tue Dec 29 20:11:41 2020"
+    ],
+    "Img_change_date":[
+        "Tue Dec 29 20:11:41 2020"
+    ],
+    "Math_place":"665751987",
+    "Phsical_place":"浙江省杭州市 移动",
+    "Server_type":[
+        "Gravatar",
+        "Apache",
+        "jQuery"
+    ],
+    "Monitor_begin":"Tue Dec 29 20:11:11 2020",
+    "Monitor_end":"unknow",
+    "Super_change":[
+    ]
+}
+```
+
+
+
 ### Usage:
 
-1. Initialization time `Runner`, you must set up a default file to store the URL, now only support `csv` type
+1. Initialization time `Runner`
 2. Then use function `add_websource` can add the folder where parser is required
 3. If you need to add a URL filter, use `add_filter`, now we support `txt` and `csv` format
 4. Perform parser on all files that have been added. Use `parser`, and don't forget specify a storage file, the default one is the initial storage location.
-5. `add_monitorfile` can add different URL store file entry the `Runner`
+5. `add_monitorfile` can add different URL store file entry the `Runner`, now only support `csv` type
 6. `run` is the core function of `demo`, `run` can update all urls in all URL store files.
 
 ```python
@@ -54,4 +97,3 @@ if __name__ == "__main__":
     a.add_monitorfile(r'The file path that stores the URL,only support csv type'')
     a.run()
 ```
-
