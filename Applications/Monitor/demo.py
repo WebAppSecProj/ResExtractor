@@ -48,8 +48,8 @@ class DirInput(InputBase):
         return file_name
 
 class Runner():
-    def __init__(self, filePath):
-        self.monitor = [filePath]
+    def __init__(self):
+        self.monitor = []
         self.pwd = []
         self.label = []
         self.filter =[]
@@ -120,12 +120,12 @@ class Runner():
     
 if __name__ == "__main__":
     begin=time.time()
-    a = Runner(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url.csv')
+    a = Runner()
     a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'),"test")
     a.add_filter(r'CN.csv')
     a.add_filter(r'my_filter.txt')
     a.parser(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
     a.run()
-    #a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
-    #a.run()
+    a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
+    a.run()
     print(time.time()-begin)
