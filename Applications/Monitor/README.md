@@ -4,74 +4,41 @@ Web Monitor is designed for download remote source, query sever information and 
 
 ### Folder structure:
 
-#### Before:
+Total wen resource
 
-Web resource:
+├─00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8
+│  ├─cordova-js-src
+│  │  ├─android
+│  │  └─plugin
+│  │      └─android
+│  ├─icons
+│  ├─plugins
+│  │  ├─cordova-plugin-appminimize
+│  │  │  └─www
+│  │  └─cordova-plugin-camera
+│  │      └─www
+│  └─**Remote**(**where we store remote web resource**)
+│      ├─03ba67568336c85bac3d47a80a924181
+│      ├─4c705510d041a366fbe25996e1c40e85
+│      ├─5fc05ef60c578d22d1eee6b6a34aa853
+│      └─dd90e725166065b8e428c5e05a9c6d16
+└─0b69ea19490b407537175575a717d6a7fd5bd696
+    ├─css
+    ├─html
+    ├─script
+    └─**Remote**
+        └─fd96577ee1ca9b82c8ce1d57c753b3a3(**where we store remote web resource**)
 
---------->md5(00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8)
 
-​             | ------>html
 
-​			 |------->js/css/img （**local web resource**)
-
---------->md5(0b69ea19490b407537175575a717d6a7fd5bd696)
-
-​             |------>html
-
-​			 |------->js/css/img
-
-#### After:
-
-Web resource:
-
---------->md5(00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8)
-
-​             | ------>html
-
-​			 |------->js/css/img（**local web resource**)
-
-​             | ------>labe one (**where we store remote web resource**)
-
-​						|------>url1
-
-​								|----->record.txt
-
-​								|----->img
-
-​								|----->js
-
-​								|----->css
-
-​								|----->js.txt/css.txt/img.txt
-
-​             | ------>labe two
-
-​						|------>url1
-
-​								|----->record.txt
-
-​								|----->img
-
-​								|----->js
-
-​								|----->css
-
-​								|----->js.txt/css.txt/img.txt
-
---------->md5(0b69ea19490b407537175575a717d6a7fd5bd696)
-
-​             |------>html
-
-​			 |------->js/css/img
-
-……
+It is equivalent to creating a new label folder under the local web resource folder, and use md5 for each URL to create a URL folder to store remote information.
 
 ### Usage:
 
 1. Initialization time `Runner`, you must set up a default file to store the URL, now only support `csv` type
 2. Then use function `add_websource` can add the folder where parser is required
 3. If you need to add a URL filter, use `add_filter`, now we support `txt` and `csv` format
-4. Perform parser on all files that have been added. use `parser`, and don't forget specify a storage file, the default is the initial storage location.
+4. Perform parser on all files that have been added. Use `parser`, and don't forget specify a storage file, the default one is the initial storage location.
 5. `add_monitorfile` can add different URL store file entry the `Runner`
 6. `run` is the core function of `demo`, `run` can update all urls in all URL store files.
 
