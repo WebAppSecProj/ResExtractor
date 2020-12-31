@@ -5,10 +5,11 @@ Created on Mon Dec 28 11:30:59 2020
 @author: hypo
 """
 
-import os,sys,csv,time
-from Url_base import HTML
-from Web_source import Web_source
-from Monitor import WebMonitor
+import os,csv,time
+
+from Applications.Monitor.Url_base import HTML
+from Applications.Monitor.Web_source import Web_source
+from Applications.Monitor.Monitor import WebMonitor
 
 class InputBase:
     """
