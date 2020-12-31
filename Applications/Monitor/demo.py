@@ -5,11 +5,15 @@ Created on Mon Dec 28 11:30:59 2020
 @author: hypo
 """
 
-import os,csv,time
+import os,csv,time,sys,logging
 
 from Applications.Monitor.Url_base import HTML
 from Applications.Monitor.Web_source import Web_source
 from Applications.Monitor.Monitor import WebMonitor
+
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
+log = logging.getLogger(__name__)
+
 
 class InputBase:
     """
@@ -50,33 +54,36 @@ class DirInput(InputBase):
 
 class Runner():
     def __init__(self, filePath):
-        self._monitor = [filePath]
-        self._pwd = []
-        self._label = []
-        self._filter =[]
+        self._monitor = [filePath]  # logging file
+        self._pwd = []              # resource folder
+        self._label = []            # task name, app name, or sth else
+        self._filter =[]            # url filter
         
     def _add_monitorfile(self, filePath):
         self._monitor.append(filePath)
     
-    def _add_filter(self, filters):
+    def add_filter(self, filters):
         self._filter.append(filters)
-        
-        
-    def _add_websource(self, inp: InputBase, label):
+
+    def add_websource(self, inp: InputBase, label):
         self._pwd.append(inp)
         self._label.append(label)
         
-    def _parser(self, dst_file=self.monitor[0]):
+    def parser(self, dst_file):
+        if dst_file == None:
+            dst_file = self._monitor[0]
         for i in range(0, len(self._pwd)):
             inp = self._pwd[i]
             label = self._label[i]
             for folder in inp:
-                print(folder)
+                log.info("processing folder: {}".format(folder))
                 a = Web_source(folder, label)
                 for i in self._filter:
                     a.del_top(i)
+
                 a.dump(dst_file)
-        
+                log.info("{}".format(a.allurl))
+
     def run(self, monitor = "all"):
         if monitor == "all":
             for monitor in self._monitor.copy():
@@ -120,13 +127,14 @@ class Runner():
     
 if __name__ == "__main__":
     begin=time.time()
-    a = Runner(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url.csv')
-    a.add_websource(DirInput(r'G:\涉案APK\盘古\working_folder\working_folder'), "test")
+    # working directory should be set to current folder.
+    r = Runner(os.path.join(os.path.dirname(os.path.realpath(__file__)), "url.cvs"))
+    r.add_websource(DirInput(sys.argv[1]), "test")
     # eh.., I find aliyun.com etc. in this list.
-    a.add_filter(r'CN.csv')
-    a.add_filter(r'my_filter.txt')
-    a.parser(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
-    a.run()
+    r.add_filter(os.path.join(os.path.dirname(os.path.realpath(__file__)), r'CN.csv'))
+    r.add_filter(os.path.join(os.path.dirname(os.path.realpath(__file__)), r'my_filter.txt'))
+    r.parser(os.path.join(os.path.dirname(os.path.realpath(__file__)), r'url2.csv'))
+    r.run()
     #a.add_monitorfile(r'C:\Users\hypo\Desktop\黑灰产paper\monitor\url2.csv')
     #a.run()
     print(time.time()-begin)

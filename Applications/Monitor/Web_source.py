@@ -11,32 +11,32 @@ import os,sys,re,csv,time
 class Web_source():
     def __init__(self, dirpath, appname):
         if os.path.exists(dirpath):
-            self.dir = dirpath
+            self._dir = dirpath
         else:
-            self.dir = None
-        self.appname = appname
+            self._dir = None
+        self._appname = appname
         self.url_list = None
-        self.format_list = None
-        self.notformat_list = None
-        self.HTTP_REGEX = 'https?://[a-zA-Z0-9\.\/_&=@$%?~#-]+'
-        self.IP_REGEX = '(((1[0-9][0-9]\.)|(2[0-4][0-9]\.)|(25[0-5]\.)|([1-9][0-9]\.)|([0-9]\.)){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9])))'
+        self._format_list = None
+        self._notformat_list = None
+        self._HTTP_REGEX = 'https?://[a-zA-Z0-9\.\/_&=@$%?~#-]+'
+        self._IP_REGEX = '(((1[0-9][0-9]\.)|(2[0-4][0-9]\.)|(25[0-5]\.)|([1-9][0-9]\.)|([0-9]\.)){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9])))'
         #非文本后缀
-        self.notfile = ["jpg","png","gif","bmp","webp","jepg","tgz"]
-        self.formats = ["jpg","png","gif","bmp","webp","jepg","tgz","txt","js","css"]
+        self._notfile = ["jpg","png","gif","bmp","webp","jepg","tgz"]
+        self._formats = ["jpg","png","gif","bmp","webp","jepg","tgz","txt","js","css"]
         
     @property
     def allurl(self):
         if self.url_list==None:
-            if self.dir:
+            if self._dir:
                 self.url_list=[]
-                for root,dirs,files in os.walk(self.dir):
+                for root,dirs,files in os.walk(self._dir):
                     for f in files:
-                        if any(f.endswith(i) for i in self.notfile):
+                        if any(f.endswith(i) for i in self._notfile):
                             continue
                         fp = os.path.join(root,f)
                         try:
                             with open(fp,'r',encoding='utf-8') as fs:
-                                self.url_list.extend(re.findall(self.HTTP_REGEX,fs.read()))
+                                self.url_list.extend(re.findall(self._HTTP_REGEX,fs.read()))
                         except:
                             continue
                         self.url_list = list(set(self.url_list))
@@ -74,32 +74,32 @@ class Web_source():
     def remote_url(self):
         if self.allurl == None:
             return None
-        self.format_list = []
-        self.notformat_list = []
+        self._format_list = []
+        self._notformat_list = []
         for i in self.allurl.copy():
-            if any(i.endswith(t) for t in self.formats) :
-                self.format_list.append(i)
+            if any(i.endswith(t) for t in self._formats) :
+                self._format_list.append(i)
             else:
-                self.notformat_list.append(i)
-        return self.format_list,self.notformat_list
+                self._notformat_list.append(i)
+        return self._format_list,self._notformat_list
     
     def dump(self, filepath, method="csv"):
         if self.allurl == None:
             return None
-        if self.notformat_list == None:
+        if self._notformat_list == None:
             self.remote_url
         if method=="csv":
             if not os.path.exists(filepath):
                 with open(filepath,'w',newline='') as f:
                     f_csv = csv.writer(f)
                     f_csv.writerow(['appname','URL','folder'])
-                    for i in self.notformat_list:
-                        f_csv.writerow([self.appname,i,self.dir])
+                    for i in self._notformat_list:
+                        f_csv.writerow([self._appname,i,self._dir])
             else:
                 with open(filepath,'a',newline='') as f:
                     f_csv = csv.writer(f)
-                    for i in self.notformat_list:
-                        f_csv.writerow([self.appname,i,self.dir])
+                    for i in self._notformat_list:
+                        f_csv.writerow([self._appname,i,self._dir])
         
         
                 
