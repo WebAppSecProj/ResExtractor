@@ -31,18 +31,26 @@ def doAPKCheck(f):
     @author : zoudeneng
     TODO: should limit to the header to avoid conflict.
     '''
-    with open(f, 'rb+') as fh:
-        # scan the file to find sig
-        while fh.tell() < os.path.getsize(f) - 10:
-            if fh.read(4) == b'\x50\x4b\x01\x02':
-                fh.seek(4, 1)
-                if fh.read(1) != b'\x00':
-                    log.error("oops, {} is protected by using fake encrypt".format(f))
-                    # walk back and reset the tag
-                    fh.seek(-1, 1)
-                    fh.write(b'\x00')
-                fh.seek(-5, 1)
-            fh.seek(-3, 1)
+    encrypt_flag = False
+    with zipfile.ZipFile(f, 'r') as z:
+        for i in z.infolist():
+            if i.flag_bits & 0x01:
+                log.error("oops, {} is protected by using fake encrypt".format(f))
+                encrypt_flag = True
+                break
+
+    if encrypt_flag == True:
+        with open(f, 'rb+') as fh:
+            # scan the file to find sig
+            while fh.tell() < os.path.getsize(f) - 10:
+                if fh.read(4) == b'\x50\x4b\x01\x02':
+                    fh.seek(4, 1)
+                    if fh.read(1) != b'\x00':
+                        # walk back and reset the tag
+                        fh.seek(-1, 1)
+                        fh.write(b'\x00')
+                    fh.seek(-5, 1)
+                fh.seek(-3, 1)
 
     if "AndroidManifest.xml" not in zf.namelist():
         log.error("not an APK file.")
