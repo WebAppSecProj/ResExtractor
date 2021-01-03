@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Dec 28 11:30:59 2020
 
 @author: hypo
 """
+
+# TODO: Use urlparse module instead
 
 import os,csv,time,sys,logging
 
@@ -84,7 +87,7 @@ class Runner():
                 a.dump(dst_file)
                 log.info("{}".format(a.allurl))
 
-    def run(self, monitor = "all"):
+    def run(self, monitor="all"):
         if monitor == "all":
             for monitor in self._monitor.copy():
                 if not os.path.exists(monitor):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Tue Dec 22 21:08:56 2020
@@ -22,6 +23,9 @@ import csv
 #设置超时时间为10s
 socket.setdefaulttimeout(10)
 
+# To remove error.
+# urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)>
+ssl._create_default_https_context = ssl._create_unverified_context
 
 class Converter:
     def __init__(self, dom_tree, dimension):
@@ -168,7 +172,7 @@ def add_parameters(params, **kwargs):
     params.update(kwargs)
 
 
-def url_filter(url,filter):
+def url_filter(url, filter):
     """
         filter can refer to the top 1w weblist by alexa
         or some special string ——such as github/fjson?.
@@ -186,7 +190,7 @@ def url_alive(url):
         To detect the url weather still achievable
     """
     try:
-        response = urllib.request.urlopen(url,timeout=3)
+        response = urllib.request.urlopen(url, timeout=3)
     except IOError:
         return False
     except ssl.CertificateError:
@@ -203,18 +207,17 @@ def url_alive(url):
 def get_html(url):
     try:
         response = urllib.request.urlopen(
-                    url,timeout=3).read().decode('UTF-8')
+                    url, timeout=3).read().decode('UTF-8')
         html = response.text
         return html
     except:
         return None
 
-def super_urlretrieve(url,file):
+def super_urlretrieve(url, file):
     try:
-        urllib.request.urlretrieve(url,file)
+        urllib.request.urlretrieve(url, file)
     except socket.timeout:
         print("downloading picture fialed!")
-            
             
 
 class HTML:
@@ -259,23 +262,23 @@ class HTML:
         """
         if self.__alive == None:
             try:
-                response = urllib.request.urlopen(self.getname,timeout=3)
+                response = urllib.request.urlopen(self.getname, timeout=3)
             except IOError:
-                self.__alive == False
+                self.__alive = False
                 return False
             except ssl.CertificateError:
-                self.__alive == False
+                self.__alive = False
                 return False
             else:
                 code = response.getcode()
                 if code == 404:
-                    self.__alive == False
+                    self.__alive = False
                     return False
                 elif code == 403:
-                    self.__alive == False
+                    self.__alive = False
                     return False
                 else:
-                    self.__alive == True
+                    self.__alive = True
                     return True
         return self.__alive
 
@@ -286,7 +289,7 @@ class HTML:
         """
         if self.alive == True and self.__content == None:
             self.__content = urllib.request.urlopen(
-                self.__URL,timeout=5).read().decode('UTF-8')
+                self.__URL, timeout=5).read().decode('UTF-8')
         return self.__content
 
     @property
@@ -321,7 +324,7 @@ class HTML:
             urlstring = 'http://'+urlstring
         if url_alive(urlstring):
             content = urllib.request.urlopen(
-                urlstring,timeout=3).read().decode('UTF-8')
+                urlstring, timeout=3).read().decode('UTF-8')
             feature = get_html_info(content, self.__dimension)
             if self.url_feature != None:
                 return calculated_similarity(self.url_feature, feature, self.__dimension)
@@ -329,7 +332,7 @@ class HTML:
                 return None
         return None
     
-    def file_similarity(self,content:str):
+    def file_similarity(self, content: str):
         feature = get_html_info(content, self.__dimension)
         if self.url_feature != None:
             return calculated_similarity(self.url_feature, feature, self.__dimension)
@@ -361,29 +364,29 @@ class HTML:
         name = filename.split('/')[-1]
         if not os.path.isdir(path):
             os.makedirs(path)
-        path = path+'\\'
+        #path = path+'\\'
         
         try:
-            if filename[-4:] in ['.jpg', '.png', '.gif', '.bmp','webp','jpeg']:
-                path = path + 'images\\'
+            if os.path.splitext(filename)[-1] in ['.jpg', '.png', '.gif', '.bmp', 'webp', 'jpeg']:
+                path = os.path.join(path, 'images')
                 if not os.path.isdir(path):
                     os.makedirs(path)
-                super_urlretrieve(filename,'{}{}'.format(path,name))
+                super_urlretrieve(filename, os.path.join(path, name))
                 #urllib.request.urlretrieve(filename,'{}{}'.format(path,name))  
-            if filename[-2:] == 'js':
-                path = path + 'js\\'
+            if os.path.splitext(filename)[-1] == '.js':
+                path = os.path.join(path, 'js')
                 if not os.path.isdir(path):
                     os.makedirs(path)
-                super_urlretrieve(filename,'{}{}'.format(path,name))
+                super_urlretrieve(filename, os.path.join(path, name))
                 #urllib.request.urlretrieve(filename,'{}{}'.format(path,name))
-            if filename[-3:] == 'css':
-                path = path + 'css\\'
+            if os.path.splitext(filename)[-1] == '.css':
+                path = os.path.join(path, 'css')
                 if not os.path.isdir(path):
                     os.makedirs(path)
-                super_urlretrieve(filename,'{}{}'.format(path,name))
+                super_urlretrieve(filename, os.path.join(path, name))
                 #urllib.request.urlretrieve(filename,'{}{}'.format(path,name))
-            if filename[-4:] == 'html':
-                super_urlretrieve(filename,'{}{}'.format(path,name))
+            if os.path.splitext(filename)[-1] == '.html':
+                super_urlretrieve(filename, os.path.join(path, name))
                 #urllib.request.urlretrieve(filename,'{}{}'.format(path,name))
         except Exception as e:
             return False
@@ -422,12 +425,12 @@ class HTML:
         patternimg3 = r'<img.*?src="([^"]+?\.(jpg|png|gif|bmp|webp|jepg))'
         pic_list = re.compile(patternimg, re.S).findall(content)
         #pic_list += re.compile(patternimg2, re.S).findall(content)
-        for i in re.compile(patternimg3 ,re.S).findall(content):
+        for i in re.compile(patternimg3, re.S).findall(content):
             pic_list.append(i[0])
         pic_list = list(set(pic_list))
         return pic_list
 
-    def list_download(self,lists,newpath):
+    def list_download(self, lists, newpath):
         final_list = [] 
         for i in lists:
             try:
@@ -436,11 +439,11 @@ class HTML:
                     if self.download_file(i, newpath):
                         final_list.append(js_url)
                 elif i.startswith('//'):
-                    js_url = 'http://'+i[2:]
+                    js_url = 'http://' + i[2:]
                     if self.download_file(js_url, newpath):
                         final_list.append(js_url)
                 elif i.startswith('/'):
-                    js_url = 'http://'+self.topdomain+i
+                    js_url = 'http://' + self.topdomain + i
                     if self.download_file(js_url, newpath):
                         final_list.append(js_url)
                 else:
@@ -454,9 +457,9 @@ class HTML:
     def scarpy_web(self, appname, path):
         if not self.alive:
             return False
-        newpath = os.path.join(path,appname)
+        newpath = os.path.join(path, appname)
         if not os.path.isdir(newpath):
-            os.mkdir(newpath)
+            os.makedirs(newpath)
             
         content = self.get_content
         if content == None:
@@ -467,30 +470,32 @@ class HTML:
             self.download_file(self.getname, newpath)
         else:
             try:
-                super_urlretrieve(self.getname,'{}{}.{}'.format(newpath+'\\',self.getname.split('/')[-1],'html'))
+                super_urlretrieve(
+                    self.getname,
+                    os.path.join(newpath, self.getname.split('/')[-1] + ".html")
+                )
+                    #'{}{}.{}'.format(newpath+'\\',self.getname.split('/')[-1],'html'))
             except:
                 pass
                 
         "save css file"
         result = self.css_list
-        final_list= self.list_download(result,newpath)
-        with open(newpath+'\\css.txt','w+') as f:
+        _ = self.list_download(result, newpath)
+        with open(os.path.join(newpath, 'css.txt'), 'w+') as f:
             for line in result:
-                f.write(line+'\n')
-  
+                f.write(line + '\n')
 
         lists = self.js_list
-        final_list = self.list_download(lists,newpath)
-        with open(newpath+'\\js.txt','w+') as f:
+        _ = self.list_download(lists, newpath)
+        with open(os.path.join(newpath, 'js.txt'), 'w+') as f:
             for line in lists:
-                f.write(line+'\n')
-
+                f.write(line + '\n')
     
         pic_list = self.img_list
-        final_list = self.list_download(pic_list,newpath)
-        with open(newpath+'\\img.txt','w+') as f:
+        _ = self.list_download(pic_list, newpath)
+        with open(os.path.join(newpath, 'img.txt'), 'w+') as f:
             for line in pic_list:
-                f.write(line+'\n')
+                f.write(line + '\n')
         
         return True
         
