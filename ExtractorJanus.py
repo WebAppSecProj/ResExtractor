@@ -210,7 +210,7 @@ class DownloadAndExtract:
                     log.info("module {} found in this application".format(Config["modules"][to_check_module_name]))
                     stats.add_entity(target_check.__class__)
 
-                    tar_module_folder = os.path.join(os.getcwd(), Config["working_folder"],
+                    tar_module_folder = os.path.join(os.getcwd(), Config["working_folder"], Config["task_name"],
                                                      Config["modules"][to_check_module_name])
                     if not os.path.exists(tar_module_folder):
                         os.mkdir(tar_module_folder)
@@ -352,9 +352,12 @@ def parse_args():
     parser.add_argument('--end-date', help="End date of the query.")
     parser.add_argument('--market', type=str, help="APP market in query. Huawei APP market is set if no argument supplemented; Use `,' to split multiple markets; Use `all' to query all markets.")
     parser.add_argument('--show-market', action='store_true', help="To list supported APP markets.")
+    parser.add_argument('--task-name', required=True, help="Provide name of this task, such that we can classify the analysis result.")
 
     args = parser.parse_args()
     JanusConfig["secret_key"] = args.secret_key
+
+    Config["task_name"] = args.task_name
 
     if args.target_date and (args.start_date or args.end_date):
         log.error("overlapping date setting")

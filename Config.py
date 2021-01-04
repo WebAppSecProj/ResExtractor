@@ -34,4 +34,6 @@ Config ={
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
     ]),
+    "task_name": "",
+
 }
