@@ -13,6 +13,7 @@ Config ={
     "apktool": "./libs/bin/apktool_2.4.0.jar",
     "logging_file": "extract_info.json",
     "working_folder": "working_folder",
+    "log_folder": "Logger",
     "server_port": 8081,
     "modules": collections.OrderedDict([
         ("libs.modules.DCloud.DCloud", "DCloud"),

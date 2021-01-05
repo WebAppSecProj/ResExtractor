@@ -8,6 +8,7 @@ import sys
 
 import os
 import zipfile
+import Config as Config
 
 import jpype
 
@@ -89,7 +90,7 @@ class BufanApp(BaseModule):
             try:
                 appUrl = str(jclass.get_appUrl(config_file, keys))  # cast to str
             except:
-                with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+                with open(os.path.join(os.getcwd(), Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
                     fwh.write(self.detect_file + "\n")
                 fwh.close()
 

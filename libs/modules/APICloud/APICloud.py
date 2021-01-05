@@ -8,6 +8,7 @@ import os
 
 from libs.modules.APICloud.uzmap_resource_extractor import tools
 from libs.modules.BaseModule import BaseModule
+import Config as Config
 
 try:
   import xml.etree.cElementTree as ET
@@ -57,7 +58,7 @@ class APICloud(BaseModule):
 
             self._dump_info(extract_folder, launch_path)
         except:
-            with open(os.path.join(os.getcwd(), "working_folder/failed_apk.txt"), "a+") as fwh:
+            with open(os.path.join(os.getcwd(), Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
                 fwh.write(self.detect_file)
             fwh.close()
 
