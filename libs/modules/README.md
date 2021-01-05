@@ -30,7 +30,7 @@
 |26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - | 
 |27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - | 
 |28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - | 
-|29| [Good Barber](http://www.goodbarber.com/)  | - | - | - | - | 
+|29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - | 
 |30| [Shoutem](http://www.shoutem.com/)  | - | - | - | - | 
 |31| [App Yourself](http://appyourself.net/)  | - | - | - | - | 
 |32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - | 
