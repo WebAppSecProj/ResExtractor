@@ -8,7 +8,7 @@ common config, app specific configuration should reside in related module.
 import collections
 
 Config ={
-    "aapt": "./libs/bin/aapt-30.0.1",
+    "aapt": "./libs/bin/aapt2",
     "aapt_ubuntu": "./libs/bin/ubuntu_aapt",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
     "logging_file": "extract_info.json",
