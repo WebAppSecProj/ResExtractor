@@ -10,5 +10,4 @@
 * [Apps Geyser](AppsGeyser)
 * [Ofcms](Ofcms)
 * [App Inventor](AppInventor)
-* [AppYet](AppYet)
-* [GoodBarber](GoodBarber)
+* [NativeScript](NativeScript.md)

@@ -11,7 +11,7 @@
 |7| [Framework 7](http://www.idangero.us/framework7)  | - | - | - | - | HTML, CSS and JS only |
 |8| [React Native](http://www.reactnative.com/)  | - | - | - | - | React | 
 |9| [jQuery Mobile](https://jquerymobile.com/)  | - | - | - | - | HTML5, jQuery | 
-|10| [Native Script](https://www.nativescript.org/)  | - | - | - | - | JavaScript |
+|10| [Native Script](https://www.nativescript.org/)  | Y | N | Y | N | JavaScript |
 |11| [Famous](http://famous.org/)  | - | - | - | - | WebGL, AngularJS |
 |12| [Intel XDK](https://software.intel.com/en-us/intel-xdk)  | - | - | - | - | depreciated |
 |13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | - | - | - | - | 

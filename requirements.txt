@@ -10,5 +10,5 @@ bs4
 multimethod
 lxml
 apkutils
-Wappalyzer
+python-Wappalyzer
 pyDes

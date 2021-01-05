@@ -7,7 +7,7 @@ common config, app specific configuration should reside in related module.
 
 import collections
 
-Config ={
+Config = {
     "aapt": "./libs/bin/aapt-30.0.1",
     "aapt_ubuntu": "./libs/bin/ubuntu_aapt",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
@@ -33,6 +33,6 @@ Config ={
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
-        ("libs.modules.GoodBarber.GoodBarber.py", "GoodBarber"),
+        ("libs.modules.NativeScript.NativeScript", "NativeScript"),
     ]),
 }
