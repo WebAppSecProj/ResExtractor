@@ -34,5 +34,6 @@ Config = {
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
+        ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
     ]),
 }
