@@ -43,22 +43,22 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     def _format_working_folder(self, working_folder):
         if os.path.isabs(working_folder):
-            extract_folder = os.path.join(working_folder, self.hash)
+            extract_folder = os.path.join(working_folder, self.hash, Config.Config["local_res_folder"])
         else:
-            extract_folder = os.path.join(os.getcwd(), working_folder, self.hash)
+            extract_folder = os.path.join(os.getcwd(), working_folder, self.hash, Config.Config["local_res_folder"])
         return extract_folder
 
     def _dump_info(self, extract_folder, launch_path):
         info = {"detect_file": self.detect_file, "start_page": launch_path}
-        json.dump(info, open(os.path.join(extract_folder, Config.Config["logging_file"]), 'w'))
+        json.dump(info, open(os.path.join(extract_folder, Config.Config["local_res_info"]), 'w', encoding='utf-8'), ensure_ascii=False)
         return
 
     # find signature
     def _find_main_activity(self, sig):
         if platform.system() == 'Darwin':
-            aapt = Config.Config["aapt"]
+            aapt = Config.Config["aapt_osx"]
         elif platform.system() == 'Linux':
-            aapt = Config.Config["aapt_ubuntu"]
+            aapt = Config.Config["aapt_linux"]
 
         proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)

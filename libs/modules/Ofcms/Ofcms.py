@@ -6,9 +6,6 @@ import shutil
 import os
 import base64
 
-import subprocess
-import Config as Config
-
 try:
     import xml.etree.cElementTree as ET
 except ImportError:

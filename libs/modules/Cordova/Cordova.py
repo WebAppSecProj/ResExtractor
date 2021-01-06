@@ -10,7 +10,6 @@ import zipfile
 import shutil
 import subprocess
 import Config as Config
-import re
 
 try:
     import xml.etree.cElementTree as ET
@@ -57,7 +56,7 @@ class Cordova(BaseModule):
 
     def doExtract(self, working_folder):
 
-        extract_folder = os.path.join(os.getcwd(), working_folder, self.hash)
+        extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
         os.makedirs(extract_folder, exist_ok = True)

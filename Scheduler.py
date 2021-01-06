@@ -3,7 +3,7 @@
 import sys
 
 '''
-the scheduler is used to observed the dynamically changed web content
+the scheduler is used to observe the dynamically changed web content
 '''
 
 def main():

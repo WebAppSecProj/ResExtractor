@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--apk-file', required=True, help="The apk files.")
+    parser.add_argument('--apk-file', required=True, help="The apk file.")
     parser.add_argument('--task-name', required=True, help="Provide name of this task, such that we can classify the analysis result.")
 
     args = parser.parse_args()

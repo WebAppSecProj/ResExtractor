@@ -44,7 +44,7 @@ It is equivalent to creating a new label folder under the local web resource fol
 6. `run` is the core function of `demo`, `run` can update all urls in all URL store files.
 
 ```python
-from demo import *
+from RemoteExtractor import *
 if __name__ == "__main__":
     a = Runner(r'The file path that stores the URL,only support csv type')
     a.add_websource(DirInput(r'folder that stores local web resources'),"The tag you want to set")

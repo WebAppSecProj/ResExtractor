@@ -8,13 +8,20 @@ common config, app specific configuration should reside in related module.
 import collections
 
 Config ={
-    "aapt": "./libs/bin/aapt2",
-    "aapt_ubuntu": "./libs/bin/ubuntu_aapt",
+    "aapt_osx": "./libs/bin/aapt2-osx",
+    "aapt_linux": "./libs/bin/aapt2-linux",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
-    "logging_file": "extract_info.json",
+
     "working_folder": "working_folder",
+    "local_res_folder": "localres",
+    "local_res_info": "local_res_info.json",
+    "remote_res_folder": "remoteres",
+    "remote_res_info": "remote_res_info.json",
+
     "log_folder": "Logger",
+
     "server_port": 8081,
+
     "modules": collections.OrderedDict([
         ("libs.modules.DCloud.DCloud", "DCloud"),
         ("libs.modules.APICloud.APICloud", "APICloud"),
@@ -28,14 +35,14 @@ Config ={
         ("libs.modules.AppInventor.AppInventor", "AppInventor"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
-        # add this module until the problem solved
+        # enable this module until the problem solved
         # ("libs.modules.AppYet.AppYet", "AppYet"),
         ("libs.modules.Ofcms.Ofcms", "Ofcms"),
+        ("libs.modules.NativeScript.NativeScript", "NativeScript"),
+        ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
-        ("libs.modules.NativeScript.NativeScript", "NativeScript"),
-        ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
     ]),
 
 }

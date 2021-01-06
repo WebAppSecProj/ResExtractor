@@ -5,9 +5,6 @@ import logging
 import shutil
 import os
 
-import subprocess
-import Config as Config
-
 from libs.modules.BaseModule import BaseModule
 
 try:
