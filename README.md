@@ -49,6 +49,24 @@ $ python3 ExtractorBatch.py path_to_the_directory
 $ python3 Extractor.py path_to_the_file
 ```
 
+# layout of the folder
+```python
+├─working folder
+│  ├─task name
+│  │  ├─module name  
+│  │  │  ├─00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of app)  
+│  │  │  │  ├─local res 
+│  │  │  │  ├─date1 
+│  │  │  │  │  ├─aaa95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url1) 
+│  │  │  │  │  │  ├─remote res 
+│  │  │  │  │  ├─bba95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url2)
+│  │  │  │  │  │  ├─remote res 
+│  │  │  │  ├─date2
+│  │  │  │  │  ├─aaa95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url1)  
+│  │  │  │  │  │  ├─remote res 
+│  │  │  │  │  ├─bba95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url2)
+│  │  │  │  │  │  ├─remote res 
+```
 
 # HOWTO Debug
 1. Use ExtractorJanus.py and keep all apk files (set `need_to_delete_apk' flag to True)

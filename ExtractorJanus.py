@@ -11,7 +11,6 @@ import json
 import random
 import hashlib
 from contextlib import closing
-import zipfile
 
 from Config import Config
 import Checker
@@ -23,9 +22,9 @@ log = logging.getLogger(__name__)
 stats = Stats.Stats()
 
 JanusConfig = {
-    "janus_output_dir": os.path.join(os.getcwd(), "janusLogger"),
-    "file_list_info_logger": os.path.join(os.getcwd(), "janusLogger", "file_list_info.txt"),
-    "apk_folder": os.path.join(os.getcwd(), "janusLogger", "apks"),
+    "janus_output_dir": Config["log_folder"],
+    "file_list_info_logger": os.path.join(Config["log_folder"], "janus_file_list_info.txt"),
+    "apk_folder": os.path.join(Config["log_folder"], "apks"),
     "size_threshold": 100,      # the threshold of the apk file, file size over this quota will not be downloaded.
     "market": ["huawei"],
     "market_list": ["googleplay", "apkpure", "yandex", "uptodown", "wandoujia", "baidu", "360", "qq", "appchina", "eoe",
@@ -210,17 +209,17 @@ class DownloadAndExtract:
                     log.info("module {} found in this application".format(Config["modules"][to_check_module_name]))
                     stats.add_entity(target_check.__class__)
 
-                    tar_module_folder = os.path.join(os.getcwd(), Config["working_folder"],
+                    tar_module_folder = os.path.join(os.getcwd(), Config["working_folder"], Config["task_name"],
                                                      Config["modules"][to_check_module_name])
                     if not os.path.exists(tar_module_folder):
-                        os.mkdir(tar_module_folder)
+                        os.makedirs(tar_module_folder)
 
                     tar_extract_folder = os.path.join(tar_module_folder, tar_app_sha1)
                     if not os.path.exists(tar_extract_folder):
-                        os.mkdir(tar_extract_folder)
+                        os.makedirs(tar_extract_folder)
 
                     try:
-                        target_check.doExtract(tar_extract_folder)
+                        target_check.doExtract(tar_module_folder)
                     except:
                         log.error("process error: {}".format(tar_app_sha1))
                         # exit(0)
@@ -352,9 +351,12 @@ def parse_args():
     parser.add_argument('--end-date', help="End date of the query.")
     parser.add_argument('--market', type=str, help="APP market in query. Huawei APP market is set if no argument supplemented; Use `,' to split multiple markets; Use `all' to query all markets.")
     parser.add_argument('--show-market', action='store_true', help="To list supported APP markets.")
+    parser.add_argument('--task-name', required=True, help="Provide name of this task, such that we can classify the analysis result.")
 
     args = parser.parse_args()
     JanusConfig["secret_key"] = args.secret_key
+
+    Config["task_name"] = args.task_name
 
     if args.target_date and (args.start_date or args.end_date):
         log.error("overlapping date setting")

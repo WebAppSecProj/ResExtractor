@@ -5,7 +5,7 @@ import Config
 import importlib
 import logging
 import os
-import zipfile
+import argparse
 import libs.Stats as Stats
 
 import Checker
@@ -15,36 +15,37 @@ log = logging.getLogger(__name__)
 
 stats = Stats.Stats()
 
-def doCheck(file_in_check):
+def doCheck(file_in_check, task_name):
 
     distill_modules = []
     # load each module
-    for m in Config.Config["modules"].keys():
-        module = getattr(
-            importlib.import_module(m),
-            Config.Config["modules"][m]
+    for k in Config.Config["modules"].keys():
+        m = getattr(
+            importlib.import_module(k),
+            Config.Config["modules"][k]
         )
-
         # TODO:: verify each module
-        if getattr(module, "doSigCheck") and getattr(module, "doExtract"):
-            distill_modules.append(module(file_in_check, "android"))
+        if getattr(m, "doSigCheck") and getattr(m, "doExtract"):
+            mod_inst = m(file_in_check, "android")
+            if mod_inst.doSigCheck():
+                stats.add_entity(mod_inst.__class__)
+                logging.info("{} signature Match".format(mod_inst.__class__))
+                extract_folder, launch_path = mod_inst.doExtract(os.path.join(Config.Config["working_folder"], task_name, Config.Config["modules"][k]))
+                log.info("{} is extracted to {}, the start page is {}".format(file_in_check, extract_folder, launch_path))
 
-    for m in distill_modules:
-        if m.doSigCheck():
-            stats.add_entity(m.__class__)
-            logging.info("{} signature Match".format(m.__class__))
-            extract_folder, launch_path = m.doExtract(Config.Config["working_folder"])
-            log.info("{} is extracted to {}, the start page is {}".format(file_in_check, extract_folder, launch_path))
-
-    # fork the service ?
-    # fork the webdriver
     return
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--apk-folder', required=True, help="Folder contains apk files.")
+    parser.add_argument('--task-name', required=True, help="Provide name of this task, such that we can classify the analysis result.")
+
+    args = parser.parse_args()
+
     if Checker.doEnvCheck() == False:
         sys.exit(1)
 
-    for dirpath, dirnames, ifilenames in os.walk(sys.argv[1]):
+    for dirpath, dirnames, ifilenames in os.walk(args.apk_folder):
         for fs in ifilenames:
             file_in_check = os.path.join(dirpath, fs)
             if not os.path.isfile(file_in_check):
@@ -52,7 +53,7 @@ def main():
             log.info(file_in_check)
             if Checker.doAPKCheck(file_in_check):
                 stats.add_entity()
-                doCheck(file_in_check)
+                doCheck(file_in_check, args.task_name)
 
     stats.doState()
 

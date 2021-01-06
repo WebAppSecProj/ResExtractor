@@ -7,12 +7,13 @@ common config, app specific configuration should reside in related module.
 
 import collections
 
-Config = {
-    "aapt": "./libs/bin/aapt-30.0.1",
+Config ={
+    "aapt": "./libs/bin/aapt2",
     "aapt_ubuntu": "./libs/bin/ubuntu_aapt",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
     "logging_file": "extract_info.json",
     "working_folder": "working_folder",
+    "log_folder": "Logger",
     "server_port": 8081,
     "modules": collections.OrderedDict([
         ("libs.modules.DCloud.DCloud", "DCloud"),
@@ -33,7 +34,7 @@ Config = {
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
-        ("libs.modules.NativeScript.NativeScript", "NativeScript"),
-        ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
     ]),
+    "task_name": "",
+
 }
