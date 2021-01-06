@@ -34,7 +34,8 @@ Config ={
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.NativeScript.NativeScript", "NativeScript"),
+        ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
     ]),
-    "task_name": "",
 
 }
