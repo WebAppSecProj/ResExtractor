@@ -81,7 +81,7 @@ class DCloud(BaseModule):
             launch_path = j['launch_path']
             self._dump_info(extract_folder, j['launch_path'])
         except:
-            with open(os.path.join(os.getcwd(), Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
+            with open(os.path.join(os.getcwd(), Config.Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
                 fwh.write(self.detect_file)
             fwh.close()
 

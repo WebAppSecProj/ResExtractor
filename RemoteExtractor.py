@@ -127,16 +127,28 @@ class Runner():
                 self.monitor.remove(monitor)
             except Exception as e:
                 print("Monitor {} Error".format(e))
-    
+
+
+RemoteExtractorConfig = {
+    "benign_url_list": ["db/benign_url/CN.csv", "db/benign_url/US.csv", "db/benign_url/my_filter.txt"],
+}
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--task-name', required=True, help="Provide name of the task, such that we can reach the local resource.")
     args = parser.parse_args()
 
-    if not os.path.exists(os.path.join(Config.Config["working_folder"], args.task_name)):
+    target_folder = os.path.join(Config.Config["working_folder"], args.task_name)
+    if not os.path.exists(target_folder):
         log.error("no such task `{}` exist".format(args.task_name))
         exit(1)
+
+    # walk the local resource folder to get urls.
+    for m in os.listdir(target_folder):                         # in the 1st round iteration, I get module folder
+        for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I get the app folder.
+            log.info(os.path.join(target_folder, m, inst))
+            # retrieve the resource.
 
 
 
