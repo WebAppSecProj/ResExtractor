@@ -102,8 +102,10 @@ $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 │  │  ├─module name  
 │  │  │  ├─00a95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of the app)  
 │  │  │  │  ├─localres
+│  │  │  │  |  ├─local_res_info.json
 │  │  │  │  |  ├─local res 
 │  │  │  │  ├─remoteres
+│  │  │  │  |  ├─remote_res_info.csv 
 │  │  │  │  │  ├─date1 
 │  │  │  │  │  │  ├─aaa95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url1) 
 │  │  │  │  │  │  │  ├─remote res 

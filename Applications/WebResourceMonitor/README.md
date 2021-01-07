@@ -1,6 +1,6 @@
 ## Web Resource Monitor 
 
-Web Monitor is designed for download remote source, query sever information and web  resource changes.
+Web Monitor is designed for download remote source, query sever information and web resource changes.
 
 ### Folder structure:
 

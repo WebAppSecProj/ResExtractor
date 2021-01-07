@@ -9,6 +9,8 @@ Created on Mon Dec 28 11:30:59 2020
 import os, sys, logging, argparse, csv, re
 
 import Config as Config
+import datetime
+import shutil
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -63,7 +65,7 @@ class Web_resource():
                     for i in row:
                         for j in self.allurl.copy():
                             if i in j:
-                                log.info("url removed: {}".format(j))
+                                log.info("url removed: {} by filter: {}".format(j, topfile))
                                 self.allurl.remove(j)
             except:
                 pass
@@ -74,7 +76,7 @@ class Web_resource():
                     for i in row:
                         for j in self.allurl.copy():
                             if i in j:
-                                log.info("url removed: {}".format(j))
+                                log.info("url removed: {} by filter: {}".format(j, topfile))
                                 self.allurl.remove(j)
             except:
                 pass
@@ -112,9 +114,8 @@ class Web_resource():
                         f_csv.writerow([self._appname, i, self._dir])
 
 class Runner():
-    def __init__(self, local_res_pwd, remote_res_pwd):
+    def __init__(self, local_res_pwd):
         self._local_res_pwd = local_res_pwd                 # local res path
-        self._remote_res_pwd = remote_res_pwd               # remote res path
         self._filter =[]                                    # url filter
 
     def add_filter(self, filters):
@@ -123,7 +124,7 @@ class Runner():
         '''
         self._filter.append(filters)
 
-    def parse(self):
+    def parse(self, logging_file):
         '''
         Distill urls
         '''
@@ -131,16 +132,13 @@ class Runner():
         for i in self._filter:
             r.del_top(i)
 
-        logging_file = os.path.join(
-            self._remote_res_pwd,
-            Config.Config["remote_res_info"],
-        )
-
-        log.info("{}".format(r.allurl))
+        log.info("distilled url: {}".format(r.allurl))
         r.dump(logging_file)
 
 RemoteExtractorConfig = {
-    "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
+    # "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
+    # eh.., I find aliyun.com etc. in this list.
+    "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/my_filter.txt"],
 }
 
 if __name__ == "__main__":
@@ -161,11 +159,23 @@ if __name__ == "__main__":
             log.info("working on {}".format(working_inst))
 
             # start to retrieve the remote resource.
-            r = Runner(
-                os.path.join(working_inst, Config.Config["local_res_folder"]),
-                os.path.join(working_inst, Config.Config["remote_res_folder"])
-            )
-            # eh.., I find aliyun.com etc. in this list.
+            local_res_folder = os.path.join(working_inst, Config.Config["local_res_folder"])
+            remote_res_folder = os.path.join(working_inst, Config.Config["remote_res_folder"])
+            # clean
+            shutil.rmtree(remote_res_folder, ignore_errors=True)
+
+            r = Runner(local_res_folder)
             for f in RemoteExtractorConfig["benign_url_list"]:
                 r.add_filter(os.path.join(os.path.dirname(os.path.realpath(__file__)), f))
-            r.parse()
+
+            logging_file = os.path.join(
+                remote_res_folder,
+                Config.Config["remote_res_info"],
+            )
+            r.parse(logging_file)
+
+            # retrieve the first web resource
+            web_resource_folder = os.path.join(remote_res_folder, str(datetime.date.today()))
+            os.makedirs(web_resource_folder, exist_ok=True)
+
+
