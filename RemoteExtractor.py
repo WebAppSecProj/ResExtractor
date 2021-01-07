@@ -39,6 +39,8 @@ class Web_resource():
                         if any(f.endswith(i) for i in self._notfile):
                             continue
                         fp = os.path.join(root, f)
+                        if not os.path.isfile(fp):
+                            continue
                         try:
                             with open(fp, 'r', encoding='utf-8') as fs:
                                 self._url_list.extend(re.findall(self._HTTP_REGEX, fs.read()))
@@ -57,20 +59,22 @@ class Web_resource():
             try:
                 with open(topfile, 'r') as csvfile:
                     reader = csv.DictReader(csvfile)
-                    column = [row['web'] for row in reader]
-                    for i in column:
+                    row = [row['web'] for row in reader]
+                    for i in row:
                         for j in self.allurl.copy():
                             if i in j:
+                                log.info("url removed: {}".format(j))
                                 self.allurl.remove(j)
             except:
                 pass
         if topfile.endswith(".txt"):
             try:
                 with open(topfile, 'r') as txt:
-                    column = txt.read().splitlines()
-                    for i in column:
+                    row = txt.read().splitlines()
+                    for i in row:
                         for j in self.allurl.copy():
                             if i in j:
+                                log.info("url removed: {}".format(j))
                                 self.allurl.remove(j)
             except:
                 pass
