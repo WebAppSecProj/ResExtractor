@@ -27,6 +27,7 @@ Reference:
 1) http://cordova.axuer.com/docs/zh-cn/latest/guide/support/index.html
 '''
 
+
 # extracting the starting page from "res/xml/config.xml" in "<content src="index.html" />"
 
 class Cordova(BaseModule):
@@ -43,11 +44,11 @@ class Cordova(BaseModule):
                     flag2 = flag2 + 1
                 elif f == "assets/www/cordova_plugins.js":
                     flag2 = flag2 + 1
-            if flag1+flag2 == 3:
+            if flag1 + flag2 == 3:
                 return True
             return False
 
-            #return self._find_main_activity("cordova.MainActivity")
+            # return self._find_main_activity("cordova.MainActivity")
         elif self.host_os == "ios":
             log.error("not support yet.")
             return False
@@ -59,9 +60,9 @@ class Cordova(BaseModule):
         extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
-        os.makedirs(extract_folder, exist_ok = True)
+        os.makedirs(extract_folder, exist_ok=True)
         tmp_folder = os.path.join(os.getcwd(), extract_folder, "tmp")
-        os.makedirs(tmp_folder, exist_ok = True)
+        os.makedirs(tmp_folder, exist_ok=True)
 
         zf = zipfile.ZipFile(self.detect_file, 'r')
 
@@ -70,33 +71,34 @@ class Cordova(BaseModule):
         for f in zf.namelist():
             if f.startswith("assets/www/"):
 
-                td = os.path.dirname(os.path.join(extract_folder, f[len("assets/www/"): ]))
+                td = os.path.dirname(os.path.join(extract_folder, f[len("assets/www/"):]))
                 if not os.access(td, os.R_OK):
                     os.makedirs(td)
-                with open(os.path.join(extract_folder, f[len("assets/www/"): ]), "wb") as fwh:
+                with open(os.path.join(extract_folder, f[len("assets/www/"):]), "wb") as fwh:
                     fwh.write(zf.read(f))
             elif f == "res/xml/config.xml":
 
                 # extracting the starting page in "<content src="index.html" />" from "res/xml/config.xml"
                 # Ugly coding, I would like to use ElementTree instead.
-                proc = subprocess.Popen("{} dump xmltree '{}' '{}'".format(Config.Config["aapt_ubuntu"], self.detect_file, "res/xml/config.xml"),
-                                        shell=True, stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc = subprocess.Popen(
+                    "{} dump xmltree '{}' '{}'".format(Config.Config["aapt"], self.detect_file, "res/xml/config.xml"),
+                    shell=True, stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 r = (proc.communicate()[0]).decode()
-                #只匹配标签src可能存在多个答案，因此还需要配合标签content来确定，应该是标签content之后的第一个src的值才是起始页真正地址
+                # 只匹配标签src可能存在多个答案，因此还需要配合标签content来确定，应该是标签content之后的第一个src的值才是起始页真正地址
                 launch_path = "no found"
                 contid = r.find("E: :content")
                 if contid >= 0:
-                    cont = r[contid+11:]
+                    cont = r[contid + 11:]
                     srcid = cont.find("A: src")
                     if srcid >= 0:
                         launch_path = (cont[srcid:].split("\""))[1]
 
-                #只匹配标签src可能存在多个答案
-                #matchObj = re.match(r'(.*)A: src=\"(.*?)\" \((.*)', r, re.S)
-                #if matchObj:
+                # 只匹配标签src可能存在多个答案
+                # matchObj = re.match(r'(.*)A: src=\"(.*?)\" \((.*)', r, re.S)
+                # if matchObj:
                 #    launch_path = matchObj.group(2)
-                #else:
+                # else:
                 #    log.error("internal error")
 
         self._dump_info(extract_folder, launch_path)
@@ -106,7 +108,9 @@ class Cordova(BaseModule):
 
 
 def main():
-    f = "./test_case/Cordova/bjgas.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+    f = "./test_case/Cordova/bjgas.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+    f = "./test_case/Cordova/a39d09b5d96bbe2715acce62c26788eb7b6a84ce0ba67ee619ff1f1c8d7f0713.apk"  # App Yourself：launcher activity start with "net.ays"
+    f = "./test_case/Cordova/a0812e6bc398784bda36979eae895775da42ca3b6958b134784cd4dc7a99455d.apk"  # hk.com.appbuilder: launcher activity start with "hk.com.appbuilder.cms"
     cordova = Cordova(f, "android")
     if cordova.doSigCheck():
         logging.info("cordova signature Match")
@@ -115,6 +119,7 @@ def main():
         log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
 
     return
+
 
 if __name__ == "__main__":
     sys.exit(main())

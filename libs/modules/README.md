@@ -2,51 +2,51 @@
 
 | # |  Framework   | Local Resource (Android)  | Remote Resource (Android) | Local Resource (iOS) | Remote Resource (iOS) | Prerequisites |
 | ---- |  :----:  | :----:  | :----:  | :----:  | :----: | :----: |
-|1| [DCloud](https://dcloud.io/)  | Y | - | - | - | 
+|1| [DCloud](https://dcloud.io/)  | Y | - | - | - |
 |2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - |
-|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - | 
-|4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - | 
+|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - |
+|4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - |
 |5| [Ionic](https://ionicframework.com/)  | Y | N | - | - | AngularJS (optional) |
 |6| [Onsen UI](https://onsen.io/)  | Y | N | - | - | AngularJS (optional) |
-|7| [Framework 7](http://www.idangero.us/framework7)  | - | - | - | - | HTML, CSS and JS only |
+|7| [Framework 7](http://www.idangero.us/framework7)  | Y(same to Cordova) | N(same to Cordova) | - | - | HTML, CSS and JS only |
 |8| [React Native](http://www.reactnative.com/)  | - | - | - | - | React | 
 |9| [jQuery Mobile](https://jquerymobile.com/)  | - | - | - | - | HTML5, jQuery | 
 |10| [Native Script](https://www.nativescript.org/)  | Y | N | Y | N | JavaScript |
-|11| [Famous](http://famous.org/)  | - | - | - | - | WebGL, AngularJS |
+|11| [Famous](http://famous.org/)  | Y(same to Cordova) | N(same to Cordova) | - | - | WebGL, AngularJS |
 |12| [Intel XDK](https://software.intel.com/en-us/intel-xdk)  | - | - | - | - | depreciated |
-|13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | - | - | - | - | 
-|14| [Kendo UI](http://www.telerik.com/kendo-ui)  | - | - | - | - | 
-|15| [Mobile Angular UI](http://mobileangularui.com/)  | - | - | - | - | 
-|16| [Monaca](https://monaca.io/)  | - | - | - | - | 
-|17| [Trigger.IO](https://trigger.io/)  | Y | Y | - | - | 
-|18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - | 
-|19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N | 
-|20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N | 
-|21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - | 
-|22| [Appinventor](http://appinventor.mit.edu/explore/)  | Y | Y | N | N | 
-|23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N | 
-|24| [Como](http://www.como.com/)  | - | - | - | - | 
-|25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - | 
-|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - | 
-|27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - | 
-|28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - | 
-|29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - | 
-|30| [Shoutem](http://www.shoutem.com/)  | - | - | - | - | 
-|31| [App Yourself](http://appyourself.net/)  | - | - | - | - | 
-|32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - | 
-|33| [Apps Builder](http://www.apps-builder.com/)  | - | - | - | - | 
-|34| [Appmakr](http://appmakr.com/)  | - | - | - | - | 
-|35| [appery.io](https://appery.io/)  | - | - | - | - | 
-|36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - | 
-|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - | 
-|38| [App Gyver](http://www.appgyver.io)  | - | - | - | - | 
-|39| [Appconfector](http://www.appconfector.de)  | - | - | - | - | 
-|40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - | 
-|41| [Appsme](http://www.appsme.com/)  | - | - | - | - | 
-|42| [App Titan](http://www.apptitan.de/)  | - | - | - | - | 
-|43| [Applicationcraft](http://www.applicationcraft.com/)  | - | - | - | - | 
-|44| [Paradise Apps](http://www.paradiseapps.net/)  | - | - | - | - | 
-|45| [Eachscape](http://eachscape.com/)  | - | - | - | - | 
+|13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|14| [Kendo UI](http://www.telerik.com/kendo-ui)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|15| [Mobile Angular UI](http://mobileangularui.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|16| [Monaca](https://monaca.io/)  | - | - | - | - |
+|17| [Trigger.IO](https://trigger.io/)  | Y | Y | - | - |
+|18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - |
+|19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N |
+|20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N |
+|21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - |
+|22| [Appinventor](http://appinventor.mit.edu/explore/)  | Y | Y | N | N |
+|23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N |
+|24| [Como](http://www.como.com/)  | - | - | - | - |
+|25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - |
+|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - |
+|27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
+|28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
+|29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
+|30| [Shoutem](http://www.shoutem.com/)  | - | - | - | - |
+|31| [App Yourself](http://appyourself.net/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - |
+|33| [Apps Builder](http://www.apps-builder.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|34| [Appmakr](http://appmakr.com/)  | - | - | - | - |
+|35| [appery.io](https://appery.io/)  | - | - | - | - |
+|36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
+|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
+|38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
+|39| [Appconfector](http://www.appconfector.de)  | - | - | - | - |
+|40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
+|41| [Appsme](http://www.appsme.com/)  | - | - | - | - |
+|42| [App Titan](http://www.apptitan.de/)  | - | - | - | - |
+|43| [Applicationcraft](http://www.applicationcraft.com/)  | - | - | - | - |
+|44| [Paradise Apps](http://www.paradiseapps.net/)  | - | - | - | - |
+|45| [Eachscape](http://eachscape.com/)  | - | - | - | - |
 |46| [Xamarin](https://docs.microsoft.com/zh-cn/xamarin/)  | - | - | - | - | .NET |
 |47| [PhoneGap](https://phonegap.com/)  | - | - | - | - | HTML, CSS and JavaScript |
 |48| [Ionic Capacitor](https://capacitorjs.com/)  | - | - | - | - |  |
@@ -63,8 +63,7 @@
 |59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
 |61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
-
-
+|62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | - | - |  |
 
 ```
 Y: Module available.
