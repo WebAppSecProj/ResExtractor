@@ -6,6 +6,7 @@ import logging
 import subprocess
 import zipfile
 import os
+import Config
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -73,7 +74,14 @@ def doEnvCheck():
         log.error("java runtime required.")
         return False
 
-    # ensure aapt can work well?
+    # ensure Logger exist
+    if not os.path.exists(Config.Config["log_folder"]):
+        os.makedirs(Config.Config["log_folder"], exist_ok=True)
+
+    # ensure working_folder exist
+    if not os.path.exists(Config.Config["working_folder"]):
+        os.makedirs(Config.Config["working_folder"], exist_ok=True)
+
 
     return True
 
