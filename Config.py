@@ -7,7 +7,7 @@ common config, app specific configuration should reside in related module.
 
 import collections
 
-Config ={
+Config = {
     "aapt_osx": "./libs/bin/aapt2-osx",
     "aapt_linux": "./libs/bin/aapt2-linux",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
@@ -43,6 +43,7 @@ Config ={
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
     ]),
 
 }
