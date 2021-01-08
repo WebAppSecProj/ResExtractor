@@ -255,32 +255,6 @@ class HTML:
             return re.findall('https?://(.*?)/', self.getname)[0]
         return self.getname
 
-    @property
-    def alive(self):
-        """
-        test if the url is alive
-        """
-        if self.__alive == None:
-            try:
-                response = urllib.request.urlopen(self.getname, timeout=3)
-            except IOError:
-                self.__alive = False
-                return False
-            except ssl.CertificateError:
-                self.__alive = False
-                return False
-            else:
-                code = response.getcode()
-                if code == 404:
-                    self.__alive = False
-                    return False
-                elif code == 403:
-                    self.__alive = False
-                    return False
-                else:
-                    self.__alive = True
-                    return True
-        return self.__alive
 
     @property
     def get_content(self):
@@ -454,51 +428,6 @@ class HTML:
                 print('{}匹配失败'.format(i), '原因:', e)
         return final_list
     
-    def scarpy_web(self, appname, path):
-        if not self.alive:
-            return False
-        newpath = os.path.join(path, appname)
-        if not os.path.isdir(newpath):
-            os.makedirs(newpath)
-            
-        content = self.get_content
-        if content == None:
-            return False
-        
-        "save the main html"
-        if self.getname.endswith('.html'):
-            self.download_file(self.getname, newpath)
-        else:
-            try:
-                super_urlretrieve(
-                    self.getname,
-                    os.path.join(newpath, self.getname.split('/')[-1] + ".html")
-                )
-                    #'{}{}.{}'.format(newpath+'\\',self.getname.split('/')[-1],'html'))
-            except:
-                pass
-                
-        "save css file"
-        result = self.css_list
-        _ = self.list_download(result, newpath)
-        with open(os.path.join(newpath, 'css.txt'), 'w+') as f:
-            for line in result:
-                f.write(line + '\n')
-
-        lists = self.js_list
-        _ = self.list_download(lists, newpath)
-        with open(os.path.join(newpath, 'js.txt'), 'w+') as f:
-            for line in lists:
-                f.write(line + '\n')
-    
-        pic_list = self.img_list
-        _ = self.list_download(pic_list, newpath)
-        with open(os.path.join(newpath, 'img.txt'), 'w+') as f:
-            for line in pic_list:
-                f.write(line + '\n')
-        
-        return True
-        
 
 def test():
     htest = HTML("https://blog.csdn.net/by_side_with_sun/article/details/93859318")
