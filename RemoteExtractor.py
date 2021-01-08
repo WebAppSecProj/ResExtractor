@@ -13,6 +13,7 @@ import datetime
 import shutil
 from deprecated.sphinx import deprecated
 from hashlib import md5
+from urllib.parse import urlparse, urljoin
 
 from libs.WebUtil import WebUtil
 
@@ -58,7 +59,6 @@ class Web_resource():
         else:
             return self._url_list
 
-
     def del_top(self, filter_file):
         if self.allurl == None:
             return None
@@ -66,10 +66,17 @@ class Web_resource():
             try:
                 with open(filter_file, 'r') as csvfile:
                     reader = csv.DictReader(csvfile)
-                    row = [row['web'] for row in reader]
+                    row = [col['web'] for col in reader]
                     for i in row:
                         for j in self.allurl.copy():
-                            if i in j:
+                            # if i.find("opensource.org") != -1 and j.find("opensource.org") != -1:
+                            #     log.info("FOO")
+                            if not i.lower().startswith("www."):
+                                i = "www." + i
+                            k = urlparse(j).netloc
+                            if not k.lower().startswith("www."):
+                                k = "www." + k
+                            if i.lower() == k.lower():
                                 log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
@@ -80,7 +87,12 @@ class Web_resource():
                     row = txt.read().splitlines()
                     for i in row:
                         for j in self.allurl.copy():
-                            if i in j:
+                            if not i.lower().startswith("www."):
+                                i = "www." + i
+                            k = urlparse(j).netloc
+                            if not k.lower().startswith("www."):
+                                k = "www." + k
+                            if i.lower() == k.lower():
                                 log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
@@ -124,9 +136,9 @@ class Web_resource():
 
 
 RemoteExtractorConfig = {
-    # "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
+    "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
     # eh.., I find aliyun.com etc. in this list.
-    "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/my_filter.txt"],
+    #"benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/my_filter.txt"],
 }
 
 if __name__ == "__main__":

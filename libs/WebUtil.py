@@ -53,7 +53,7 @@ class WebUtil:
         '''
         wget --spider --no-check-certificate https://wzpa2.lanchengzxl.com/1 
         '''
-        proc = subprocess.Popen("wget --spider --timeout=10 --no-check-certificate {}".format(self._url), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("wget --spider --timeout=10 --tries=3 --no-check-certificate {}".format(self._url), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
         if r.find("200") == -1:
