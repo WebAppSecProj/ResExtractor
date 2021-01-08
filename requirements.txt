@@ -12,3 +12,4 @@ lxml
 apkutils
 python-Wappalyzer
 pyDes
+deprecated

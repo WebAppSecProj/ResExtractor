@@ -16,10 +16,13 @@ import sys
 import urllib
 import shutil
 import ssl
+import socket
+import urllib.request
+import urllib.parse
+import subprocess
 
-from hashlib import md5
 from Wappalyzer import Wappalyzer, WebPage
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -29,38 +32,45 @@ log = logging.getLogger(__name__)
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-class HTMLUtil:
+class WebUtil:
     def __init__(self, url):
-        self._url = url
+        self._url = url                         #
+        self._is_active = None
+        self._env = None
+        self._init()
+
+    def _init(self):
+        proc = subprocess.Popen("wget --version", shell=True, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        r = (proc.communicate()[1]).decode()
+        if r.find("not found") != -1:
+            log.error("wget required.")
+            self._env = False
+            return
+        else:
+            self._env = True
+
+        '''
+        wget --spider --no-check-certificate https://wzpa2.lanchengzxl.com/1 
+        '''
+        proc = subprocess.Popen("wget --spider --timeout=10 --no-check-certificate {}".format(self._url), shell=True, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        r = (proc.communicate()[1]).decode()
+        if r.find("200") == -1:
+            log.error("server down.")
+            self._is_active = False
+        else:
+            self._is_active = True
 
     @property
-    def alive(self):
-        """
-        test if the url is alive
-        """
-        try:
-            response = urllib.request.urlopen(self._url, timeout=3)
-        except IOError:
-            return False
-        except ssl.CertificateError:
-            return False
-        else:
-            code = response.getcode()
-            if code != 200:
-                return False
-            else:
-                return True
+    def is_active(self):
+        return self._is_active
 
-class WebResourceDownloader:
-    '''
-    Download do download stuff, other thing should be excluded
-    '''
-    def __init__(self, url, storage_path, log_file):
-        self._url = url
-        self._storage_path = os.path.join(storage_path, md5(url.encode('utf-8')).hexdigest())
-        self._config_file = os.path.join(self._storage_path, log_file)
-
-    def _wappalyzer_check(self):
+    @property
+    def server_info(self):
+        '''
+        get server information of the web server
+        '''
         if not self._url.startswith('http'):
             url = "http://" + self._url
         else:
@@ -72,9 +82,10 @@ class WebResourceDownloader:
         except:
             return []
 
-    def _get_ip_info(self):
+    @property
+    def ip_info(self):
         """
-        域名的IP，地理位置
+        get domain information of the domain
         @ return ip, domain, math_location, location
         """
         gheaders = {
@@ -100,50 +111,36 @@ class WebResourceDownloader:
         else:
             return t1[0], t2[0], t2[1], t3[0]
 
-    def scarpy_web(self, appname, path):
-        if not self.alive:
+    def scarpy_web(self, storage_path):
+        '''
+        wget -r -l=1 --no-check-certificate -k --quota=20M https://wzpa2.lanchengzxl.com
+        '''
+
+        if self._env == False or self._is_active == False:
+            log.error("crawl not satisfied")
             return False
-        newpath = os.path.join(path, appname)
-        if not os.path.isdir(newpath):
-            os.makedirs(newpath)
+        # caller should do this job
+        if not os.path.isdir(storage_path):
+            os.makedirs(storage_path)
 
-        content = self.get_content
-        if content == None:
-            return False
+        log.info("start crawling: {}".format(self._url))
+        proc = subprocess.Popen("wget -r -l=1 --no-check-certificate -k --quota=20M {} -P '{}'".format(self._url, storage_path), shell=True, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _ = (proc.communicate()[0]).decode()
 
-        "save the main html"
-        if self.getname.endswith('.html'):
-            self.download_file(self.getname, newpath)
-        else:
-            try:
-                super_urlretrieve(
-                    self.getname,
-                    os.path.join(newpath, self.getname.split('/')[-1] + ".html")
-                )
-                # '{}{}.{}'.format(newpath+'\\',self.getname.split('/')[-1],'html'))
-            except:
-                pass
-
-        "save css file"
-        result = self.css_list
-        _ = self.list_download(result, newpath)
-        with open(os.path.join(newpath, 'css.txt'), 'w+') as f:
-            for line in result:
-                f.write(line + '\n')
-
-        lists = self.js_list
-        _ = self.list_download(lists, newpath)
-        with open(os.path.join(newpath, 'js.txt'), 'w+') as f:
-            for line in lists:
-                f.write(line + '\n')
-
-        pic_list = self.img_list
-        _ = self.list_download(pic_list, newpath)
-        with open(os.path.join(newpath, 'img.txt'), 'w+') as f:
-            for line in pic_list:
-                f.write(line + '\n')
+        log.info("finished")
 
         return True
+
+'''
+#    Download do download stuff, other thing should be excluded
+
+class WebResourceDownloader:
+    def __init__(self, url, storage_path, log_file):
+        self._url = url
+        self._storage_path = os.path.join(storage_path, md5(url.encode('utf-8')).hexdigest())
+        self._config_file = os.path.join(self._storage_path, log_file)
+
 
 
     def doDownload(self):
@@ -188,7 +185,6 @@ class WebResourceDownloader:
                 json.dump(data, f)
             print("------{} download done".format(url))
 
-        '''
 
 def WebMonitor(url, storage_path, appname="foo"):
 
@@ -280,5 +276,5 @@ def WebMonitor(url, storage_path, appname="foo"):
 '''
 
 if __name__ == "__main__":
-    downloader = WebResourceDownloader("https://wzpa2.lanchengzxl.com", "test", "log.json")
-    downloader.doDownload()
+    downloader = WebUtil("https://wzpa2.lanchengzxl.com")
+    downloader.scarpy_web(os.path.join(os.path.dirname(__file__), "test"))

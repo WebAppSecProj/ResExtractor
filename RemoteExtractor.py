@@ -11,6 +11,10 @@ import os, sys, logging, argparse, csv, re
 import Config as Config
 import datetime
 import shutil
+from deprecated.sphinx import deprecated
+from hashlib import md5
+
+from libs.WebUtil import WebUtil
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -54,35 +58,39 @@ class Web_resource():
         else:
             return self._url_list
 
-    def del_top(self, topfile):
+
+    def del_top(self, filter_file):
         if self.allurl == None:
             return None
-        if topfile.endswith(".csv"):
+        if filter_file.endswith(".csv"):
             try:
-                with open(topfile, 'r') as csvfile:
+                with open(filter_file, 'r') as csvfile:
                     reader = csv.DictReader(csvfile)
                     row = [row['web'] for row in reader]
                     for i in row:
                         for j in self.allurl.copy():
                             if i in j:
-                                log.info("url removed: {} by filter: {}".format(j, topfile))
+                                log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
                 pass
-        if topfile.endswith(".txt"):
+        if filter_file.endswith(".txt"):
             try:
-                with open(topfile, 'r') as txt:
+                with open(filter_file, 'r') as txt:
                     row = txt.read().splitlines()
                     for i in row:
                         for j in self.allurl.copy():
                             if i in j:
-                                log.info("url removed: {} by filter: {}".format(j, topfile))
+                                log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
                 pass
 
     @property
-    def remote_url(self):
+    def purified_url(self):
+        return self._notformat_list
+
+    def _purify_url(self):
         if self.allurl == None:
             return None
         self._format_list = []
@@ -94,11 +102,12 @@ class Web_resource():
                 self._notformat_list.append(i)
         return self._format_list, self._notformat_list
 
+
     def dump(self, filepath, method="csv"):
         if self.allurl == None:
             return None
-        if self._notformat_list == None:
-            self.remote_url
+        _, _ = self._purify_url()
+
         if method == "csv":
             if not os.path.exists(filepath):
                 os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -113,27 +122,6 @@ class Web_resource():
                     for i in self._notformat_list:
                         f_csv.writerow([self._appname, i, self._dir])
 
-class Runner():
-    def __init__(self, local_res_pwd):
-        self._local_res_pwd = local_res_pwd                 # local res path
-        self._filter =[]                                    # url filter
-
-    def add_filter(self, filters):
-        '''
-        urls of boilerplate code should be removed
-        '''
-        self._filter.append(filters)
-
-    def parse(self, logging_file):
-        '''
-        Distill urls
-        '''
-        r = Web_resource(self._local_res_pwd)
-        for i in self._filter:
-            r.del_top(i)
-
-        log.info("distilled url: {}".format(r.allurl))
-        r.dump(logging_file)
 
 RemoteExtractorConfig = {
     # "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
@@ -153,8 +141,8 @@ if __name__ == "__main__":
         exit(1)
 
     # walk the local resource folder to get urls.
-    for m in os.listdir(target_folder):                         # in the 1st round iteration, I get module folder
-        for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I get the app folder.
+    for m in os.listdir(target_folder):                         # in the 1st round iteration, I reach the module folder
+        for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I reach the app folder.
             working_inst = os.path.join(target_folder, m, inst)
             log.info("working on {}".format(working_inst))
 
@@ -164,18 +152,31 @@ if __name__ == "__main__":
             # clean
             shutil.rmtree(remote_res_folder, ignore_errors=True)
 
-            r = Runner(local_res_folder)
-            for f in RemoteExtractorConfig["benign_url_list"]:
-                r.add_filter(os.path.join(os.path.dirname(os.path.realpath(__file__)), f))
+            r = Web_resource(local_res_folder)
 
+            # I would like to preserve all urls firstly, such that we can do statistic to find the dominate urls and supplement the `my_filter.txt` file.
             logging_file = os.path.join(
                 remote_res_folder,
                 Config.Config["remote_res_info"],
             )
-            r.parse(logging_file)
+            r.dump(logging_file)
+
+            # then remove top urls
+            for f in RemoteExtractorConfig["benign_url_list"]:
+                r.del_top(os.path.join(os.path.dirname(os.path.realpath(__file__)), f))
+            logging_file = os.path.join(
+                remote_res_folder,
+                Config.Config["filtered_remote_res_info"],
+            )
+            r.dump(logging_file)
 
             # retrieve the first web resource
             web_resource_folder = os.path.join(remote_res_folder, str(datetime.date.today()))
             os.makedirs(web_resource_folder, exist_ok=True)
 
+            for u in r.purified_url:
+                log.info("processing: {}".format(u))
+                downloader = WebUtil(u)
+                downloader.scarpy_web(web_resource_folder)
 
+                # log sth.
