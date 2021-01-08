@@ -13,24 +13,48 @@ import re
 import requests
 import logging
 import sys
+import urllib
+import shutil
+import ssl
+
 from hashlib import md5
 from Wappalyzer import Wappalyzer, WebPage
-import shutil
 from urllib.parse import urlparse
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
 
+# To remove error.
+# urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)>
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
-
-
-class HTML:
+class HTMLUtil:
     def __init__(self, url):
         self._url = url
 
+    @property
+    def alive(self):
+        """
+        test if the url is alive
+        """
+        try:
+            response = urllib.request.urlopen(self._url, timeout=3)
+        except IOError:
+            return False
+        except ssl.CertificateError:
+            return False
+        else:
+            code = response.getcode()
+            if code != 200:
+                return False
+            else:
+                return True
 
 class WebResourceDownloader:
+    '''
+    Download do download stuff, other thing should be excluded
+    '''
     def __init__(self, url, storage_path, log_file):
         self._url = url
         self._storage_path = os.path.join(storage_path, md5(url.encode('utf-8')).hexdigest())
@@ -39,9 +63,11 @@ class WebResourceDownloader:
     def _wappalyzer_check(self):
         if not self._url.startswith('http'):
             url = "http://" + self._url
+        else:
+            url = self._url
         try:
             wappalyzer = Wappalyzer.latest()
-            webpage = WebPage.new_from_url(url)
+            webpage = WebPage.new_from_url(url, verify=False)
             return list(wappalyzer.analyze(webpage))
         except:
             return []
@@ -60,20 +86,69 @@ class WebResourceDownloader:
             return None, None, None, None
         r.encoding = r.apparent_encoding
 
-        return None, None, None, None
-        # TODO: fix the code later
+        # t1[0]: ip
+        # t2[0]: 域名
+        # t3[1]: 数字地址
+        # t3[0]: 物理地址
 
-        domain = re.findall('<span class=\"Whwtdhalf w15-0 lh45\">(.*?)<\/span>', r.text)
-        ips = re.findall('onclick=\"AiWenIpData\(\'(.*?)\'\)\">', r.text)
-        location = re.findall('<span class=\"Whwtdhalf w50-0\">(.*?)<\/span>', r.text)
+        t1 = re.findall('onclick=\"AiWenIpData\(\'(.*?)\'\)\">', r.text)
+        t2 = re.findall('<span class=\"Whwtdhalf w15-0 lh45\">(.*?)<\/span>', r.text)
+        t3 = re.findall('<span class=\"Whwtdhalf w30-0 lh24 tl ml80\">\s+<p>(.*?)<\/p>', r.text)
 
-        return ips[0], domain[3], domain[4], location[1]
+        if len(t2[0]) < 2:
+            return t1[0], t2[0], None, t3[0]
+        else:
+            return t1[0], t2[0], t2[1], t3[0]
+
+    def scarpy_web(self, appname, path):
+        if not self.alive:
+            return False
+        newpath = os.path.join(path, appname)
+        if not os.path.isdir(newpath):
+            os.makedirs(newpath)
+
+        content = self.get_content
+        if content == None:
+            return False
+
+        "save the main html"
+        if self.getname.endswith('.html'):
+            self.download_file(self.getname, newpath)
+        else:
+            try:
+                super_urlretrieve(
+                    self.getname,
+                    os.path.join(newpath, self.getname.split('/')[-1] + ".html")
+                )
+                # '{}{}.{}'.format(newpath+'\\',self.getname.split('/')[-1],'html'))
+            except:
+                pass
+
+        "save css file"
+        result = self.css_list
+        _ = self.list_download(result, newpath)
+        with open(os.path.join(newpath, 'css.txt'), 'w+') as f:
+            for line in result:
+                f.write(line + '\n')
+
+        lists = self.js_list
+        _ = self.list_download(lists, newpath)
+        with open(os.path.join(newpath, 'js.txt'), 'w+') as f:
+            for line in lists:
+                f.write(line + '\n')
+
+        pic_list = self.img_list
+        _ = self.list_download(pic_list, newpath)
+        with open(os.path.join(newpath, 'img.txt'), 'w+') as f:
+            for line in pic_list:
+                f.write(line + '\n')
+
+        return True
+
 
     def doDownload(self):
         shutil.rmtree(self._storage_path, ignore_errors=True)
         os.makedirs(self._storage_path, exist_ok=True)
-
-        h = HTML(self._url)
 
         ip, domain, math_location, location = self._get_ip_info()
         log_data = {
@@ -87,12 +162,13 @@ class WebResourceDownloader:
             "Img_change_date": [],
             "Math_place": math_location,
             "Physical_place": location,
-            "Server_type": self._wappalyzer_check(self._url),
+            "Server_type": self._wappalyzer_check(),
             "Monitor_begin": time.asctime(),
             "Monitor_end": "unknown",
             "Super_change": []
         }
 
+        h = HTMLUtil(self._url)
         if h.alive == False:
             log_data["State"] = "dead"
             log_data["Monitor_end"] = time.asctime()
@@ -100,7 +176,6 @@ class WebResourceDownloader:
                 json.dump(log_data, f)
             log.info("can not access {}".format(self._url))
             return
-
 
         if h.scarpy_web(md5(url.encode('utf-8')).hexdigest(), os.path.join(storage_path, appname)):
             data["State"] = "alive"
@@ -113,6 +188,7 @@ class WebResourceDownloader:
                 json.dump(data, f)
             print("------{} download done".format(url))
 
+        '''
 
 def WebMonitor(url, storage_path, appname="foo"):
 
@@ -201,8 +277,8 @@ def WebMonitor(url, storage_path, appname="foo"):
             print("-------check {} done".format(url))
         return True
 
-
+'''
 
 if __name__ == "__main__":
-    downloader = WebResourceDownloader("https://www.sina.com", "test", "log.json")
+    downloader = WebResourceDownloader("https://wzpa2.lanchengzxl.com", "test", "log.json")
     downloader.doDownload()
