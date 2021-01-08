@@ -12,6 +12,8 @@ Config = {
     "aapt_linux": "./libs/bin/aapt2-linux",
     "apktool": "./libs/bin/apktool_2.4.0.jar",
 
+    "decrypt_jar": "./libs/bin/ResDecode.jar",
+
     "working_folder": "working_folder",
     "local_res_folder": "localres",
     "local_res_info": "local_res_info.json",
@@ -36,7 +38,7 @@ Config = {
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
-        # ("libs.modules.AppYet.AppYet", "AppYet"),
+        ("libs.modules.AppYet.AppYet", "AppYet"),
         ("libs.modules.Ofcms.Ofcms", "Ofcms"),
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
         ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),

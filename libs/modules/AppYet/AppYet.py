@@ -15,6 +15,8 @@ import jpype
 from Crypto.Hash import MD5
 from Crypto.Cipher import DES
 
+import Config as Config
+
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -28,7 +30,7 @@ log = logging.getLogger(__name__)
 
 
 class AppYet(BaseModule):
-    #通过python实现使用PBEWithMD5AndDES解密，但是appyet加解密前后还有一些字节操作。decry函数不包含字节操作，因此通过jar包调用java方法。
+    # 通过python实现使用PBEWithMD5AndDES解密，但是appyet加解密前后还有一些字节操作。decry函数不包含字节操作，因此通过jar包调用java方法。
     def decry(self, filepath):
         with open(filepath, "rb") as fh:
             plaintext_to_encrypt = fh.read()
@@ -46,10 +48,8 @@ class AppYet(BaseModule):
         encoder = DES.new(result[:8], DES.MODE_CBC, result[8:16])
         length = len(plaintext_to_encrypt)
         print(len(plaintext_to_encrypt))
-        encrypted = encoder.decrypt(plaintext_to_encrypt[:length-2])
+        encrypted = encoder.decrypt(plaintext_to_encrypt[:length - 2])
         print(encrypted.decode('utf-8', errors='ignore'))
-
-
 
     def extract_startpage(self, filepath):
         """
@@ -68,15 +68,18 @@ class AppYet(BaseModule):
 
         # 开启jvm
         if not jpype.isJVMStarted():
-            jpype.startJVM(jvmPath, "-ea", "-Djava.class.path=%s" % (decode_jar_path))
+            jpype.startJVM(jvmPath, '-ea',
+                           '-Djava.class.path={0}'.format(Config.Config["decrypt_jar"]),
+                           convertStrings=False)
         # ②、加载java类（参数是java的长类名）
-        javaClass = jpype.JClass("Main")
+        javaClass = jpype.JClass("com.ResDecode.Main")()
 
         # 实例化java对象
         # javaInstance = javaClass()
 
         # ③、调用java方法，由于我写的是静态方法，直接使用类名就可以调用方法
-        plain = javaClass.decrypt(filepath)
+        _password = 'X5nFe16r7FbKpb16lJGH386S4WFaqy1khWWzo7Wyv3Pr1wJlF5C28g39kNcPYt4p2s3FayL3u28KfLxUQx8c922XH9inECtciY0hgsegn443gfeg543'  # MD5
+        plain = javaClass.DeAppYet(filepath, _password)
         feed_url = []
         m = re.findall('FeedUrl":"https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', str(plain))
         if m:
@@ -95,7 +98,6 @@ class AppYet(BaseModule):
         jpype.shutdownJVM()
         return ("{} {}".format(feedurl, weburl))
 
-
     def doSigCheck(self):
         if self.host_os == "android":
             return self._find_main_activity("com.appyet.activity.MainActivity")
@@ -108,13 +110,14 @@ class AppYet(BaseModule):
         extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
-        os.makedirs(extract_folder, exist_ok = True)
+        os.makedirs(extract_folder, exist_ok=True)
         tmp_folder = os.path.join(os.getcwd(), extract_folder, "tmp")
-        os.makedirs(tmp_folder, exist_ok = True)
-        self._apktool_no_decode_source(tmp_folder)  #不反编译代码
+        os.makedirs(tmp_folder, exist_ok=True)
+        self._apktool_no_decode_source(tmp_folder)  # 不反编译代码
 
         for dirpath, dirnames, ifilenames in os.walk(tmp_folder):
-            if dirpath.find("assets/web") != -1 or dirpath.find("assets/media") != -1:   #自定义页面保存在assets/web中，上传的多媒体文件保存在assets/media中
+            if dirpath.find("assets/web") != -1 or dirpath.find(
+                    "assets/media") != -1:  # 自定义页面保存在assets/web中，上传的多媒体文件保存在assets/media中
                 for fs in ifilenames:
                     f = os.path.join(dirpath, fs)
                     matchObj = re.match(r'(.*)assets/(.*)', f, re.S)
@@ -123,7 +126,7 @@ class AppYet(BaseModule):
                     tf = os.path.join(extract_folder, newRP)
                     if not os.access(os.path.dirname(tf), os.R_OK):
                         os.makedirs(os.path.dirname(tf))
-                    with open(tf, "wb") as fwh:  #output the
+                    with open(tf, "wb") as fwh:  # output the
                         # ugly coding
                         fp = open(os.path.join(dirpath, fs), "rb")
                         c = fp.read()
@@ -131,7 +134,7 @@ class AppYet(BaseModule):
                         fwh.write(c)
                     fwh.close()
         launch_path = self.extract_startpage(os.path.join(tmp_folder, "res/raw/metadata.txt"))
-        #launch_path = self.decry(os.path.join(tmp_folder, "res/raw/metadata.txt"))
+        # launch_path = self.decry(os.path.join(tmp_folder, "res/raw/metadata.txt"))
         self._dump_info(extract_folder, launch_path)
         # clean env
         shutil.rmtree(tmp_folder)
@@ -139,15 +142,14 @@ class AppYet(BaseModule):
 
 
 def main():
-    f = "./test_case/AppYet/example.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+    f = "./test_case/AppYet/example.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
     appyet = AppYet(f, "android")
     if appyet.doSigCheck():
         logging.info("AppYet signature Match")
-
         extract_folder, launch_path = appyet.doExtract("working_folder")
         log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
-
     return
+
 
 if __name__ == "__main__":
     sys.exit(main())

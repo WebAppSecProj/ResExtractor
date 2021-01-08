@@ -49,10 +49,12 @@ class BufanApp(BaseModule):
             fo = open(config_file, "r+")
             config_json = json.load(fo)
             appUrl = config_json["url"]
-            log.info(config_json)
+            shutil.copy(config_file, extract_folder)
         else:
-            # get keys from smali code
-            #   com.bufan.util.JwtUtils
+            """
+            get keys from smali code
+            filename:  com.bufan.util.JwtUtils.smali
+            """
             self._apktool(tmp_folder)
             JwtUtilsPath = os.path.join(tmp_folder, "smali/com/bufan/utils/JwtUtils.smali")
             JwtUtilsFile = open(JwtUtilsPath, "r+")
@@ -73,17 +75,17 @@ class BufanApp(BaseModule):
             JwtUtilsFile.close()
 
             config_file = zf.extract("assets/source/config.json", tmp_folder)
-            decode_jar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "decode_bufan.jar")
-            MyJSON_jar_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "MyJSON.jar")
+            shutil.copy(config_file, extract_folder)
             jvmPath = jpype.getDefaultJVMPath()
             if not jpype.isJVMStarted():
-                jpype.startJVM(jvmPath, '-ea', '-Djava.class.path={0}:{1}'.format(decode_jar_path, MyJSON_jar_path),
+                jpype.startJVM(jvmPath, '-ea',
+                               '-Djava.class.path={0}'.format(Config.Config["decrypt_jar"]),
                                convertStrings=False)
-            jclass = jpype.JClass("com.decode.Main")()
 
+            jclass = jpype.JClass("com.ResDecode.Main")()
             """
             get appUrl
-                method: com.decode.JwtUtils.get_appUrl
+                method: com.ResDecode.Main.get_appUrl
                 input: (String) encoded JSONString, (String[]) keys
                 output: (String) url
             """
@@ -104,9 +106,9 @@ class BufanApp(BaseModule):
 
 
 def main():
-    f = "./test_case/bugs/14b03ed97138c6f99f71f5bd633548c4.apk"  # need decode
-    # f = "./test_case/BufanApp/世耀国际_bufan.apk"
-    # f = "./test_case/BufanApp/惠普分期_bufan.apk"  # need decode
+    # f = "./test_case/bugs/14b03ed97138c6f99f71f5bd633548c4.apk"  # need decode
+    f = "./test_case/BufanApp/世耀国际_bufan.apk"
+    f = "./test_case/BufanApp/惠普分期_bufan.apk"  # need decode
     # f = "./test_case/BufanApp/淘客_bufan.apk"
     bufan = BufanApp(f, "android")
     if bufan.doSigCheck():
