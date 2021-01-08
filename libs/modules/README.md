@@ -31,7 +31,7 @@
 |27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
 |28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
 |29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
-|30| [Shoutem](http://www.shoutem.com/)  | - | - | - | - |
+|30| [Shoutem](http://www.shoutem.com/)  | N | Y | - | - |
 |31| [App Yourself](http://appyourself.net/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - |
 |33| [Apps Builder](http://www.apps-builder.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |

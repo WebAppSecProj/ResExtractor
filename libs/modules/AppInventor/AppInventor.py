@@ -27,7 +27,7 @@ def extract_startpage(mainactivityfile):
     launch_path = []
     fp = open(mainactivityfile)
     data = fp.read()
-    m = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', data)
+    m = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', data)  #'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'该正则表达式不适用shoutem.py，因为它对于https://***/***，只能提取出https://***
     if m:
         for tmp in m:
             if tmp not in launch_path:
@@ -44,7 +44,7 @@ class AppInventor(BaseModule):
     def doSigCheck(self):
         if self.host_os == "android":
             #com.google.appinventor.components.runtime.multidex.MultiDexApplication is application name
-            apk = APK(self.detect_file)  #ference "https://github.com/TheKingOfDuck/ApkAnalyser"
+            apk = APK(self.detect_file)  #reference "https://github.com/TheKingOfDuck/ApkAnalyser"
             if apk.get_manifest() \
                 and 'application' in apk.get_manifest() \
                 and '@android:name' in apk.get_manifest()['application'] \
