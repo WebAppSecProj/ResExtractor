@@ -15,7 +15,7 @@ import logging
 import sys
 from hashlib import md5
 from Wappalyzer import Wappalyzer, WebPage
-from libs.web_resource_downloader import HTML
+from libs.WebUtil import HTML
 import Config
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')

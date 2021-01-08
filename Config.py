@@ -19,6 +19,7 @@ Config = {
     "local_res_info": "local_res_info.json",
     "remote_res_folder": "remoteres",
     "remote_res_info": "remote_res_info.csv",
+    "filtered_remote_res_info": "filtered_remote_res_info.csv",
 
     "log_folder": "Logger",
 
