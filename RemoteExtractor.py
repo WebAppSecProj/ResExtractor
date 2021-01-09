@@ -36,6 +36,20 @@ class Web_resource():
         self._notfile = ["jpg", "png", "gif", "bmp", "webp", "jepg", "tgz"]
         self._formats = ["jpg", "png", "gif", "bmp", "webp", "jepg", "tgz", "txt", "js", "css"]
 
+        self._topHostPostfix = [
+            '.com', '.la', '.io', '.co', '.info', '.net', '.org', '.me', '.mobi',
+            '.us', '.biz', '.xxx', '.ca', '.co.jp', '.com.cn', '.net.cn',
+            '.org.cn', '.mx', '.tv', '.ws', '.ag', '.com.ag', '.net.ag',
+            '.org.ag', '.am', '.asia', '.at', '.be', '.com.br', '.net.br',
+            '.bz', '.com.bz', '.net.bz', '.cc', '.com.co', '.net.co',
+            '.nom.co', '.de', '.es', '.com.es', '.nom.es', '.org.es',
+            '.eu', '.fm', '.fr', '.gs', '.in', '.co.in', '.firm.in', '.gen.in',
+            '.ind.in', '.net.in', '.org.in', '.it', '.jobs', '.jp', '.ms',
+            '.com.mx', '.nl', '.nu', '.co.nz', '.net.nz', '.org.nz',
+            '.se', '.tc', '.tk', '.tw', '.com.tw', '.idv.tw', '.org.tw',
+            '.hk', '.co.uk', '.me.uk', '.org.uk', '.vg', ".com.hk",
+            '.edu.cn', '.ly', '.live', '.xyz', 'site', 'cn']
+
     @property
     def allurl(self):
         if self._url_list == None:
@@ -48,9 +62,19 @@ class Web_resource():
                         fp = os.path.join(root, f)
                         if not os.path.isfile(fp):
                             continue
+
                         try:
                             with open(fp, 'r', encoding='utf-8') as fs:
-                                self._url_list.extend(re.findall(self._HTTP_REGEX, fs.read()))
+                                l = re.findall(self._HTTP_REGEX, fs.read())
+
+                                for ll in l.copy():
+                                    # if ll.find("quilljs.com") != -1:
+                                    #     log.info("e")
+
+                                    if not any(urlparse(ll).netloc.endswith(t) for t in self._topHostPostfix):
+                                        log.info("invalid postfix: {}".format(ll))
+                                        l.remove(ll)
+                                self._url_list.extend(l)
                         except:
                             continue
                         self._url_list = list(set(self._url_list))
@@ -154,8 +178,12 @@ if __name__ == "__main__":
 
     # walk the local resource folder to get urls.
     for m in os.listdir(target_folder):                         # in the 1st round iteration, I reach the module folder
+        if not os.path.isdir(os.path.join(target_folder, m)):
+            continue
         for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I reach the app folder.
             working_inst = os.path.join(target_folder, m, inst)
+            if not os.path.isdir(working_inst):
+                continue
             log.info("working on {}".format(working_inst))
 
             # start to retrieve the remote resource.
