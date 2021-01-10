@@ -43,10 +43,10 @@ Config = {
         ("libs.modules.Ofcms.Ofcms", "Ofcms"),
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
         ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
+        ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
-        ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
     ]),
 
 }

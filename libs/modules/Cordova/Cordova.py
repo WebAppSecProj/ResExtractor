@@ -10,6 +10,7 @@ import zipfile
 import shutil
 import subprocess
 import Config as Config
+import platform
 
 try:
     import xml.etree.cElementTree as ET
@@ -80,8 +81,13 @@ class Cordova(BaseModule):
 
                 # extracting the starting page in "<content src="index.html" />" from "res/xml/config.xml"
                 # Ugly coding, I would like to use ElementTree instead.
+                if platform.system() == 'Darwin':
+                    aapt = Config.Config["aapt_osx"]
+                elif platform.system() == 'Linux':
+                    aapt = Config.Config["aapt_linux"]
+
                 proc = subprocess.Popen(
-                    "{} dump xmltree '{}' '{}'".format(Config.Config["aapt"], self.detect_file, "res/xml/config.xml"),
+                    "{} dump xmltree '{}' '{}'".format(aapt, self.detect_file, "res/xml/config.xml"),
                     shell=True, stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 r = (proc.communicate()[0]).decode()

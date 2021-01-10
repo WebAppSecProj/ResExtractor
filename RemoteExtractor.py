@@ -66,14 +66,14 @@ class Web_resource():
                         try:
                             with open(fp, 'r', encoding='utf-8') as fs:
                                 l = re.findall(self._HTTP_REGEX, fs.read())
-
+                                '''
                                 for ll in l.copy():
                                     # if ll.find("quilljs.com") != -1:
                                     #     log.info("e")
-
                                     if not any(urlparse(ll).netloc.endswith(t) for t in self._topHostPostfix):
                                         log.info("invalid postfix: {}".format(ll))
                                         l.remove(ll)
+                                '''
                                 self._url_list.extend(l)
                         except:
                             continue

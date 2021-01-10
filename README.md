@@ -107,25 +107,27 @@ $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 │  │  │  │  ├─remoteres
 │  │  │  │  |  ├─remote_res_info.csv 
 │  │  │  │  │  ├─date1 
-│  │  │  │  │  │  ├─aaa95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url1) 
+│  │  │  │  │  │  ├─url1
 │  │  │  │  │  │  │  ├─remote res 
-│  │  │  │  │  │  ├─bba95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url2)
+│  │  │  │  │  │  ├─url2
 │  │  │  │  │  │  │  ├─remote res 
 │  │  │  │  │  ├─date2
-│  │  │  │  │  │  ├─aaa95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url1)  
+│  │  │  │  │  │  ├─url3  
 │  │  │  │  │  │  │  ├─remote res 
-│  │  │  │  │  │  ├─bba95f0e62afc81ec6a138d5b5c4c16607d2d3e8 (hash of url2)
+│  │  │  │  │  │  ├─url4
 │  │  │  │  │  │  │  ├─remote res 
 │  │  │  │  ├─screenshot
 ```
 
 # 3. Applications
 
-## 3.1 Classification
+## 3.1 Web resource monitor
 
-## 3.2 Web resource similarity analysis
+## 3.2 Grayware classification
 
-## 3.3 Screen shot similarity analysis
+## 3.3 Web resource similarity analysis
+
+## 3.4 Screen shot similarity analysis
 
 
 # A1. HOWTO Debug
