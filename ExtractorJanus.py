@@ -15,6 +15,7 @@ from contextlib import closing
 from Config import Config
 import Checker
 import libs.Stats as Stats
+import csv
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -42,6 +43,21 @@ JanusConfig = {
     "start_date": str(datetime.date.today() - datetime.timedelta(days=1)),
     "end_date": str(datetime.date.today() - datetime.timedelta(days=1)),
 }
+
+
+def log_error(module, file, msg):
+    log_file = os.path.join(Config["log_folder"], "JanusError.csv")
+    if not os.path.exists(log_file):
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        with open(log_file, 'w', newline='') as f:
+            f_csv = csv.writer(f)
+            f_csv.writerow(['Module', 'Instance', 'Message'])
+            f_csv.writerow([module, file, msg])
+    else:
+        with open(log_file, 'a', newline='') as f:
+            f_csv = csv.writer(f)
+            f_csv.writerow([module, file, msg])
+
 
 '''
 I do not know why we use a class :(
@@ -221,11 +237,12 @@ class DownloadAndExtract:
                     try:
                         target_check.doExtract(tar_module_folder)
                     except:
+                        log_error(target_check.__class__, tar_app_sha1, "doExtract")
                         log.error("process error: {}".format(tar_app_sha1))
                         # exit(0)
                         continue
                     # extract_info.json
-                    extract_info_path = os.path.join(tar_extract_folder, tar_app_sha1, Config["logging_file"])
+                    extract_info_path = os.path.join(tar_extract_folder, tar_app_sha1, Config["local_res_info"])
                     if os.path.exists(extract_info_path):
                         extract_info_file = open(extract_info_path, "r")
                         result = json.load(extract_info_file)
