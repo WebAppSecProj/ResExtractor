@@ -46,12 +46,23 @@
 <div align=center><img src="./image/APICloud/apicloud-15.jpg"/></div><br>
 <div align=center><img src="./image/APICloud/apicloud-16.jpg"/></div>
 
+
 因为`key=ce1f1ef32f62ff6d7606`，可以看到栈帧里已经被key填满了，证明猜测无误。s盒里经过key的计算已经被填充满，用以进行下面`__RC4`的计算
 - __RC4
 <div align=center><img src="./image/APICloud/apicloud-17.jpg"/></div>
 看上去也是比较正常的rc4算法，接下来就开始写解密算法
 
-### 3. 解密实现
+### 3. key 生成
+key的生成主要是在+[UZPrivacy ValidatorDesc]中通过调用偏移为0x100095c64中的方法来生成key，
+在该方法中，其伪代码为
+<div align=center><img src="./image/APICloud/apicloud-20.jpg"/></div>
+
+最后该逻辑是通过一个数组中的偏移，在一个字符串中取出一部分的字符组成字符串作为key，
+<div align=center><img src="./image/APICloud/apicloud-21.jpg"/></div>
+<div align=center><img src="./image/APICloud/apicloud-22.jpg"/></div>
+通过模拟运行可以得出之前在内存中的 `key=ce1f1ef32f62ff6d7606`
+
+### 4. 解密实现
 这里有两种方式：
 - 找一个现成的rc4算法改一改
 - 照抄
@@ -61,4 +72,4 @@
 <div align=center><img src="./image/APICloud/apicloud-19.jpg"/></div>
 
 ### 结论
-实测下来，该框架使用了多个key来解密不同的文件，大部分的网页资源都可以用同一个key来解密。但所有的资源解密都是共用一套rc4算法，所以对于不同文件，传递不同的key解密即可。分析到此结束。
+实测下来，该框架使用了多个key来解密不同的文件，大部分的网页资源都可以用生成的key来解密，uz下面的Engine.bundle中的资源则是通过一个固定的key来进行解密。 但所有的资源解密都是共用一套rc4算法，所以对于不同文件，传递不同的key解密即可。分析到此结束。

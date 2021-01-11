@@ -1,4 +1,4 @@
-# AppCan Android Rev
+# AppCan 
 作者：beizishaozi，如需转载请注明出处
 ## 目录
 + 简述
@@ -20,12 +20,21 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/> 
 
 ## 应用特征描述
-分析应用特征是为了从海量apk数据中快速筛选出基于AppCan框架开发的应用。从应用apk特征分析，其主Activity名字为“org.zywx.wbpalmstar.engine.LoadingActivity”。通过搜索该特征就可以定位哪些应用使用了appcan框架进行开发。
+分析应用特征是为了从海量apk数据中快速筛选出基于AppCan框架开发的应用。
+
+### Android
+从应用apk特征分析，其主Activity名字为“org.zywx.wbpalmstar.engine.LoadingActivity”。通过搜索该特征就可以定位哪些应用使用了appcan框架进行开发。
 <div align=left><img src="./image/Appcan/mainactivity.png"/></div>
 <br/>  
 <br/> 
 
+### iOS
+iOS AppCanz的特征为：ipa文件中Frameworks文件夹下包含AppCanEngine.framework，其中appcan主要的引擎代码也在其中
+
+
 ## 定位解密
+
+### Android
 通过反编译目标应用apk文件，对反编译代码进行关键词（如config，这是因为config.xml文件解密的时候可能会进行文件名拼接）搜索或者页面加载函数（loadurl等）进行动态调用栈跟踪，分析得出加密文件的解密操作发生在org.zywx.wbpalmstar.acedes.DESUtility类的public static String a(byte[] arg5, String arg6)函数中，代码如下：
 <div align=left><img src="./image/Appcan/decrypt.png"/></div>
 其中nativeHtmlDecode函数是JNI函数
@@ -42,7 +51,7 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 <br/>
 <br/>
 
-## 解密算法解析
+#### 解密算法解析
 因为解密算法在so文件中，所以就通过IDA动态调试+F5静态静态反编译来分析，并将算法重新实现即可。为了便于逆向，直接用了C语言实现。<br>
 总得来说，appcan框架采用了RC4加密算法。只是密钥生成部分是通过对加密文件的密文长度、文件名以及应用appkey进行MD5处理得到16位签名值，通过十六进制转换以及不停循环最终得到256位初始密码。具体实现，参考以下三部分代码实现即可。
 <br>
@@ -254,7 +263,16 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 这段代码就是RC4解密算法实现，网上资源很多，这里就不重复了。最后两个函数是释放内存，同时将结果转换为string，返回给java程序。需要说明一下，因为这个基于F5反编译的结果修改的，所以代码量较大，其实内部实现逻辑还是相对简单。在工程对应appcan.py中将该解密算法通过python重新实现了一遍，可参考。
 <br/>
 <br/>
+
+### iOS
+iOS版本中，判断文件是否进行加密的方法为+[FileEncrypt isDataEncrypted:]，其具体的判断算法和Android版本相同就不进行重复。
+
+而具体的解密代码这是在-[FileEncrypt decryptWithPath:appendData:]中被调用，其实际解密算法逻辑同于Android版本，同样不进行重复。
+主要的区别点在于，Android解密中传入的第四个参数实在资源文件中所获取的字符串，而在iOS版本中则是通过调用+[Beqtucontent getContentPath]获取，而该方法的实现是在IPA包下的主可执行文件中，直接返回一个key如（dbc8ee80-3bfc-4fc3-abc0-a51b606876e8），因此对iOS进行解析时需要通过解析可执行文件获取该key
+
 ## 解密验证
+
+### Android
 最后，我将java层的处理和C层的解密操作都实现在一个android应用中，然后用AppCan提供的在线打包功能，分别构造出了加密的config.xml和test.js，经测试，均能成功解密。
 <br>
 例如，对于加密的test.js文件，其文件内容为"abcdefghijklmnop"，长度为16，密文如下图所示
@@ -265,6 +283,9 @@ AppCan框架提供了两种APP开发方式：1）webapp；2）hybrid app。<br>
 其中plain byte[]内容正是加密文件的内容，而最后的result是解密结果，中间日志是一些中间结果输出，如md5 sig 32：fbcfa213d077a8973774c617d4014cd就是MD5值以十六进制输出之后的结果。
 <br/>
 <br/>
+
+### iOS
+通过将算法抽象为python代码，进行实现验证后，证明解密算法是准确的。
 
 ## 资源数据提取
 资源数据是指应用的web页面、JS、CSS、图片等资源。对于Appcan第一种开发方式，只需要对/assets/widget/config.xml文件进行解析，读取其中content标签项的属性src值，如`<`content encoding="utf-8" src="https://www.appscan.io/" />，src值定义了加载资源数据时的起始页。对于Appcan第二种开发方式，app应用文件中还有开发人员编写的网页资源文件，这些文件分析保存在assets/widget目录下，因此也需要对该目录下的文件进行提取。<br>
