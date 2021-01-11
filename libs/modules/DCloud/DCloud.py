@@ -51,6 +51,7 @@ class DCloud(BaseModule):
         zf = zipfile.ZipFile(self.detect_file, 'r')
         if "assets/data/dcloud_control.xml" not in zf.namelist():
             log.error("DCloud module error")
+            self._log_error(os.path.basename(__file__), self.detect_file, "foo")
             return None, None
         config_file = zf.extract("assets/data/dcloud_control.xml", tmp_folder)
 
@@ -81,9 +82,7 @@ class DCloud(BaseModule):
             launch_path = j['launch_path']
             self._dump_info(extract_folder, j['launch_path'])
         except:
-            with open(os.path.join(os.getcwd(), Config.Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
-                fwh.write(self.detect_file)
-            fwh.close()
+            self._log_error(os.path.basename(__file__), self.detect_file, "foo")
 
         # clean env
         shutil.rmtree(tmp_folder)
