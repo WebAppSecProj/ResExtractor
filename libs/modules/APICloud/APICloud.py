@@ -58,9 +58,7 @@ class APICloud(BaseModule):
 
             self._dump_info(extract_folder, launch_path)
         except:
-            with open(os.path.join(os.getcwd(), Config["log_folder"], "failed_apk.txt"), "a+") as fwh:
-                fwh.write(self.detect_file)
-            fwh.close()
+            self._log_error(os.path.basename(__file__), self.detect_file, "foo")
 
         return extract_folder, launch_path
 

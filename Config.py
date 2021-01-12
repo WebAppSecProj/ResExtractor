@@ -10,13 +10,18 @@ import collections
 Config = {
     "aapt_osx": "./libs/bin/aapt2-osx",
     "aapt_linux": "./libs/bin/aapt2-linux",
+    "aapt_windows": "./libs/bin/aapt2-windows.exe",
+
     "apktool": "./libs/bin/apktool_2.4.0.jar",
+
+    "decrypt_jar": "./libs/bin/ResDecode.jar",
 
     "working_folder": "working_folder",
     "local_res_folder": "localres",
     "local_res_info": "local_res_info.json",
     "remote_res_folder": "remoteres",
-    "remote_res_info": "remote_res_info.json",
+    "remote_res_info": "remote_res_info.csv",
+    "filtered_remote_res_info": "filtered_remote_res_info.csv",
 
     "log_folder": "Logger",
 
@@ -37,14 +42,14 @@ Config = {
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
-        # ("libs.modules.AppYet.AppYet", "AppYet"),
+        ("libs.modules.AppYet.AppYet", "AppYet"),
         ("libs.modules.Ofcms.Ofcms", "Ofcms"),
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
         ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
+        ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
-        ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
     ]),
 
 }

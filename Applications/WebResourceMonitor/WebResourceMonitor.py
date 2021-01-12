@@ -11,11 +11,15 @@ import json
 import time
 import re
 import requests
+import logging
+import sys
 from hashlib import md5
 from Wappalyzer import Wappalyzer, WebPage
-from Applications.Monitor.Url_base import HTML
-from Applications.Monitor.MonitorConfig import MonitorConfig
-import shutil
+from libs.WebUtil import HTML
+import Config
+
+logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
+log = logging.getLogger(__name__)
 
 def check_domain(ip):
     """
@@ -85,7 +89,7 @@ def WappalyzerCheck(url):
         return []
 
 
-def WebMonitor(url, storage_path, appname):
+def WebMonitor(url, storage_path, appname="foo"):
 
     h = HTML(url)
     pwd = os.path.join(storage_path, appname, md5(url.encode('utf-8')).hexdigest())
@@ -207,10 +211,29 @@ def WebMonitor(url, storage_path, appname):
         return True
 
 
+# I would like to config the task names rather than get them from the command line
+MonitorConfig ={
+    "tasks": [
+        "xingyuan.2020.01.05",
+    ],
+}
+
 if __name__ == "__main__":
+
+    # working directory should be set to the root directory
+    '''
+    for task in MonitorConfig["task_folder"]:       # for each task
+        for m in os.listdir(task):                  # for each module
+            for inst in os.listdir(m):              # for each app
+                remote_res_folder = os.path.join(Config.Config["working_folder"], task, m, inst, Config.Config["remote_res_folder"])
+                if not os.path.exists(remote_res_folder, Config.Config["remote_res_info"]):
+                    log.warning("incomplete instance: {}".format(inst))
+                    continue
+    '''
+
     begin = time.time()
     WebMonitor(r"https://blog.csdn.net/qq_40965177/article/details/88086592",
-               MonitorConfig["monitor_working_folder"],
+               MonitorConfig["monitor_folder"],
                r"baidu")     # hash of the app, such that I can find the related apps.
     end = time.time()
     print(end - begin)

@@ -22,7 +22,7 @@ def main():
     if Checker.doEnvCheck() == False:
         sys.exit(1)
 
-    if Checker.doAPKCheck(sys.argv[1]) == False:
+    if Checker.doAPKCheck(args.apk_file) == False:
         sys.exit(1)
 
 

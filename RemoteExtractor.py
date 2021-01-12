@@ -9,6 +9,13 @@ Created on Mon Dec 28 11:30:59 2020
 import os, sys, logging, argparse, csv, re
 
 import Config as Config
+import datetime
+import shutil
+from deprecated.sphinx import deprecated
+from hashlib import md5
+from urllib.parse import urlparse, urljoin
+
+from libs.WebUtil import WebUtil
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -23,11 +30,27 @@ class Web_resource():
         self._url_list = None
         self._format_list = None
         self._notformat_list = None
-        self._HTTP_REGEX = 'https?://[a-zA-Z0-9\.\/_&=@$%?~#-]+'
+        # https://gist.github.com/gruber/8891611
+        self._HTTP_REGEX = r"(?i)\b((?:https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\-]+[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)/)(?:[^\s()<>{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))+(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’])|(?:(?<!@)[a-z0-9]+(?:[.\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|Ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)\b/?(?!@)))"
+        # self._HTTP_REGEX = 'https?://[a-zA-Z0-9\.\/_&=@$%?~#-]+'
         self._IP_REGEX = '(((1[0-9][0-9]\.)|(2[0-4][0-9]\.)|(25[0-5]\.)|([1-9][0-9]\.)|([0-9]\.)){3}((1[0-9][0-9])|(2[0-4][0-9])|(25[0-5])|([1-9][0-9])|([0-9])))'
         # 非文本后缀
         self._notfile = ["jpg", "png", "gif", "bmp", "webp", "jepg", "tgz"]
         self._formats = ["jpg", "png", "gif", "bmp", "webp", "jepg", "tgz", "txt", "js", "css"]
+
+        self._topHostPostfix = [
+            '.com', '.la', '.io', '.co', '.info', '.net', '.org', '.me', '.mobi',
+            '.us', '.biz', '.xxx', '.ca', '.co.jp', '.com.cn', '.net.cn',
+            '.org.cn', '.mx', '.tv', '.ws', '.ag', '.com.ag', '.net.ag',
+            '.org.ag', '.am', '.asia', '.at', '.be', '.com.br', '.net.br',
+            '.bz', '.com.bz', '.net.bz', '.cc', '.com.co', '.net.co',
+            '.nom.co', '.de', '.es', '.com.es', '.nom.es', '.org.es',
+            '.eu', '.fm', '.fr', '.gs', '.in', '.co.in', '.firm.in', '.gen.in',
+            '.ind.in', '.net.in', '.org.in', '.it', '.jobs', '.jp', '.ms',
+            '.com.mx', '.nl', '.nu', '.co.nz', '.net.nz', '.org.nz',
+            '.se', '.tc', '.tk', '.tw', '.com.tw', '.idv.tw', '.org.tw',
+            '.hk', '.co.uk', '.me.uk', '.org.uk', '.vg', ".com.hk",
+            '.edu.cn', '.ly', '.live', '.xyz', 'site', 'cn']
 
     @property
     def allurl(self):
@@ -39,9 +62,21 @@ class Web_resource():
                         if any(f.endswith(i) for i in self._notfile):
                             continue
                         fp = os.path.join(root, f)
+                        if not os.path.isfile(fp):
+                            continue
+
                         try:
                             with open(fp, 'r', encoding='utf-8') as fs:
-                                self._url_list.extend(re.findall(self._HTTP_REGEX, fs.read()))
+                                l = re.findall(self._HTTP_REGEX, fs.read())
+                                '''
+                                for ll in l.copy():
+                                    # if ll.find("quilljs.com") != -1:
+                                    #     log.info("e")
+                                    if not any(urlparse(ll).netloc.endswith(t) for t in self._topHostPostfix):
+                                        log.info("invalid postfix: {}".format(ll))
+                                        l.remove(ll)
+                                '''
+                                self._url_list.extend(l)
                         except:
                             continue
                         self._url_list = list(set(self._url_list))
@@ -50,33 +85,50 @@ class Web_resource():
         else:
             return self._url_list
 
-    def del_top(self, topfile):
+    def del_top(self, filter_file):
         if self.allurl == None:
             return None
-        if topfile.endswith(".csv"):
+        if filter_file.endswith(".csv"):
             try:
-                with open(topfile, 'r') as csvfile:
+                with open(filter_file, 'r') as csvfile:
                     reader = csv.DictReader(csvfile)
-                    column = [row['web'] for row in reader]
-                    for i in column:
+                    row = [col['web'] for col in reader]
+                    for i in row:
                         for j in self.allurl.copy():
-                            if i in j:
+                            # if i.find("opensource.org") != -1 and j.find("opensource.org") != -1:
+                            #     log.info("FOO")
+                            if not i.lower().startswith("www."):
+                                i = "www." + i
+                            k = urlparse(j).netloc
+                            if not k.lower().startswith("www."):
+                                k = "www." + k
+                            if i.lower() == k.lower():
+                                log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
                 pass
-        if topfile.endswith(".txt"):
+        if filter_file.endswith(".txt"):
             try:
-                with open(topfile, 'r') as txt:
-                    column = txt.read().splitlines()
-                    for i in column:
+                with open(filter_file, 'r') as txt:
+                    row = txt.read().splitlines()
+                    for i in row:
                         for j in self.allurl.copy():
-                            if i in j:
+                            if not i.lower().startswith("www."):
+                                i = "www." + i
+                            k = urlparse(j).netloc
+                            if not k.lower().startswith("www."):
+                                k = "www." + k
+                            if i.lower() == k.lower():
+                                log.info("url removed: {} by filter: {}".format(j, filter_file))
                                 self.allurl.remove(j)
             except:
                 pass
 
     @property
-    def remote_url(self):
+    def purified_url(self):
+        return self._notformat_list
+
+    def _purify_url(self):
         if self.allurl == None:
             return None
         self._format_list = []
@@ -88,11 +140,12 @@ class Web_resource():
                 self._notformat_list.append(i)
         return self._format_list, self._notformat_list
 
+
     def dump(self, filepath, method="csv"):
         if self.allurl == None:
             return None
-        if self._notformat_list == None:
-            self.remote_url
+        _, _ = self._purify_url()
+
         if method == "csv":
             if not os.path.exists(filepath):
                 os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -107,36 +160,11 @@ class Web_resource():
                     for i in self._notformat_list:
                         f_csv.writerow([self._appname, i, self._dir])
 
-class Runner():
-    def __init__(self, local_res_pwd, remote_res_pwd):
-        self._local_res_pwd = local_res_pwd                 # local res path
-        self._remote_res_pwd = remote_res_pwd               # remote res path
-        self._filter =[]                                    # url filter
-
-    def add_filter(self, filters):
-        '''
-        urls of boilerplate code should be removed
-        '''
-        self._filter.append(filters)
-
-    def parse(self):
-        '''
-        Distill urls
-        '''
-        r = Web_resource(self._local_res_pwd)
-        for i in self._filter:
-            r.del_top(i)
-
-        logging_file = os.path.join(
-            self._remote_res_pwd,
-            Config.Config["remote_res_info"],
-        )
-
-        log.info("{}".format(r.allurl))
-        r.dump(logging_file)
 
 RemoteExtractorConfig = {
     "benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/US.csv", r"db/benign_url/my_filter.txt"],
+    # eh.., I find aliyun.com etc. in this list.
+    #"benign_url_list": [r"db/benign_url/CN.csv", r"db/benign_url/my_filter.txt"],
 }
 
 if __name__ == "__main__":
@@ -151,17 +179,46 @@ if __name__ == "__main__":
         exit(1)
 
     # walk the local resource folder to get urls.
-    for m in os.listdir(target_folder):                         # in the 1st round iteration, I get module folder
-        for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I get the app folder.
+    for m in os.listdir(target_folder):                         # in the 1st round iteration, I reach the module folder
+        if not os.path.isdir(os.path.join(target_folder, m)):
+            continue
+        for inst in os.listdir(os.path.join(target_folder, m)): # in the 2nd round iteration, I reach the app folder.
             working_inst = os.path.join(target_folder, m, inst)
+            if not os.path.isdir(working_inst):
+                continue
             log.info("working on {}".format(working_inst))
 
             # start to retrieve the remote resource.
-            r = Runner(
-                os.path.join(working_inst, Config.Config["local_res_folder"]),
-                os.path.join(working_inst, Config.Config["remote_res_folder"])
+            local_res_folder = os.path.join(working_inst, Config.Config["local_res_folder"])
+            remote_res_folder = os.path.join(working_inst, Config.Config["remote_res_folder"])
+            # clean
+            shutil.rmtree(remote_res_folder, ignore_errors=True)
+
+            r = Web_resource(local_res_folder)
+
+            # I would like to preserve all urls firstly, such that we can do statistic to find the dominate urls and supplement the `my_filter.txt` file.
+            logging_file = os.path.join(
+                remote_res_folder,
+                Config.Config["remote_res_info"],
             )
-            # eh.., I find aliyun.com etc. in this list.
+            r.dump(logging_file)
+
+            # then remove top urls
             for f in RemoteExtractorConfig["benign_url_list"]:
-                r.add_filter(os.path.join(os.path.dirname(os.path.realpath(__file__)), f))
-            r.parse()
+                r.del_top(os.path.join(os.path.dirname(os.path.realpath(__file__)), f))
+            logging_file = os.path.join(
+                remote_res_folder,
+                Config.Config["filtered_remote_res_info"],
+            )
+            r.dump(logging_file)
+
+            # retrieve the first web resource
+            web_resource_folder = os.path.join(remote_res_folder, str(datetime.date.today()))
+            os.makedirs(web_resource_folder, exist_ok=True)
+
+            for u in r.purified_url:
+                log.info("processing: {}".format(u))
+                downloader = WebUtil(u)
+                downloader.scarpy_web(web_resource_folder)
+
+                # log sth.
