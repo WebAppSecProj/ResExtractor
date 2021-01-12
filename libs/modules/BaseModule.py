@@ -64,14 +64,7 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     # find signature
     def _find_main_activity(self, sig):
-        if platform.system() == 'Darwin':
-            aapt = Config.Config["aapt_osx"]
-        elif platform.system() == 'Linux':
-            aapt = Config.Config["aapt_linux"]
-        elif platform.system() == 'Windows':
-            aapt = Config.Config["aapt_windows"]
-
-        proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("'{}' dump badging '{}'".format(self._aapt(), self.detect_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()
