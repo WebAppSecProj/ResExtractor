@@ -49,6 +49,7 @@ Config = {
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.Appmakr.Appmakr", "Appmakr"),
     ]),
 
 }
