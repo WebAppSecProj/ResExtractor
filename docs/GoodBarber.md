@@ -17,15 +17,29 @@ GoodBarber框架支持Android和iOS应用开发。该框架支持在线开发，
 <br><br>
 
 ## 应用特征描述
+### Android
 对基于该框架生成的应用进行逆向分析。发现其主Activity的名字是确定的，即“com.goodbarber.v2.core.common.activities.SplashscreenActivity”。<div align=left><img src="./image/GoodBarber/goodbarber_mainactivity.png"/></div>因此，将该主Activity名字作为基于GoodBarber框架开发的应用特征。<br><br>
+
+### iOS
+iOS的特征为，其Info.plist中的Bundle identifier为com.goodbarber.* 形式
 
 ## 资源数据提取
 GoodBarber框架不支持对资源数据进行加密，因此相对来说提取工作比较方便。
+### Android
 编写的HTML页面保存在assets/cache/settings/plugins/目录下，而应用起始页URL链接则是保存在assets/cache/settings/7b070bc294dc48bb947a2b4e0885cd58文件中。<br> 7b070bc294d48bb947a2b4e0885cd58是固定的，因为这是“settings_json”字符串的md5值，而该字符串是硬编码在应用代码中。7b070bc294d48bb947a2b4e0885cd58文件就是一个配置文件,里面配置了很多信息，以json格式组织的。因此，直接从assets目录下提取即可。<br>
 apk文件目录结构如下
 <div align=left><img src="./image/GoodBarber/goodbarber_dirs.png"/></div>
 这里需要注意一点，这些本地页面在assets/cache/settings/目录下也有一份，只是名字是md5值，是由配置文件7b070bc294d48bb947a2b4e0885cd58中sectionUrl字段的值进行md5处理得到的，例如"/apiv3/release/android/10/section/40359713/index.html?v=1609754175"。为了方便，我们选择直接从assets/cache/settings/plugins/目录下提取。
 <br><br>
+
+### iOS
+iOS相关的应用特定资源主要在Preloading目录下面，这个目录的结构如图
+<div align=left><img src="./image/GoodBarber/goodbarber_ios_1.png"/></div>
+<br>
+
+其中通过网络加载的url保存在settings.json中的mobileURL中。其他相关的资源文件则在其他的目录下。
+
+还有一些情况下开发者可能会自己通过goodbarber添加其他的相关资源到目录下，这种情况很难模式化地进行抽取，因此暂时只提取Preloading目录下的相关资源。
 
 ## 结论
 GoodBarber框架支持基于web的Android和iOS应用开发，但是该框架没有提供加密功能，因此定位到存储资源数据的目录直接解压缩进行提取即可。
