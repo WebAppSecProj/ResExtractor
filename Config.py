@@ -10,6 +10,8 @@ import collections
 Config = {
     "aapt_osx": "./libs/bin/aapt2-osx",
     "aapt_linux": "./libs/bin/aapt2-linux",
+    "aapt_windows": "./libs/bin/aapt2-windows.exe",
+
     "apktool": "./libs/bin/apktool_2.4.0.jar",
 
     "decrypt_jar": "./libs/bin/ResDecode.jar",

@@ -85,6 +85,8 @@ class Cordova(BaseModule):
                     aapt = Config.Config["aapt_osx"]
                 elif platform.system() == 'Linux':
                     aapt = Config.Config["aapt_linux"]
+                elif platform.system() == 'Windows':
+                    aapt = Config.Config["aapt_windows"]
 
                 proc = subprocess.Popen(
                     "{} dump xmltree '{}' '{}'".format(aapt, self.detect_file, "res/xml/config.xml"),
