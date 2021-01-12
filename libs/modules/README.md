@@ -17,9 +17,9 @@
 |13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |14| [Kendo UI](http://www.telerik.com/kendo-ui)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |15| [Mobile Angular UI](http://mobileangularui.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
-|16| [Monaca](https://monaca.io/)  | - | - | - | - |
+|16| [Monaca](https://monaca.io/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |17| [Trigger.IO](https://trigger.io/)  | Y | Y | - | - |
-|18| [Seattle Cloud](http://seattleclouds.com/)  | - | - | - | - |
+|18| [Seattle Cloud](http://seattleclouds.com/)  | Y | N | - | - |
 |19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N |
 |20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N |
 |21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - |
