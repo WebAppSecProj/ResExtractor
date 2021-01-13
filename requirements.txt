@@ -13,3 +13,6 @@ apkutils
 python-Wappalyzer
 pyDes
 deprecated
+opencv-python
+opencv-contrib-python
+NumPy
