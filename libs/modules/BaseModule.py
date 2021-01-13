@@ -8,6 +8,7 @@ import hashlib
 import subprocess
 import json
 import os
+import csv
 
 import Config as Config
 import platform
@@ -53,12 +54,22 @@ class BaseModule(metaclass=abc.ABCMeta):
         json.dump(info, open(os.path.join(extract_folder, Config.Config["local_res_info"]), 'w', encoding='utf-8'), ensure_ascii=False)
         return
 
+    def _aapt(self):
+        if platform.system() == 'Darwin':
+            return Config.Config["aapt_osx"]
+        elif platform.system() == 'Linux':
+            return Config.Config["aapt_linux"]
+        elif platform.system() == 'Windows':
+            return Config.Config["aapt_windows"]
+
     # find signature
     def _find_main_activity(self, sig):
         if platform.system() == 'Darwin':
             aapt = Config.Config["aapt_osx"]
         elif platform.system() == 'Linux':
             aapt = Config.Config["aapt_linux"]
+        elif platform.system() == 'Windows':
+            aapt = Config.Config["aapt_windows"]
 
         proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -76,6 +87,19 @@ class BaseModule(metaclass=abc.ABCMeta):
             sha1obj.update(frh.read())
             return sha1obj.hexdigest()
 
+
+    def _log_error(self, module, file, msg):
+        log_file = os.path.join(Config.Config["log_folder"], "ModuleError.csv")
+        if not os.path.exists(log_file):
+            os.makedirs(os.path.dirname(log_file), exist_ok=True)
+            with open(log_file, 'w', newline='') as f:
+                f_csv = csv.writer(f)
+                f_csv.writerow(['Module', 'Instance', 'Message'])
+                f_csv.writerow([module, file, msg])
+        else:
+            with open(log_file, 'a', newline='') as f:
+                f_csv = csv.writer(f)
+                f_csv.writerow([module, file, msg])
 
     def __str__(self):
         return "{} file: {}".format(self.host_os, self.detect_file)

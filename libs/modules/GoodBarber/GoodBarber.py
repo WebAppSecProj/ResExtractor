@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Created on Tues 01 05 2021
+Created on Tues JAN 05 2021
 
 @author: beizishaozi
 """
@@ -92,7 +92,7 @@ class GoodBarber(BaseModule):
 
 
 def main():
-    f = "./test_case/GoodBarber/goodbarber.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径, //出错在解压缩失败//
+    f = "./test_case/GoodBarber/mivoice.apk"    #后续会将当前脚本路径与之相拼接，得到最终detect_file路径, //出错在解压缩失败//
     goodbarber = GoodBarber(f, "android")
     if goodbarber.doSigCheck():
         logging.info("GoodBarber signature Match")

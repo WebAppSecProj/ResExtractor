@@ -10,6 +10,8 @@ import collections
 Config = {
     "aapt_osx": "./libs/bin/aapt2-osx",
     "aapt_linux": "./libs/bin/aapt2-linux",
+    "aapt_windows": "./libs/bin/aapt2-windows.exe",
+
     "apktool": "./libs/bin/apktool_2.4.0.jar",
 
     "decrypt_jar": "./libs/bin/ResDecode.jar",
@@ -36,6 +38,7 @@ Config = {
         ("libs.modules.Andromo.Andromo", "Andromo"),
         ("libs.modules.AppsGeyser.AppsGeyser", "AppsGeyser"),
         ("libs.modules.AppInventor.AppInventor", "AppInventor"),
+        ("libs.modules.SeattleCloud.SeattleCloud", "SeattleCloud"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
@@ -47,6 +50,7 @@ Config = {
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.Appmakr.Appmakr", "Appmakr"),
     ]),
 
 }
