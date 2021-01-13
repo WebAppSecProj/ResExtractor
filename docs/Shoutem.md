@@ -19,12 +19,20 @@ Shoutem框架支持Android和iOS应用开发。该框架支持在线开发，需
 <br><br>
 
 ## 应用特征描述
+### Android
 根据简述中所描述的，应用app主Activity的名字并不是确定的。另外我们还发现，反编译之后生成的应用其assets目录下的文件数量和名字是确定的，如下图所示
 <div align=left><img src="./image/Shoutem/shoutem_assetsdir.png"/></div>
 因此，为了能尽量不遗漏目标应用，我们将包名和应用assets目录下的文件共同作为基于Shoutem框架开发的应用特征，而不是应用的主activity名字。<br><br>
 
+### iOS
+iOS可以通过解析Info.plist中的bundle identifiers是否满足类似hr.apps.n*形式，如果需要更进一步准确，则可以分析assets目录下是否有shoutem开头的目录。
+
 ## 资源数据提取
+### Android
 Shoutem框架不支持网页资源本地存储，因此只需要提取扩展模块中URL链接即可。这些链接又是明文保存在assets目录下index.android.bundle文件中。由于Shoutem框架提供了很多扩展模块，其中有不少扩展模块都支持填入URL链接。因此，在提取URL链接时，先是识别index.android.bundle文件中所有配置的扩展模块，如果模块信息中配置了URL链接，那么就将其提取出来即可。URL提取实现通过python正则匹配获取。
+
+### iOS
+shoutem相关的资源都保存在ipa文件夹下的assets目录中，因此如果要提取相关的资源及对应的链接直接在该文件夹下提取，不过因为没有Android中的类似index.android.bundle文件，因此需要对文件夹下的每个文件内容进行解析。
 
 ## 结论
 Shoutem框架支持模块化的Android和iOS应用开发，并且该框架也没有提供加密功能，因此为了提取网页资源信息，只需要从index.android.bundle文件中提取即可。
