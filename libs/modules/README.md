@@ -35,8 +35,8 @@
 |31| [App Yourself](http://appyourself.net/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - |
 |33| [Apps Builder](http://www.apps-builder.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
-|34| [Appmakr](http://appmakr.com/)  | - | - | - | - |
-|35| [appery.io](https://appery.io/)  | - | - | - | - |
+|34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
+|35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
 |37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
@@ -63,7 +63,7 @@
 |59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
 |61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
-|62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | - | - |  |
+|62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
 
 ```
 Y: Module available.
