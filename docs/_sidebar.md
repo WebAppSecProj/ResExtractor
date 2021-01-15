@@ -15,4 +15,4 @@
 * [NativeScript](NativeScript)
 * [YunDaBao](YunDaBao)
 * [Shoutem](Shoutem.md)
-* [Biznessapps](Biznessapps.md)
+* [appery](appery.md)

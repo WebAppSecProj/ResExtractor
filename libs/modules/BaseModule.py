@@ -54,6 +54,14 @@ class BaseModule(metaclass=abc.ABCMeta):
         json.dump(info, open(os.path.join(extract_folder, Config.Config["local_res_info"]), 'w', encoding='utf-8'), ensure_ascii=False)
         return
 
+    def _aapt(self):
+        if platform.system() == 'Darwin':
+            return Config.Config["aapt_osx"]
+        elif platform.system() == 'Linux':
+            return Config.Config["aapt_linux"]
+        elif platform.system() == 'Windows':
+            return Config.Config["aapt_windows"]
+
     # find signature
     def _find_main_activity(self, sig):
         if platform.system() == 'Darwin':

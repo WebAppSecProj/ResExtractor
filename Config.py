@@ -48,8 +48,10 @@ Config = {
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
         ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
         ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
-        # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
+        ("libs.modules.Appmakr.Appmakr", "Appmakr"),
+        ("libs.modules.appery.appery", "appery"),
+        # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Cordova.Cordova", "Cordova"),
     ]),
 

@@ -81,15 +81,9 @@ class Cordova(BaseModule):
 
                 # extracting the starting page in "<content src="index.html" />" from "res/xml/config.xml"
                 # Ugly coding, I would like to use ElementTree instead.
-                if platform.system() == 'Darwin':
-                    aapt = Config.Config["aapt_osx"]
-                elif platform.system() == 'Linux':
-                    aapt = Config.Config["aapt_linux"]
-                elif platform.system() == 'Windows':
-                    aapt = Config.Config["aapt_windows"]
 
                 proc = subprocess.Popen(
-                    "{} dump xmltree '{}' '{}'".format(aapt, self.detect_file, "res/xml/config.xml"),
+                    "{} dump xmltree '{}' '{}'".format(self._aapt(), self.detect_file, "res/xml/config.xml"),
                     shell=True, stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 r = (proc.communicate()[0]).decode()
