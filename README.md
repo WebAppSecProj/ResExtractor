@@ -117,6 +117,7 @@ $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 │  │  │  │  │  │  ├─url4
 │  │  │  │  │  │  │  ├─remote res 
 │  │  │  │  ├─screenshot
+│  │  │  │  │  ├─Android-hash~of~app.png
 ```
 
 # 3. Applications
