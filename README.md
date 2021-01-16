@@ -152,7 +152,6 @@ optional arguments:
   --img-file IMG_FILE   img file for searching.
   --db-file DB_FILE     db file for preserving keypoint of images.
   --DEBUG DEBUG         show designate number of similar img.
-
 ```
 There are 2 steps to lunch screen shot similarity analysis.
 1. build database containing keypoint of all images. e.g., 
@@ -163,17 +162,44 @@ $ python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --db-fi
 ```commandline
 $ python3 ScreenShotSimilarity.py --img-file="working_folder/snapshot/3eca26b5485de89b2f122634d51a7dbd9c50af19.png" --db-file="Applications/ScreenShotSimilarity/All.pkl" --DEBUG=10
 ```
-also, you can use them all such that the built db file can be used later.
+also, you can use them all such that the built db file can be used next time.
 e.g.,
 ```commandline
 $ python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --img-file="working_folder/snapshot/3eca26b5485de89b2f122634d51a7dbd9c50af19.png" --db-file="Applications/ScreenShotSimilarity/All.pkl" --DEBUG=10
 ```
+## 3.2 HTML similarity analysis
 
-## 3.2 Web resource monitor
+```commandline
+$ usage: HTMLSimilarity.py [-h] [--html-folder HTML_FOLDER]
+                         [--html-file HTML_FILE] --db-file DB_FILE
 
-## 3.3 Grayware classification
+optional arguments:
+  -h, --help            show this help message and exit
+  --html-folder HTML_FOLDER
+                        Folder containing html files.
+  --html-file HTML_FILE
+                        html file for searching.
+  --db-file DB_FILE     db file for preserving eigenvector of html files.
+```
+There are 2 steps to lunch html similarity analysis.
+1. build database containing eigenvector of all html files. e.g., 
+```commandline
+$ python3 HTMLSimilarity.py --html-folder="working_folder" --db-file="Applications/HTMLSimilarity/All.pkl"
+```
+2. search similar html file. e.g., 
+```commandline
+$ python3 HTMLSimilarity.py --html-file="/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/yingyuan.2021.01.12/APICloud/882f9292700f68b221f7716b7bceec9b50b1892f/localres/widget/error/error.html" --db-file="Applications/HTMLSimilarity/All.pkl"
+```
+also, you can use them all such that the built db file can be used later.
+e.g.,
+```commandline
+$ python3 HTMLSimilarity.py --html-folder="working_folder" --html-file="/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/yingyuan.2021.01.12/APICloud/882f9292700f68b221f7716b7bceec9b50b1892f/localres/widget/error/error.html" --db-file="Applications/HTMLSimilarity/All.pkl"
+```
 
-## 3.4 Web resource similarity analysis
+## 3.3 Web resource monitor
+
+## 3.4 Grayware classification
+
 
 
 

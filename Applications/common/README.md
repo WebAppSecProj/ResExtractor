@@ -21,16 +21,20 @@ for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
         m.debug_(img, i[0]) # will show the result one by one
     log.info(i)
 ```
-# HTMLSimilarity
+# HTMLSimilarityWrapper
 
 ## usage:
 ```python
-    s, r = get_html_similarity(
-        open("/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/kaizhi.2021.01.11/APICloud/6a4244e94ebfa68ab1a625f900427cacbb9f3150/localres/index.html"),
-        #open("/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/kaizhi.2021.01.11/APICloud/015d85fa9fdceef340f4a5c69b9d085357a8503c/localres/index.html")
-        open("/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/kaizhi.2021.01.11/Cordova/9715c1fffc9b6beb1860b3e93dee2b8071b9ac15/localres/index.html")
-    )
-    log.info("similarity: {}, ratio: {}".format(s, r))
+    m = HTMLSimilarityWrapper()
+
+    # "build db firstly"
+    m.build_db("../../working_folder", "All.pkl")
+
+    "compare one by one"
+    html = "/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/yingyuan.2021.01.12/APICloud/882f9292700f68b221f7716b7bceec9b50b1892f/localres/widget/error/error.html"
+    res = m.search_img(html, "../../img.db.pkl")
+    for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=False):
+        log.info(i)
 ```
 
 

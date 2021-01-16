@@ -107,7 +107,7 @@ class SIFTFlannBasedMatcher:
                     continue
                 if db.__contains__(file_in_check):
                     continue
-                if os.path.splitext(file_in_check)[-1] not in img_extension:
+                if os.path.splitext(file_in_check)[-1].lower() not in img_extension:
                     continue
 
                 try:
