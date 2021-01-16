@@ -11,6 +11,7 @@ import sys
 import os
 import pickle
 import logging
+import time
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ class SIFTFlannBasedMatcher:
         log.info(R)
 
         imgX = cv2.drawMatchesKnn(img1_h, kp1, img2_h, kp2, good, None, flags=2)
-        cv2.imshow("FLANN", imgX)
+        cv2.imshow('similar percentage: {:.2%}'.format(R), imgX)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
@@ -55,7 +56,7 @@ class SIFTFlannBasedMatcher:
         kp, des = self._sift.detectAndCompute(img_h, None)  # des是描述子
         return kp, des, img_h
 
-    def get_similar(self, file, db_file, DEBUG=False):
+    def search_img(self, file, db_file, DEBUG=False):
         retMe = {}
         if not os.access(db_file, os.R_OK):
             log.info("build db first")
@@ -67,6 +68,7 @@ class SIFTFlannBasedMatcher:
         for k, v in db.items():
             # if keypoint < 100
             if len(v["des"]) < self._key_point_threshold:
+                log.error("img has no enough keypoint: {}".format(k))
                 continue
             try:
                 matches = self._flann.knnMatch(des, v["des"], k=2)
@@ -112,9 +114,9 @@ class SIFTFlannBasedMatcher:
                     log.error("error when processing: {}".format(file_in_check))
                     continue
 
-                # if len(kp) == 0:
-                #     log.error("img with no enough keypoint: {}".format(file_in_check))
-                #     continue
+                if len(kp) == 0:
+                    log.error("img has no keypoint: {}".format(file_in_check))
+                    continue
                 db[file_in_check] = {"des": des}
 
         log.info("total {} image files are found".format(len(db)))
@@ -127,6 +129,8 @@ def main():
     1. build the db firstly.
     2. then feed an img file and get the result.
     '''
+    begin = time.time()
+
     m = SIFTFlannBasedMatcher()
 
     "for debugging"
@@ -137,17 +141,19 @@ def main():
     # m.build_db("../../working_folder", "../../img.db.pkl")
 
     "compare one by one"
-    img = "/home/demo/Desktop/WebAppSec/ResExtractor/working_folder/xingyuan.2020.01.05/DCloud/7f467367a1d9991436cec337daf30dc945fd33c7/localres/images/src_images_toux01.png"
-    res = m.get_similar(img, "../../img.db.pkl")
+    img = "/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/xingyuan.2020.09.30-2021.01.08/DCloud/457208089db17d9c0cf7e42e61d15c01cef74fed/localres/static/img/xglhc.c210e3e.png"
+    res = m.search_img(img, "../../img.db.pkl")
     showTime = 0
     for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
-        if showTime < 10:
+        if showTime < 20:
             showTime += 1
             m.debug_(img, i[0])
         log.info(i)
 
     # 0.03 is likely a good threshold
 
+    end = time.time()
+    print(end - begin)
 
 if __name__== "__main__":
     sys.exit(main())

@@ -17,6 +17,8 @@ Config = {
     "decrypt_jar": "./libs/bin/ResDecode.jar",
 
     "working_folder": "working_folder",
+    "snapshot_folder": "snapshot",
+
     "local_res_folder": "localres",
     "local_res_info": "local_res_info.json",
     "remote_res_folder": "remoteres",

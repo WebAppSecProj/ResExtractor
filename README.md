@@ -4,7 +4,7 @@ Features:
 2. Retrieve remote resource of web apps.
    
 Check the supported module list [here](https://github.com/WebAppSecProj/ResExtractor/tree/master/libs/modules). 
-And technique report [here](ttps://webappsecproj.github.io/ResExtractor/).
+And technique report [here](https://webappsecproj.github.io/ResExtractor/).
 # 2. Get started
 ## 2.1 Prerequisites
 ```
@@ -78,7 +78,7 @@ e.g., :
 $ python3 Extractor.py --apk-file=/home/demo/Desktop/WebAppSec/ResExtractor/test_case/AppYet/example.apk --task-name=foo
 ```
 
-## 2.2 To retrieve remote resource
+## 2.3 To retrieve remote resource
 
 Use the following command to parse local resource and then retrieve the remote resource.
 ```buildoutcfg
@@ -94,8 +94,24 @@ e.g., :
 ```
 $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 ```
+
+## 2.4 To retrieve snapshot
+Follow the [instruction](https://github.com/WebAppSecProj/RemovePermissionGrant) to build your own rom firstly.  
+Then use `SnapShotExtractor.py` to retrieve snapshot. The results are reside in `working_folder/snapshot`
+```commandline
+$usage: SnapShotExtractor.py [-h] --apk-folder APK_FOLDER
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --apk-folder APK_FOLDER
+                        Folder contains apk files.
+```
+e.g., 
+```commandline
+python3 SnapShotExtractor.py --apk-folder="/Users/panmac/Desktop/workspace/WebAppSecProj/sample/xingyuan/2021-01-14"
+```
                         
-## 2.3 layout of the folder
+## 2.5 layout of the folder
 ```python
 ├─working folder
 │  ├─task name
@@ -116,19 +132,49 @@ $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 │  │  │  │  │  │  │  ├─remote res 
 │  │  │  │  │  │  ├─url4
 │  │  │  │  │  │  │  ├─remote res 
-│  │  │  │  ├─screenshot
-│  │  │  │  │  ├─Android-hash~of~app.png
+├─screenshot
+│  ├─hash~of~app.png
 ```
 
 # 3. Applications
 
-## 3.1 Web resource monitor
+## 3.1 Screen shot similarity analysis
 
-## 3.2 Grayware classification
+```commandline
+$ usage: ScreenShotSimilarity.py [-h] [--img-folder IMG_FOLDER]
+                               [--img-file IMG_FILE] --db-file DB_FILE
+                               [--DEBUG DEBUG]
 
-## 3.3 Web resource similarity analysis
+optional arguments:
+  -h, --help            show this help message and exit
+  --img-folder IMG_FOLDER
+                        Folder contains img files.
+  --img-file IMG_FILE   img file for searching.
+  --db-file DB_FILE     db file for preserving keypoint of images.
+  --DEBUG DEBUG         show designate number of similar img.
 
-## 3.4 Screen shot similarity analysis
+```
+There are 2 steps to lunch screen shot similarity analysis.
+1. build database containing keypoint of all images. e.g., 
+```commandline
+$ python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --db-file="Applications/ScreenShotSimilarity/All.pkl"
+```
+2. search similar img, you can use `--DEBUG` argument for observing the analysis result. e.g., 
+```commandline
+$ python3 ScreenShotSimilarity.py --img-file="working_folder/snapshot/3eca26b5485de89b2f122634d51a7dbd9c50af19.png" --db-file="Applications/ScreenShotSimilarity/All.pkl" --DEBUG=10
+```
+also, you can use them all such that the built db file can be used later.
+e.g.,
+```commandline
+$ python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --img-file="working_folder/snapshot/3eca26b5485de89b2f122634d51a7dbd9c50af19.png" --db-file="Applications/ScreenShotSimilarity/All.pkl" --DEBUG=10
+```
+
+## 3.2 Web resource monitor
+
+## 3.3 Grayware classification
+
+## 3.4 Web resource similarity analysis
+
 
 
 # A1. HOWTO Debug
