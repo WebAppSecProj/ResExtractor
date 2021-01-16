@@ -4,3 +4,6 @@
 [submodule "libs/ExAndroidNativeEmu"]
 	path = libs/ExAndroidNativeEmu
 	url = https://github.com/WebAppSecProj/ExAndroidNativeEmu.git
+[submodule "Applications/common/HTMLSimilarity"]
+	path = Applications/common/HTMLSimilarity
+	url = https://github.com/WebAppSecProj/HTMLSimilarity.git

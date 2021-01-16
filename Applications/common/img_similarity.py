@@ -43,7 +43,8 @@ class SIFTFlannBasedMatcher:
             if m.distance < self._threshold * n.distance:
                 good.append([m])
 
-        R = float(len(good)) * 2 / (len(kp1) + len(kp2))
+        R = (float(len(good)) / len(kp1) + float(len(good)) / len(kp2)) / 2
+        # R = float(len(good)) * 2 / (len(kp1) + len(kp2))
         log.info(R)
 
         imgX = cv2.drawMatchesKnn(img1_h, kp1, img2_h, kp2, good, None, flags=2)
@@ -81,7 +82,8 @@ class SIFTFlannBasedMatcher:
                 if m.distance < self._threshold * n.distance:
                     good.append([m])
 
-            R = float(len(good)) * 2 / (len(des) + len(v["des"]))
+            R = (float(len(good)) / len(des) + float(len(good)) / len(v["des"])) / 2
+            # R = float(len(good)) * 2 / (len(des) + len(v["des"]))
             retMe[k] = R
 
         return retMe
