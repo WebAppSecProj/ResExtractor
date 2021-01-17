@@ -95,8 +95,9 @@ class AppYet(BaseModule):
                     web_url.append(tmp)
         weburl = ("".join(web_url)).replace('"Type":"Link","Data":"', ' ')
         # ④、关闭jvm
-        jpype.shutdownJVM()
-        return ("{} {}".format(feedurl, weburl))
+        # 执行关闭jvm后，后续其他模块执行jpype.startJVM()时，会提示 OSError: JVM cannot be restarted
+        # jpype.shutdownJVM()
+        return "{} {}".format(feedurl, weburl)
 
     def doSigCheck(self):
         if self.host_os == "android":
