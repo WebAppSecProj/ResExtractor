@@ -85,7 +85,9 @@ class appery_ios(BaseModule):
                 if child.tag == "content":
                     content = child.attrib['src']
         launch_path = "www/" + content
-
+        pattern = re.compile(r'^[a-z-]+://')
+        if pattern.match(content):
+            launch_path = content
         self._dump_info(extract_folder, launch_path)
         shutil.rmtree(tmp_folder)
         return extract_folder, launch_path
