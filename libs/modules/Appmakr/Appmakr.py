@@ -5,6 +5,7 @@
 # @FileName: Appmakr.py
 
 import logging
+import re
 import shutil
 import sys
 
@@ -49,9 +50,13 @@ class Appmakr(BaseModule):
             t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
             root = t.getroot()
             for child in root:
-                if child.tag == "content":
+                if "content" in child.tag:
                     content = child.attrib['src']
-        launch_path = "assets/www/" + content  # in java code, launch is "file:///android_asset/www/" + content
+        launch_path = "assets/www/" + content  # in java code, start page is "file:///android_asset/www/" + content
+        pattern = re.compile(r'^[a-z-]+://')
+        if pattern.match(content):
+            launch_path = content
+
         self._dump_info(extract_folder, launch_path)
 
         # clean env
