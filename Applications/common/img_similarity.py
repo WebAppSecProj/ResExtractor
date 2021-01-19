@@ -61,7 +61,7 @@ class SIFTFlannBasedMatcher:
         # https://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html
         height, width = img_h.shape[:2]
         mask = np.zeros(img_h.shape[:2], dtype=np.uint8)
-        cv2.rectangle(mask, (0, int(height/30)), (width, int(28*height/30)), (255), thickness=-1)
+        cv2.rectangle(mask, (0, int(height/30)), (width, int(27*height/30)), (255), thickness=-1)
 
         kp, des = self._sift.detectAndCompute(img_h, mask)
 
@@ -90,7 +90,7 @@ class SIFTFlannBasedMatcher:
             if len(v["des"]) < self._key_point_threshold:
                 log.error("img has no enough keypoint: {}".format(k))
                 continue
-            if k == file:       # does not compare to itself
+            if k == os.path.splitext(os.path.basename(file))[-2]:       # does not compare to itself
                 continue
             try:
                 matches = self._flann.knnMatch(des, v["des"], k=2)
@@ -109,7 +109,7 @@ class SIFTFlannBasedMatcher:
 
         return retMe
 
-    def build_db(self, path, db_file, incremental = False):
+    def build_signature_db(self, path, db_file, incremental = False):
         '''
         db formant:
         path: {"des": des}
@@ -132,10 +132,11 @@ class SIFTFlannBasedMatcher:
                 file_in_check = os.path.join(os.path.abspath(dirpath), f)
                 if not os.path.isfile(file_in_check):
                     continue
-                if db.__contains__(file_in_check) and incremental:
+                if db.__contains__(os.path.splitext(os.path.basename(file_in_check))[-2]) and incremental:
                     continue
                 if os.path.splitext(file_in_check)[-1].lower() not in img_extension:
                     continue
+
 
                 try:
                     kp, des, _ = self._get_kp_des(file_in_check)
@@ -146,7 +147,8 @@ class SIFTFlannBasedMatcher:
                 if len(kp) == 0:
                     log.error("img has no keypoint: {}".format(file_in_check))
                     continue
-                db[file_in_check] = {"des": des}
+
+                db[os.path.splitext(os.path.basename(file_in_check))[-2]] = {"des": des}
 
         log.info("total {} image files are found".format(len(db)))
 

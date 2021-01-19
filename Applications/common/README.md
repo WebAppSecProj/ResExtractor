@@ -8,7 +8,7 @@ m = SIFTFlannBasedMatcher()
 ```
 2. build the keypoint db firstly. Feed build_db with searching path and path of the `pkl` file
 ```python
-m.build_db("../../working_folder", "../../img.db.pkl")
+m.build_signature_db("../../working_folder", "../../img.db.pkl", incremental = False)
 ```
 3. Then feed an img file and get the result.
 ```python
@@ -28,7 +28,7 @@ for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
     m = HTMLSimilarityWrapper()
 
     # "build db firstly"
-    m.build_db("../../working_folder", "All.pkl")
+    m.build_signature_db("../../working_folder", "All.pkl", incremental = False)
 
     "compare one by one"
     html = "/Users/panmac/Desktop/workspace/WebAppSecProj/ResExtractor/working_folder/yingyuan.2021.01.12/APICloud/882f9292700f68b221f7716b7bceec9b50b1892f/localres/widget/error/error.html"

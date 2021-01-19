@@ -15,7 +15,7 @@ optional arguments:
 ```
 e.g.,
 ```commandline
-python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --img-file="working_folder/snapshot/841d85d5c6460e629134433c8200811fb58b4970.png" --db-file="Applications/ScreenShotSimilarity/search_result.pkl" --DEBUG=10
+python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --img-file="working_folder/snapshot/e59fda3a65ad05b4df834a66db32818a52c82320.png" --db-file="Applications/ScreenShotSimilarity/screenshot_signature_db.pkl" --DEBUG=10
 ```
 
 # ScreenShotSimilarityCluster.py
@@ -36,5 +36,8 @@ optional arguments:
 
 e.g., 
 ```commandline
-$ python3 ScreenShotSimilarityBatch.py --img-folder="working_folder/snapshot" --db-file="Applications/ScreenShotSimilarity/screenshot.pkl" --sim-threshold=0.3
+$ python3 ScreenShotSimilarityBatch.py --db-file="Applications/ScreenShotSimilarity/screenshot_signature_db.pkl" --img-folder="working_folder/snapshot" --sim-threshold=0.3
 ```
+
+# Format of db file
+{hash-of-apk, {"des": signature-of-img}}

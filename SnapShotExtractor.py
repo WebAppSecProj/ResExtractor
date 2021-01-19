@@ -67,25 +67,37 @@ class SnapShotExtractor:
             log.error("lunch failed.")
             return False
 
+        snap_shot_file_name = self._gethash(apk_file)
+        # # take screen shot
+        # snap_shot_file = "/sdcard/Splash-{}.png".format(snap_shot_file_name)
+        # proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
+        #                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # r = (proc.communicate()[1]).decode()
+        # if r != "":
+        #     log.error("screencap failed.")
+        #     return False
+        #
+        # time.sleep(2)
+        #
+        # # retrieve screenshot
+        # proc = subprocess.Popen("adb pull '{}' '{}'".format(snap_shot_file, local_folder), shell=True, stdin=subprocess.PIPE,
+        #                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # r = (proc.communicate()[0]).decode()
+        # if "error" in r:
+        #     log.error("adb pull failed.")
+        #     return False
+
+
         # wait for a while
-        time.sleep(10)
+        time.sleep(15)
 
         # take screen shot
-        snap_shot_file_name = self._gethash(apk_file)
         snap_shot_file = "/sdcard/{}.png".format(snap_shot_file_name)
         proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
         if r != "":
             log.error("screencap failed.")
-            return False
-
-        # retrieve screenshot
-        proc = subprocess.Popen("adb pull '{}' '{}'".format(snap_shot_file, local_folder), shell=True, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        r = (proc.communicate()[0]).decode()
-        if "error" in r:
-            log.error("adb pull failed.")
             return False
 
         # uninstall
