@@ -16,3 +16,4 @@ deprecated
 opencv-python
 opencv-contrib-python
 NumPy
+networkx

@@ -38,7 +38,7 @@ def main():
     m = img_similarity.SIFTFlannBasedMatcher()
 
     if args.img_folder and args.db_file:
-        m.build_db(args.img_folder, args.db_file)
+        m.build_db(args.img_folder, args.db_file, incremental=True)
 
     if args.db_file and args.img_file:
         res = m.search_img(args.img_file, args.db_file)
@@ -49,8 +49,6 @@ def main():
                     showTime += 1
                     m.debug_(args.img_file, i[0])
             log.info(i)
-
-    # 0.03 is likely a good threshold
 
     end = time.time()
     log.info(end - begin)

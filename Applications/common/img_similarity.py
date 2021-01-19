@@ -12,6 +12,7 @@ import os
 import pickle
 import logging
 import time
+import numpy as np
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -53,11 +54,27 @@ class SIFTFlannBasedMatcher:
         cv2.destroyAllWindows()
 
     def _get_kp_des(self, imgname):
+
         img_h = cv2.imread(imgname)
-        kp, des = self._sift.detectAndCompute(img_h, None)  # des是描述子
+        # remove header and footer
+        # https://stackoverflow.com/questions/46447073/how-to-ignore-part-of-a-image-during-feature-extraction-in-opencv
+        # https://docs.opencv.org/3.1.0/d6/d00/tutorial_py_root.html
+        height, width = img_h.shape[:2]
+        mask = np.zeros(img_h.shape[:2], dtype=np.uint8)
+        cv2.rectangle(mask, (0, int(height/30)), (width, int(28*height/30)), (255), thickness=-1)
+
+        kp, des = self._sift.detectAndCompute(img_h, mask)
+
+        # imgX = cv2.drawKeypoints(img_h, kp, None, color=(255, 0, 0))
+        # cv2.imshow('keypoint-4-debug', imgX)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+
         return kp, des, img_h
 
-    def search_img(self, file, db_file, DEBUG=False):
+    def search_img(self, file, db_file):
+        # if "0a9f77be095a7640ff2f9acaac3ee02727cfe580" in file:
+        #     log.info("foo")
         retMe = {}
         if not os.access(db_file, os.R_OK):
             log.info("build db first")
@@ -66,10 +83,14 @@ class SIFTFlannBasedMatcher:
             db = pickle.load(f)
 
         kp, des, _ = self._get_kp_des(file)
+        if len(kp) == 0:
+            return retMe
         for k, v in db.items():
             # if keypoint < 100
             if len(v["des"]) < self._key_point_threshold:
                 log.error("img has no enough keypoint: {}".format(k))
+                continue
+            if k == file:       # does not compare to itself
                 continue
             try:
                 matches = self._flann.knnMatch(des, v["des"], k=2)
@@ -88,24 +109,30 @@ class SIFTFlannBasedMatcher:
 
         return retMe
 
-    def build_db(self, path, db_file):
+    def build_db(self, path, db_file, incremental = False):
         '''
         db formant:
         path: {"des": des}
         '''
         img_extension = [".bmp", ".dib", ".jpeg", ".jpg", ".jpe", ".jp2", ".png", ".webp", ".pbm", ".pgm", ".ppm", ".pxm", ".pnm", ".pfm", ".sr", ".tiff", ".tif", ".exr", ".hdr", ".pic"] # check cv2.imread
-        if not os.access(db_file, os.R_OK):
+
+        if incremental == False and os.path.exists(db_file):
+            os.remove(db_file)
             db = {}
-        else:
+        elif incremental == True and os.path.exists(db_file):
             with open(db_file, 'rb') as f:
                 db = pickle.load(f)
+        elif incremental == False and not os.path.exists(db_file):
+            db = {}
+        elif incremental == True and not os.path.exists(db_file):
+            db = {}
 
         for dirpath, dirnames, filenames in os.walk(path):
             for f in filenames:
                 file_in_check = os.path.join(os.path.abspath(dirpath), f)
                 if not os.path.isfile(file_in_check):
                     continue
-                if db.__contains__(file_in_check):
+                if db.__contains__(file_in_check) and incremental:
                     continue
                 if os.path.splitext(file_in_check)[-1].lower() not in img_extension:
                     continue

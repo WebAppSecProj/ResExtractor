@@ -97,7 +97,7 @@ $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 
 ## 2.4 To retrieve snapshot
 Follow the [instruction](https://github.com/WebAppSecProj/RemovePermissionGrant) to build your own rom firstly.  
-Then use `SnapShotExtractor.py` to retrieve snapshot. The results are reside in `working_folder/snapshot`
+Then use `SnapShotExtractor.py` to retrieve snapshot. The results reside in `working_folder/snapshot`
 ```commandline
 $usage: SnapShotExtractor.py [-h] --apk-folder APK_FOLDER
 
@@ -167,6 +167,25 @@ e.g.,
 ```commandline
 $ python3 ScreenShotSimilarity.py --img-folder="working_folder/snapshot" --img-file="working_folder/snapshot/3eca26b5485de89b2f122634d51a7dbd9c50af19.png" --db-file="Applications/ScreenShotSimilarity/All.pkl" --DEBUG=10
 ```
+Also, you can use:
+```commandline
+$ ScreenShotSimilarityCluster.py [-h] [--img-folder IMG_FOLDER] --db-file
+                                      DB_FILE [--sim-threshold SIM_THRESHOLD]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --img-folder IMG_FOLDER
+                        Folder contains img files.
+  --db-file DB_FILE     db file for preserving keypoint of images.
+  --sim-threshold SIM_THRESHOLD
+                        similarity threshold.
+```
+
+e.g., 
+```commandline
+$ python3 ScreenShotSimilarityBatch.py --img-folder="working_folder/snapshot" --db-file="Applications/ScreenShotSimilarity/screenshot.pkl" --sim-threshold=0.3
+```
+
 ## 3.2 HTML similarity analysis
 
 ```commandline

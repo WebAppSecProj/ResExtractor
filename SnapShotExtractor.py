@@ -16,7 +16,7 @@ import subprocess
 import platform
 import re
 import hashlib
-
+import time
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -67,8 +67,12 @@ class SnapShotExtractor:
             log.error("lunch failed.")
             return False
 
+        # wait for a while
+        time.sleep(10)
+
         # take screen shot
-        snap_shot_file = "/sdcard/{}.png".format(self._gethash(apk_file))
+        snap_shot_file_name = self._gethash(apk_file)
+        snap_shot_file = "/sdcard/{}.png".format(snap_shot_file_name)
         proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
@@ -95,8 +99,9 @@ class SnapShotExtractor:
         # clean
         proc = subprocess.Popen("adb shell rm '{}'".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        r = (proc.communicate()[0]).decode()
+        _ = (proc.communicate()[0]).decode()
 
+        log.info("snap shot of {} is stored to {}".format(apk_file, os.path.join(local_folder, snap_shot_file_name)))
         return True
 
 def main():
@@ -122,7 +127,10 @@ def main():
         log.error("adb command not found.")
         sys.exit(1)
 
-    s = SnapShotExtractor(args.device_serial)
+    # if args.device_serial:
+    #     s = SnapShotExtractor(args.device_serial)
+    # else:
+    s = SnapShotExtractor("")
 
     for dirpath, dirnames, ifilenames in os.walk(args.apk_folder):
         for fs in ifilenames:
