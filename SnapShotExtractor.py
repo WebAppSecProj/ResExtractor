@@ -45,9 +45,9 @@ class SnapShotExtractor:
         log.info("install")
         proc = subprocess.Popen("adb install -r '{}'".format(apk_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        r = (proc.communicate()[0]).decode()
+        r = (proc.communicate()[1]).decode()
         log.info("install: {}".format(r))
-        if r.find("Success") == -1:
+        if r.find("failed") != -1:
             log.error("install failed.")
             return False
 
@@ -65,7 +65,9 @@ class SnapShotExtractor:
         proc = subprocess.Popen("adb shell am start -n {}/{}".format(package, lunch_activity), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
-        log.info("start: {}".format(r))
+        log.info("start: {}".format((proc.communicate()[0]).decode()))
+        log.info("start: {}".format((proc.communicate()[1]).decode()))
+
         if "Error" in r:
             log.error("lunch failed.")
             return False
@@ -127,6 +129,10 @@ class SnapShotExtractor:
 
 def main():
 
+    # s = SnapShotExtractor("")
+    # snapshot_folder = os.path.join(Config.Config["working_folder"], Config.Config["snapshot_folder"])
+    # s.get_screen_shot("/hd/sample/803APK/202007APK_pkg/197684CDC55C94AE9BCD035D39D46C226/2020年7月16日李天宇被骗案_202007152035566272339737_QQ_8.4.1.apk", snapshot_folder)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--apk-folder', required=True, help="Folder contains apk files.")
     # parser.add_argument('--device-serial', help="set the device serial, use `adb devices` to find the device.")
@@ -159,6 +165,7 @@ def main():
             if not os.path.isfile(file_in_check):
                 continue
             if Checker.doAPKCheck(file_in_check):
+                log.info("processing file: {}.".format(file_in_check))
                 r = s.get_screen_shot(file_in_check, snapshot_folder)
                 if r == True:
                     log.info("processing file: {} success.".format(file_in_check))

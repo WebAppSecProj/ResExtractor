@@ -21,6 +21,7 @@ for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
         m.debug_(img, i[0]) # will show the result one by one
     log.info(i)
 ```
+
 # HTMLSimilarityWrapper
 
 ## usage:
@@ -37,4 +38,22 @@ for i in sorted(res.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
         log.info(i)
 ```
 
+# OCR
+
+## usage:
+select a module and feed an image, then get the result. e.g.,  
+```python
+    file = '/home/demo/Desktop/WebAppSec/ResExtractor/working_folder/snapshot/0d648ac6b03cb7d152efe533a4a7d3544cfaa79a.png'
+    o = OCR_tesseract()
+    R = o.get_literal(file)
+    log.info(R)
+
+    o = OCR_baiduAI()
+    R = o.get_literal(file)
+    # process error
+    if R.__contains__("error_code"):
+        log.error("check https://ai.baidu.com/ai-doc/OCR/zkibizyhz for reason.")
+    for r in R["words_result"]:
+        log.info(r["words"])
+```
 
