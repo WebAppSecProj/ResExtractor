@@ -41,3 +41,7 @@ $ python3 ScreenShotSimilarityBatch.py --db-file="Applications/ScreenShotSimilar
 
 # Format of db file
 {hash-of-apk, {"des": signature-of-img}}
+
+# TODO
+A fine strategy is needed, e.g., remove the pic without enough keypoint. take snapshot per minute and remove the useless image by using template.  
+Or pursue a new similarity analysis algorithm.   

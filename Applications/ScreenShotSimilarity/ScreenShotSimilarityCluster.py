@@ -85,7 +85,6 @@ def main():
 
     GN = []
     for g in G:
-
         skip = False
         for gt in GN:
             if g.issubset(gt):      # has been merged
@@ -108,6 +107,8 @@ def main():
                 break
         GN.append(gn)
 
+    for i in GN:
+        log.info(i)
     # ugly view.
     G = nx.DiGraph()
     for k, v in db.items():

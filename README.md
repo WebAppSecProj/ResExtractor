@@ -41,7 +41,7 @@ optional arguments:
                         Provide name of this task, such that we can classify
                         the analysis result.
 ```
-e.g., :
+e.g.,
 ```
 $ python3 ExtractorJanus.py --secret-key=123456 --start-date=2020-10-01 --end-date=2020-10-02 --task-name=janus.2020.10.01-2020.10.02
 ```
@@ -57,7 +57,7 @@ optional arguments:
                         Provide name of this task, such that we can classify
                         the analysis result.
 ```
-e.g., :
+e.g.,
 ```
 python3 ExtractorBatch.py --apk-folder="/home/demo/Desktop/sample/xingyuan/2021-01-04" --task-name="xingyuan.2020.01.05"
 ```
@@ -73,7 +73,7 @@ optional arguments:
                         Provide name of this task, such that we can classify
                         the analysis result.
 ```
-e.g., :
+e.g.,
 ```
 $ python3 Extractor.py --apk-file=/home/demo/Desktop/WebAppSec/ResExtractor/test_case/AppYet/example.apk --task-name=foo
 ```
@@ -90,7 +90,7 @@ optional arguments:
                         Provide name of the task, such that we can reach the
                         local resource.
 ```
-e.g., :
+e.g.,
 ```
 $ python3 RemoteExtractor.py --task-name="xingyuan.2020.01.05"
 ```

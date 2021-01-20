@@ -42,10 +42,11 @@ class SnapShotExtractor:
 
     def get_screen_shot(self, apk_file, local_folder):
 
-        # install
+        log.info("install")
         proc = subprocess.Popen("adb install -r '{}'".format(apk_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
+        log.info("install: {}".format(r))
         if r.find("Success") == -1:
             log.error("install failed.")
             return False
@@ -60,9 +61,11 @@ class SnapShotExtractor:
             log.error("no lunch information.")
             return False
 
+        log.info("start")
         proc = subprocess.Popen("adb shell am start -n {}/{}".format(package, lunch_activity), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
+        log.info("start: {}".format(r))
         if "Error" in r:
             log.error("lunch failed.")
             return False
@@ -92,26 +95,32 @@ class SnapShotExtractor:
         time.sleep(15)
 
         # take screen shot
+        log.info("screencap")
         snap_shot_file = "/sdcard/{}.png".format(snap_shot_file_name)
         proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
+        log.info("screencap: {}".format(r))
         if r != "":
             log.error("screencap failed.")
             return False
 
         # uninstall
+        log.info("uninstall")
         proc = subprocess.Popen("adb uninstall '{}'".format(package), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
+        log.info("uninstall: {}".format(r))
         if "Failure" in r:
             log.error("adb uninstall failed.")
             return False
 
         # clean
+        log.info("rm")
         proc = subprocess.Popen("adb shell rm '{}'".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        _ = (proc.communicate()[0]).decode()
+        r = (proc.communicate()[0]).decode()
+        log.info("rm: {}".format(r))
 
         log.info("snap shot of {} is stored to {}".format(apk_file, os.path.join(local_folder, snap_shot_file_name)))
         return True
