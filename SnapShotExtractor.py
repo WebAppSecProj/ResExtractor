@@ -84,14 +84,6 @@ class SnapShotExtractor:
         #
         # time.sleep(2)
         #
-        # # retrieve screenshot
-        # proc = subprocess.Popen("adb pull '{}' '{}'".format(snap_shot_file, local_folder), shell=True, stdin=subprocess.PIPE,
-        #                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # r = (proc.communicate()[0]).decode()
-        # if "error" in r:
-        #     log.error("adb pull failed.")
-        #     return False
-
 
         # wait for a while
         time.sleep(15)
@@ -105,6 +97,14 @@ class SnapShotExtractor:
         log.info("screencap: {}".format(r))
         if r != "":
             log.error("screencap failed.")
+            return False
+
+        # retrieve screenshot
+        proc = subprocess.Popen("adb pull '{}' '{}'".format(snap_shot_file, local_folder), shell=True, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        r = (proc.communicate()[0]).decode()
+        if "error" in r:
+            log.error("adb pull failed.")
             return False
 
         # uninstall
