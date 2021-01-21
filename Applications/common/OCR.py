@@ -81,7 +81,7 @@ def main():
     '''
     begin = time.time()
     # o = OCR_tesseract("/home/demo/Desktop/WebAppSec/ResExtractor/working_folder/snapshot/9715c1fffc9b6beb1860b3e93dee2b8071b9ac15.png")
-    file = '/home/demo/Desktop/WebAppSec/ResExtractor/working_folder/snapshot/0d648ac6b03cb7d152efe533a4a7d3544cfaa79a.png'
+    file = '/home/demo/Desktop/WebAppSec/ResExtractor/working_folder/snapshot/ce27081e970cfa016d338a21005fe940ee3de2be.png'
     o = OCR_tesseract()
     R = o.get_literal(file)
     log.info(R)
@@ -90,7 +90,7 @@ def main():
     R = o.get_literal(file)
     # process error
     if R.__contains__("error_code"):
-        log.error("check https://ai.baidu.com/ai-doc/OCR/zkibizyhz for reason.")
+        log.error("visit https://ai.baidu.com/ai-doc/OCR/zkibizyhz for reason.")
     for r in R["words_result"]:
         log.info(r["words"])
 

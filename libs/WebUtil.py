@@ -7,18 +7,11 @@ Created on Wed Dec 23 19:14:18 2020
 """
 
 import os
-import json
-import time
 import re
 import requests
 import logging
 import sys
-import urllib
-import shutil
 import ssl
-import socket
-import urllib.request
-import urllib.parse
 import subprocess
 
 from Wappalyzer import Wappalyzer, WebPage

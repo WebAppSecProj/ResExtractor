@@ -56,4 +56,6 @@ select a module and feed an image, then get the result. e.g.,
     for r in R["words_result"]:
         log.info(r["words"])
 ```
+Other framework:
+https://github.com/chineseocr/chineseocr
 
