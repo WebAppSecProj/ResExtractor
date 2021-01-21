@@ -40,7 +40,7 @@
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
 |37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
-|39| [Appconfector](http://www.appconfector.de)  | - | - | - | - |
+|39| [Appconfector](http://www.appconfector.de)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
 |41| [Appsme](http://www.appsme.com/)  | - | - | - | - |
 |42| [App Titan](http://www.apptitan.de/)  | - | - | - | - |
@@ -65,6 +65,7 @@
 |61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
 |62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
 |63| [yunedit](https://www.yunedit.com/)  | Y | N | - | - |  |
+|63| [apkeditor](https://apkeditor.cn/)  | Y | Y | - | - |  |
 
 ```
 Y: Module available.
