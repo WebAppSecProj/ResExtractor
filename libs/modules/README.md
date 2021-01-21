@@ -64,6 +64,7 @@
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
 |61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
 |62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
+|63| [yunedit](https://www.yunedit.com/)  | Y | N | - | - |  |
 
 ```
 Y: Module available.

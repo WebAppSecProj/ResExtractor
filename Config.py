@@ -42,6 +42,7 @@ Config = {
         ("libs.modules.AppInventor.AppInventor", "AppInventor"),
         ("libs.modules.SeattleCloud.SeattleCloud", "SeattleCloud"),
         ("libs.modules.Biznessapps.Biznessapps", "Biznessapps"),
+        ("libs.modules.yunedit.yunedit", "yunedit"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
