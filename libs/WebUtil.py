@@ -117,7 +117,7 @@ class WebUtil:
             os.makedirs(storage_path)
 
         log.info("start crawling: {}".format(self._url))
-        proc = subprocess.Popen("wget -r -l=1 --no-check-certificate -k --quota=20M {} -P '{}'".format(self._url, storage_path), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("wget -r -l 1 --no-check-certificate -k --quota=20M {} -P '{}'".format(self._url, storage_path), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _ = (proc.communicate()[0]).decode()
 
