@@ -44,6 +44,7 @@ Config = {
         ("libs.modules.Biznessapps.Biznessapps", "Biznessapps"),
         ("libs.modules.yunedit.yunedit", "yunedit"),
         ("libs.modules.apkeditor.apkeditor", "apkeditor"),
+        ("libs.modules.AppPark.AppPark.py", "AppPark"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
