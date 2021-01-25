@@ -42,11 +42,12 @@ class SnapShotExtractor:
 
     def get_screen_shot(self, apk_file, local_folder):
 
-        # install
+        log.info("install")
         proc = subprocess.Popen("adb install -r '{}'".format(apk_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        r = (proc.communicate()[0]).decode()
-        if r.find("Success") == -1:
+        r = (proc.communicate()[1]).decode()
+        log.info("install: {}".format(r))
+        if r.find("failed") != -1:
             log.error("install failed.")
             return False
 
@@ -60,22 +61,40 @@ class SnapShotExtractor:
             log.error("no lunch information.")
             return False
 
+        log.info("start")
         proc = subprocess.Popen("adb shell am start -n {}/{}".format(package, lunch_activity), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
+        log.info("start: {}".format((proc.communicate()[0]).decode()))
+        log.info("start: {}".format((proc.communicate()[1]).decode()))
+
         if "Error" in r:
             log.error("lunch failed.")
             return False
 
+        snap_shot_file_name = self._gethash(apk_file)
+        # # take screen shot
+        # snap_shot_file = "/sdcard/Splash-{}.png".format(snap_shot_file_name)
+        # proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
+        #                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # r = (proc.communicate()[1]).decode()
+        # if r != "":
+        #     log.error("screencap failed.")
+        #     return False
+        #
+        # time.sleep(2)
+        #
+
         # wait for a while
-        time.sleep(10)
+        time.sleep(15)
 
         # take screen shot
-        snap_shot_file_name = self._gethash(apk_file)
+        log.info("screencap")
         snap_shot_file = "/sdcard/{}.png".format(snap_shot_file_name)
         proc = subprocess.Popen("adb shell screencap -p {}".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[1]).decode()
+        log.info("screencap: {}".format(r))
         if r != "":
             log.error("screencap failed.")
             return False
@@ -89,22 +108,30 @@ class SnapShotExtractor:
             return False
 
         # uninstall
+        log.info("uninstall")
         proc = subprocess.Popen("adb uninstall '{}'".format(package), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
+        log.info("uninstall: {}".format(r))
         if "Failure" in r:
             log.error("adb uninstall failed.")
             return False
 
         # clean
+        log.info("rm")
         proc = subprocess.Popen("adb shell rm '{}'".format(snap_shot_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        _ = (proc.communicate()[0]).decode()
+        r = (proc.communicate()[0]).decode()
+        log.info("rm: {}".format(r))
 
         log.info("snap shot of {} is stored to {}".format(apk_file, os.path.join(local_folder, snap_shot_file_name)))
         return True
 
 def main():
+
+    # s = SnapShotExtractor("")
+    # snapshot_folder = os.path.join(Config.Config["working_folder"], Config.Config["snapshot_folder"])
+    # s.get_screen_shot("/hd/sample/803APK/202007APK_pkg/197684CDC55C94AE9BCD035D39D46C226/2020年7月16日李天宇被骗案_202007152035566272339737_QQ_8.4.1.apk", snapshot_folder)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--apk-folder', required=True, help="Folder contains apk files.")
@@ -138,6 +165,7 @@ def main():
             if not os.path.isfile(file_in_check):
                 continue
             if Checker.doAPKCheck(file_in_check):
+                log.info("processing file: {}.".format(file_in_check))
                 r = s.get_screen_shot(file_in_check, snapshot_folder)
                 if r == True:
                     log.info("processing file: {} success.".format(file_in_check))

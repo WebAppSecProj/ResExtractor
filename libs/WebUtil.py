@@ -7,18 +7,11 @@ Created on Wed Dec 23 19:14:18 2020
 """
 
 import os
-import json
-import time
 import re
 import requests
 import logging
 import sys
-import urllib
-import shutil
 import ssl
-import socket
-import urllib.request
-import urllib.parse
 import subprocess
 
 from Wappalyzer import Wappalyzer, WebPage
@@ -124,7 +117,7 @@ class WebUtil:
             os.makedirs(storage_path)
 
         log.info("start crawling: {}".format(self._url))
-        proc = subprocess.Popen("wget -r -l=1 --no-check-certificate -k --quota=20M {} -P '{}'".format(self._url, storage_path), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("wget -r -l 1 --no-check-certificate -k --quota=20M {} -P '{}'".format(self._url, storage_path), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _ = (proc.communicate()[0]).decode()
 
