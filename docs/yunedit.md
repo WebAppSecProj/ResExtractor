@@ -1,4 +1,4 @@
-# yunedit Android Rev
+# yunedit Rev
 
 作者：fy，如需转载请注明出处
 
