@@ -57,6 +57,7 @@ class Trigger(BaseModule):
                 elif 'live' in config_json['core']['general']:
                     if 'enabled' in config_json['core']['general']['live']:
                         launch_path = config_json["core"]["general"]["live"]['url']
+        self._dump_info(extract_folder, launch_path)
         # clean env
         shutil.rmtree(tmp_folder)
         return extract_folder, launch_path

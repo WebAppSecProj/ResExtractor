@@ -17,6 +17,8 @@ Config = {
     "decrypt_jar": "./libs/bin/ResDecode.jar",
 
     "working_folder": "working_folder",
+    "snapshot_folder": "snapshot",
+
     "local_res_folder": "localres",
     "local_res_info": "local_res_info.json",
     "remote_res_folder": "remoteres",
@@ -39,6 +41,11 @@ Config = {
         ("libs.modules.AppsGeyser.AppsGeyser", "AppsGeyser"),
         ("libs.modules.AppInventor.AppInventor", "AppInventor"),
         ("libs.modules.SeattleCloud.SeattleCloud", "SeattleCloud"),
+        ("libs.modules.Biznessapps.Biznessapps", "Biznessapps"),
+        ("libs.modules.yunedit.yunedit", "yunedit"),
+        ("libs.modules.apkeditor.apkeditor", "apkeditor"),
+        ("libs.modules.AppPark.AppPark", "AppPark"),
+        ("libs.modules.yimen.yimen", "yimen"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
@@ -47,10 +54,11 @@ Config = {
         ("libs.modules.NativeScript.NativeScript", "NativeScript"),
         ("libs.modules.GoodBarber.GoodBarber", "GoodBarber"),
         ("libs.modules.YunDaBao.YunDaBao", "YunDaBao"),
-        # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Ionic.Ionic", "Ionic"),
-        ("libs.modules.Cordova.Cordova", "Cordova"),
         ("libs.modules.Appmakr.Appmakr", "Appmakr"),
+        ("libs.modules.appery.appery", "appery"),
+        # should put the low-level boilerplate framework at the end of this list
+        ("libs.modules.Cordova.Cordova", "Cordova"),
     ]),
 
 }

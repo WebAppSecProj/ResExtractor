@@ -66,6 +66,10 @@ def doEnvCheck():
         log.error("python3 required.")
         return False
 
+    if sys.version_info.minor < 8:
+        log.error("python3.8 or above required.")
+        return False
+
     # java env required
     proc = subprocess.Popen("java -version", shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)

@@ -72,10 +72,8 @@ static.maiduo.com
 pc9828.com
 www.mescroll.com
 raw.githubusercontent.com
-goo.gl
 daneden.github.io
 d38s53scas00u7.cloudfront.net
-bit.ly
 www.baidu.com
 placehold.it
 people.mozilla.org
@@ -89,3 +87,10 @@ m.sqkb.com
 kjur.github.io
 infra.spec.whatwg.org
 dev.w3.org
+developer.apple.com
+www.ecma-international.org
+blog.tradingview.com
+lodash.com
+git.io
+www.denso-wave.com
+iosoteric.com

@@ -5,12 +5,10 @@ Created on Wed Dec 25 2020
 @author: beizishaozi
 """
 import logging
+import re
 import sys
 import zipfile
 import shutil
-import subprocess
-import Config as Config
-import platform
 
 try:
     import xml.etree.cElementTree as ET
@@ -34,74 +32,44 @@ Reference:
 class Cordova(BaseModule):
     def doSigCheck(self):
         if self.host_os == "android":
-            # Cordova app's signature is the apk which contain the file "/assets/www/cordova.js /assets/www/cordova_plugin.js /assets/www/cordova-js-src"
-            zf = zipfile.ZipFile(self.detect_file, 'r')
-            flag1 = 0
-            flag2 = 0
-            for f in zf.namelist():
-                if f.startswith("assets/www/cordova-js-src"):
-                    flag1 = 1
-                elif f == "assets/www/cordova.js":
-                    flag2 = flag2 + 1
-                elif f == "assets/www/cordova_plugins.js":
-                    flag2 = flag2 + 1
-            if flag1 + flag2 == 3:
+            # Cordova app's signature is the apk which contain the file "/assets/www/cordova.js /assets/www/cordova_plugins.js /assets/www/cordova-js-src"
+            apk_file = zipfile.ZipFile(self.detect_file)
+            pattern = re.compile(r'^(assets/www/cordova-js-src).*')
+            app_dir = ""
+            for f in apk_file.namelist():
+                m = pattern.match(f)
+                if m is not None:
+                    app_dir = m.group()
+            features = ['assets/www/cordova.js', 'assets/www/cordova_plugins.js']
+            if (set(features) < set(apk_file.namelist())) and (len(app_dir)):
                 return True
-            return False
-
-            # return self._find_main_activity("cordova.MainActivity")
+            return self._find_main_activity("cordova.MainActivity")
         elif self.host_os == "ios":
             log.error("not support yet.")
             return False
-
         return False
 
     def doExtract(self, working_folder):
-
         extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
-        os.makedirs(extract_folder, exist_ok=True)
-        tmp_folder = os.path.join(os.getcwd(), extract_folder, "tmp")
-        os.makedirs(tmp_folder, exist_ok=True)
+        tmp_folder = os.path.join(extract_folder, "tmp")
+        self._apktool(tmp_folder)
 
-        zf = zipfile.ZipFile(self.detect_file, 'r')
-
-        launch_path = ""
-
-        for f in zf.namelist():
-            if f.startswith("assets/www/"):
-
-                td = os.path.dirname(os.path.join(extract_folder, f[len("assets/www/"):]))
-                if not os.access(td, os.R_OK):
-                    os.makedirs(td)
-                with open(os.path.join(extract_folder, f[len("assets/www/"):]), "wb") as fwh:
-                    fwh.write(zf.read(f))
-            elif f == "res/xml/config.xml":
-
-                # extracting the starting page in "<content src="index.html" />" from "res/xml/config.xml"
-                # Ugly coding, I would like to use ElementTree instead.
-
-                proc = subprocess.Popen(
-                    "{} dump xmltree '{}' '{}'".format(self._aapt(), self.detect_file, "res/xml/config.xml"),
-                    shell=True, stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                r = (proc.communicate()[0]).decode()
-                # 只匹配标签src可能存在多个答案，因此还需要配合标签content来确定，应该是标签content之后的第一个src的值才是起始页真正地址
-                launch_path = "no found"
-                contid = r.find("E: :content")
-                if contid >= 0:
-                    cont = r[contid + 11:]
-                    srcid = cont.find("A: src")
-                    if srcid >= 0:
-                        launch_path = (cont[srcid:].split("\""))[1]
-
-                # 只匹配标签src可能存在多个答案
-                # matchObj = re.match(r'(.*)A: src=\"(.*?)\" \((.*)', r, re.S)
-                # if matchObj:
-                #    launch_path = matchObj.group(2)
-                # else:
-                #    log.error("internal error")
+        resource_path = os.path.join(tmp_folder, "assets/www/")
+        shutil.copytree(resource_path, extract_folder, dirs_exist_ok=True)
+        content = "index.html"
+        # if config.xml missing, the default start page is assets/www/index.html
+        if os.path.exists(os.path.join(tmp_folder, "res/xml/config.xml")):
+            t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
+            root = t.getroot()
+            for child in root:
+                if "content" in child.tag:
+                    content = child.attrib['src']
+        launch_path = "assets/www/" + content  # in java code, start page is "file:///android_asset/www/" + content
+        pattern = re.compile(r'^[a-z-]+://')
+        if pattern.match(content):
+            launch_path = content
 
         self._dump_info(extract_folder, launch_path)
         # clean env
@@ -110,16 +78,16 @@ class Cordova(BaseModule):
 
 
 def main():
-    f = "./test_case/Cordova/bjgas.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
-    f = "./test_case/Cordova/a39d09b5d96bbe2715acce62c26788eb7b6a84ce0ba67ee619ff1f1c8d7f0713.apk"  # App Yourself：launcher activity start with "net.ays"
-    f = "./test_case/Cordova/a0812e6bc398784bda36979eae895775da42ca3b6958b134784cd4dc7a99455d.apk"  # hk.com.appbuilder: launcher activity start with "hk.com.appbuilder.cms"
+    f = "./test_case/Cordova/U878d.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+   # f = "./test_case/Cordova/a39d09b5d96bbe2715acce62c26788eb7b6a84ce0ba67ee619ff1f1c8d7f0713.apk"  # App Yourself：launcher activity start with "net.ays"
+   # f = "./test_case/Cordova/a0812e6bc398784bda36979eae895775da42ca3b6958b134784cd4dc7a99455d.apk"  # hk.com.appbuilder: launcher activity start with "hk.com.appbuilder.cms"
+   # f = "./test_case/Cordova/3a60fcc118cbbb09b9b0f14fa47e62a35a.apk"  # start page isn't a local source
+    f = "./test_case/Cordova/justep_app.apk"   # example of Justep
     cordova = Cordova(f, "android")
     if cordova.doSigCheck():
         logging.info("cordova signature Match")
-
         extract_folder, launch_path = cordova.doExtract("working_folder")
         log.info("{} is extracted to {}, the start page is {}".format(f, extract_folder, launch_path))
-
     return
 
 

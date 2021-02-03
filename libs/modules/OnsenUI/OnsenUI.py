@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+import re
 import sys
 import logging
 import shutil
@@ -32,35 +33,30 @@ class OnsenUI(BaseModule):
 
     def doExtract(self, working_folder):
         extract_folder = self._format_working_folder(working_folder)
-
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
-        # os.makedirs(extract_folder, exist_ok=True)
-
         tmp_folder = os.path.join(extract_folder, "tmp")
-        # os.makedirs(tmp_folder, exist_ok=True)
-
         self._apktool(tmp_folder)
 
-        # copy resource dir ("assets/www/") to working_folder
         resource_path = os.path.join(tmp_folder, "assets/www/")
-        # if os.path.exists(resource_path):
-        #     shutil.rmtree(extract_folder)
         shutil.copytree(resource_path, extract_folder, dirs_exist_ok=True)
+        content = "index.html"
+        # if config.xml missing, the default start page is assets/www/index.html
+        if os.path.exists(os.path.join(tmp_folder, "res/xml/config.xml")):
+            t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
+            root = t.getroot()
+            for child in root:
+                if "content" in child.tag:
+                    content = child.attrib['src']
+        launch_path = "assets/www/" + content  # in java code, start page is "file:///android_asset/www/" + content
+        pattern = re.compile(r'^[a-z-]+://')
+        if pattern.match(content):
+            launch_path = content
 
-        # get res/xml/config.xml
-        # read content tag
-        t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
-        root = t.getroot()
-        for child in root:
-            if child.tag == "{http://www.w3.org/ns/widgets}content":
-                content = child.attrib['src']
-        launch_path = "assets/www/" + content  # default content in res/xml/config.xml
         self._dump_info(extract_folder, launch_path)
 
         # clean env
         shutil.rmtree(tmp_folder)
-
         return extract_folder, launch_path
 
 

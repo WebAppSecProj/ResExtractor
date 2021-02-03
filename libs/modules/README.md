@@ -22,7 +22,7 @@
 |18| [Seattle Cloud](http://seattleclouds.com/)  | Y | N | - | - |
 |19| [Andromo](http://www.andromo.com/)  | Y | Y | N | N |
 |20| [Apps Geyser](http://www.appsgeyser.com/)  | Y | Y | N | N |
-|21| [Biznessapps](http://www.biznessapps.com/)  | - | - | - | - |
+|21| [Biznessapps](http://www.biznessapps.com/)  | N | Y | - | - |
 |22| [Appinventor](http://appinventor.mit.edu/explore/)  | Y | Y | N | N |
 |23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N |
 |24| [Como](http://www.como.com/)  | - | - | - | - |
@@ -35,12 +35,12 @@
 |31| [App Yourself](http://appyourself.net/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - |
 |33| [Apps Builder](http://www.apps-builder.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
-|34| [Appmakr](http://appmakr.com/)  | - | - | - | - |
-|35| [appery.io](https://appery.io/)  | - | - | - | - |
+|34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
+|35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
 |37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
-|39| [Appconfector](http://www.appconfector.de)  | - | - | - | - |
+|39| [Appconfector](http://www.appconfector.de)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
 |41| [Appsme](http://www.appsme.com/)  | - | - | - | - |
 |42| [App Titan](http://www.apptitan.de/)  | - | - | - | - |
@@ -58,12 +58,15 @@
 |54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
 |55| [ChuXueYun](https://www.chuxueyun.com/)  | - | Y(E) same to BSL | - | - |  |
 |56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
-|57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
+|57| [AppPark](http://www.apppark.cn/)  | Y | Y | - | - |  |
 |58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
 |59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
-|61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
-|62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | - | - |  |
+|61| [Justep](https://www.justep.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |  |
+|62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
+|63| [yunedit](https://www.yunedit.com/)  | Y | N | - | - |  |
+|63| [apkeditor](https://apkeditor.cn/)  | Y | Y | - | - |  |
+|63| [yimen](https://www.yimenapp.net/)  | Y | Y | - | - |  |
 
 ```
 Y: Module available.
