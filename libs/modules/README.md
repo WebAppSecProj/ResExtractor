@@ -27,7 +27,7 @@
 |23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N |
 |24| [Como](http://www.como.com/)  | - | - | - | - |
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - |
-|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - |
+|26| [Mobincube](http://www.mobincube.com/)  | Y | Y | - | - |
 |27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
 |28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
 |29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
