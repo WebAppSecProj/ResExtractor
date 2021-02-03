@@ -9,6 +9,10 @@ import subprocess
 import json
 import os
 import csv
+import lief
+import zipfile
+import biplist
+import plistlib
 
 import Config as Config
 import platform
@@ -86,6 +90,143 @@ class BaseModule(metaclass=abc.ABCMeta):
             sha1obj = hashlib.sha1()
             sha1obj.update(frh.read())
             return sha1obj.hexdigest()
+
+    def _ipa_extract(self,working_folder):
+        if zipfile.is_zipfile(self.detect_file)==False:
+            return False
+        target_zip_file = zipfile.ZipFile(self.detect_file)
+        target_zip_file.extractall(working_folder)
+        return True
+    
+    def _ipa_app_path(self):
+        target_app_path = os.path.dirname(zipfile.ZipFile(self.detect_file).namelist()[1])
+        return target_app_path
+    
+    def _dir_info_plist(self,tar_dir):
+        plist_path = os.path.join(tar_dir,"Info.plist")
+        #print(plist_path)
+        if os.path.exists(plist_path):
+            return biplist.readPlist(plist_path)
+        return None
+
+    def _dir_info_plist_from_ipa(self,tar_dir):
+        plist_path = os.path.join(tar_dir,"Info.plist")
+        #print(plist_path)
+        target_zip_file = zipfile.ZipFile(self.detect_file)
+        #print(target_zip_file.namelist())
+        if plist_path in target_zip_file.namelist():
+            return plistlib.load(target_zip_file.open(plist_path))
+        return None
+
+    def _check_file_exists(self,target_file_name, is_dir=False):
+        if zipfile.is_zipfile(self.detect_file)==False:
+            return False
+        target_zip_file = zipfile.ZipFile(self.detect_file)
+        target_file_path = os.path.join(self._ipa_app_path(),target_file_name)
+        if is_dir:
+            target_file_path +="/"
+        return target_file_path in target_zip_file.namelist() 
+    
+    def _convert_list_to_int(self, target_list):
+        target_int = 0
+        for tmp_i in range(len(target_list)):
+            target_int += target_list[tmp_i]*pow(0x100,tmp_i)
+        return target_int
+
+    def _get_target_method_add(self, macho_path,target_class_name,target_method_name):
+        if not lief.is_macho(macho_path):
+            log.error("executable not macho ? for {}".format(macho_path))
+            sys.exit()
+        fat_binary = lief.MachO.parse(macho_path,config=lief.MachO.ParserConfig.deep)
+        arm64_binary = None 
+        for tmp_i in range(fat_binary.size):
+            tmp_Binary = fat_binary.at(tmp_i)
+            if tmp_Binary.header.cpu_type == lief.MachO.CPU_TYPES.ARM64:
+                arm64_binary = tmp_Binary
+        if arm64_binary == None:
+            log.error("no arm 64 binary in macho {}".format(self.main_macho_path))
+            sys.exit()
+        for tmp_symbol in arm64_binary.symbols:
+            if "["+target_class_name + " " + target_method_name + "]" in tmp_symbol.name:
+                return tmp_symbol.value
+        class_list_section = arm64_binary.get_section("__objc_classlist")
+        
+        class_size = class_list_section.size // 0x8
+        for tmp_i in range(class_size):
+            tmp_class_data_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(class_list_section.virtual_address+tmp_i*0x8,0x8))
+            '''
+            struct cd_objc2_class {
+	            uint64_t isa;
+	            uint64_t superclass;
+	            uint64_t cache;
+	            uint64_t vtable;
+	            uint64_t data; // points to class_ro_t
+	            uint64_t reserved1;
+	            uint64_t reserved2;
+	            uint64_t reserved3;
+	        }
+            '''
+            tmp_class_ro_t_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_data_add + 0x4*0x8,0x8))
+            '''
+            struct cd_objc2_class_ro_t {
+	            uint32_t flags;
+	            uint32_t instanceStart;
+	            uint32_t instanceSize;
+	            uint32_t reserved; // *** this field does not exist in the 32-bit version ***
+	            uint64_t ivarLayout;
+	            uint64_t name;
+	            uint64_t baseMethods;
+	            uint64_t baseProtocols;
+	            uint64_t ivars;
+	            uint64_t weakIvarLayout;
+	            uint64_t baseProperties;
+	        };
+            '''
+            tmp_class_name_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_ro_t_add + 0x3*0x8,0x8))
+            tmp_class_baseMethods_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_ro_t_add + 0x4*0x8,0x8))
+            print(hex(tmp_class_ro_t_add))
+
+            #read class name 
+            cur_str_add = tmp_class_name_add
+            tmp_class_name = ""
+            while True:
+                #print(hex(cur_str_add))
+                if (arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0]==0):
+                    break
+                tmp_class_name +=str(bytes(arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)),"utf-8")
+                cur_str_add += 0x1
+            print(tmp_class_name)
+            print(hex(tmp_class_baseMethods_add))
+            if tmp_class_name != target_class_name:
+                continue
+            if tmp_class_baseMethods_add == 0:
+                continue
+            # read method array from baseMethods
+            tmp_struct_size = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_baseMethods_add,0x4))
+            tmp_method_size = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_baseMethods_add+0x4,0x4))
+
+            tmp_method_array_add = tmp_class_baseMethods_add+0x8
+
+            if tmp_struct_size != 0x18:
+                log.error("struct size :  {} not 0x18 something wrong".format(tmp_struct_size))
+                sys.exit()
+
+            tmp_method_add = None
+            for tmp_j in tmp_method_size:
+                tmp_method_name_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_method_array_add + tmp_j*tmp_struct_size,0x8))
+                tmp_method_name = ""
+                cur_str_add = tmp_method_name_add
+                while True:
+                    if (arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0]==0):
+                        break
+                    tmp_method_name +=str(arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0],"utf-8")
+                    cur_str_add += 0x1
+                if tmp_method_name == target_method_name:
+                    tmp_method_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_method_array_add + tmp_j*tmp_struct_size + 0x10,0x8))
+                    return tmp_method_add
+        return None
+
+
 
 
     def _log_error(self, module, file, msg):
