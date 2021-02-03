@@ -46,6 +46,7 @@ Config = {
         ("libs.modules.apkeditor.apkeditor", "apkeditor"),
         ("libs.modules.AppPark.AppPark", "AppPark"),
         ("libs.modules.yimen.yimen", "yimen"),
+        ("libs.modules.Mobincube.Mobincube", "Mobincube"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
