@@ -38,7 +38,7 @@
 |34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
 |35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
-|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
+|37| [Mobile Roadie](http://mobileroadie.com/)  | N | Y | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
 |39| [Appconfector](http://www.appconfector.de)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
