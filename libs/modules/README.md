@@ -27,7 +27,7 @@
 |23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N |
 |24| [Como](http://www.como.com/)  | - | - | - | - |
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - |
-|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - |
+|26| [Mobincube](http://www.mobincube.com/)  | Y | Y | - | - |
 |27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
 |28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
 |29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
@@ -38,7 +38,7 @@
 |34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
 |35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
-|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
+|37| [Mobile Roadie](http://mobileroadie.com/)  | N | Y | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
 |39| [Appconfector](http://www.appconfector.de)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
