@@ -8,6 +8,7 @@ import os
 import lief
 import capstone
 import re
+import json
 
 #from libs.modules.APICloud.uzmap_resource_extractor import tools
 from libs.modules.BaseModule import BaseModule
@@ -69,97 +70,6 @@ class APICloud(BaseModule):
 
         return extract_folder, launch_path
     
-    def iOSKeyExtract(self):
-        print(self.main_macho_path)
-        fat_binary = lief.MachO.parse(self.main_macho_path,config=lief.MachO.ParserConfig.deep)
-        arm64_binary = None 
-        for tmp_i in range(fat_binary.size):
-            tmp_Binary = fat_binary.at(tmp_i)
-            if tmp_Binary.header.cpu_type == lief.MachO.CPU_TYPES.ARM64:
-                arm64_binary = tmp_Binary
-        if arm64_binary == None:
-            log.error("no arm 64 binary in macho {}".format(self.main_macho_path))
-            sys.exit()
-        target_function = self._get_target_method_add(self.main_macho_path,"UZPrivacy","getAppKeySecret")
-        if target_function == None:
-            log.error("no +[UZPrivacy getAppKeySecret]")
-            self.app_key = None
-            return 
-
-        start_address = target_function.value 
-        target_code = bytes(arm64_binary.get_content_from_virtual_address(start_address,0x240))
-
-        cap_md = capstone.Cs(capstone.CS_ARCH_ARM64, capstone.CS_MODE_ARM)
-        ins_list = cap_md.disasm(target_code,start_address)[0]
-
-        #目标_data段地址
-        sign_address = 0
-
-        for ins in ins_list:
-            if ins.mnemonic == "adr" | ins.mnemonic == "adrp":
-                target_mem_add = ins.value.mem.base
-                is_target_in_data_section = False
-                for tmp_section in arm64_binary.sections:
-                    if (target_mem_add > tmp_section.virtual_address) & (target_mem_add < (tmp_section.virtual_address + tmp_section.size)):
-                        if "_data" in tmp_section.name:
-                            is_target_in_data_section = True
-                        break
-                if is_target_in_data_section == False:
-                    continue
-                
-                cfstring_address = 0
-                tmp_add_list = arm64_binary.get_content_from_virtual_address(target_mem_add,0x8)
-                for tmp_i in range(0x8):
-                    cfstring_address += tmp_i*0x100 + tmp_add_list[tmp_i]
-                # cfstring struct 
-                string_address = 0
-                tmp_add_list = arm64_binary.get_content_from_virtual_address(cfstring_address + 0x10,0x8)
-                for tmp_i in range(0x8):
-                    string_address += tmp_i*0x100 + tmp_add_list[tmp_i]
-                
-                string_size = 0 
-                tmp_add_list = arm64_binary.get_content_from_virtual_address(cfstring_address + 0x18,0x8)
-                for tmp_i in range(0x8):
-                    string_size += tmp_i*0x100 + tmp_add_list[tmp_i]
-                key_str = str(bytes(arm64_binary.get_content_from_virtual_address(string_address,string_size))) 
-                if (re.match(key_str,"[a-zA-Z0-9]+")==None) | (len(key_str) == 8):
-                    continue
-                sign_address = target_mem_add
-                break
-        
-        key_seed = ""
-        for tmp_i in range(4):
-            target_cfstring_address = 0
-            tmp_add_list = arm64_binary.get_content_from_virtual_address(sign_address + tmp_i,0x8)
-            for tmp_j in range(0x8):
-                target_cfstring_address += tmp_j*0x100 + tmp_add_list[tmp_j]
-
-            tmp_string_address = 0
-            tmp_add_list = arm64_binary.get_content_from_virtual_address(target_cfstring_address + 0x10, 0x8)
-            for tmp_j in range(0x8):
-                tmp_string_address = tmp_j * 0x100 + tmp_add_list[tmp_j]
-            
-            tmp_string_size = 0 
-            tmp_add_list = arm64_binary.get_content_from_virtual_address(target_cfstring_address + 0x18, 0x8)
-            for tmp_j in range(0x8):
-                tmp_string_size = tmp_j * 0x100 + tmp_add_list[tmp_j]
-
-            tmp_str = str(bytes(arm64_binary.get_content_from_virtual_address(tmp_string_address, tmp_string_size)))
-            key_seed += tmp_str
-
-        key_Array =  []
-        for tmp_i in range(0x14):
-            tmp_int = 0 
-            for tmp_j in range(0x4):
-                tmp_int += tmp_j + arm64_binary.get_content_from_virtual_address(sign_address + tmp_i*0x4 + tmp_j, 0x1)
-            key_Array.append(tmp_int)
-        
-        self.app_key = ""
-
-        for tmp_i in range(0x14):
-            tmp_char = key_Array[tmp_i]
-            self.app_key += tmp_char
-    
     def generateiOSLongKey(self):
         filled_list = [0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC,0xD,0xE,0xF]
         result_key = []
@@ -179,30 +89,197 @@ class APICloud(BaseModule):
             result_key[tmp_v10] = tmp_x 
         return result_key
 
+    def iOSKeyExtract(self):
+        #print(self.main_macho_path)
+        fat_binary = lief.MachO.parse(self.main_macho_path,config=lief.MachO.ParserConfig.deep)
+        arm64_binary = None 
+        for tmp_i in range(fat_binary.size):
+            tmp_Binary = fat_binary.at(tmp_i)
+            if tmp_Binary.header.cpu_type == lief.MachO.CPU_TYPES.ARM64:
+                arm64_binary = tmp_Binary
+        if arm64_binary == None:
+            log.error("no arm 64 binary in macho {}".format(self.main_macho_path))
+            sys.exit()
+        target_function = self._get_target_method_add(self.main_macho_path,"UZPrivacy","getAppKeySecret")
+        if target_function == None:
+            log.error("no +[UZPrivacy getAppKeySecret]")
+            self.app_key = None
+            return 
+
+        start_address = target_function 
+        target_code = bytes(arm64_binary.get_content_from_virtual_address(start_address,0x240))
+        #print(hex(start_address))
+        cap_md = capstone.Cs(capstone.CS_ARCH_ARM64, capstone.CS_MODE_ARM)
+        cap_md.detail = True
+        ins_list = list(cap_md.disasm(target_code,start_address))
+
+        #目标_data段地址
+        sign_address = 0
+
+        #for ins in ins_list:
+        for tmp_i in range(len(ins_list)):
+            ins = ins_list[tmp_i]
+            #code i
+            '''
+            if (ins.mnemonic == "adr") :
+                print(hex(ins.address))
+                print(ins.op_str)
+                target_mem_add = ins.operands[1].value.imm
+                is_target_in_data_section = False
+                for tmp_section in arm64_binary.sections:
+                    if (target_mem_add > tmp_section.virtual_address) & (target_mem_add < (tmp_section.virtual_address + tmp_section.size)):
+                        if "_data" in tmp_section.name:
+                            is_target_in_data_section = True
+                        break
+                if is_target_in_data_section == False:
+                    continue
+                
+                cfstring_address =self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(target_mem_add,0x8))
+                print(hex(target_mem_add))
+                print(hex(cfstring_address))
+                
+                
+                # cfstring struct 
+                string_address = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(cfstring_address + 0x10,0x8))
+                
+                string_size = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(cfstring_address + 0x18,0x8))
+                key_str = str(bytes(arm64_binary.get_content_from_virtual_address(string_address,string_size))) 
+                if (re.match(key_str,"[a-zA-Z0-9]+")==None) | (len(key_str) != 8):
+                    continue
+                sign_address = target_mem_add
+                break
+            '''
+            # adrp, get page address first then get offset in page to calculate the _data memory address
+            if (ins.mnemonic == "adrp"):
+                if ((ins_list[tmp_i + 1].mnemonic != "nop")|(ins_list[tmp_i + 2].mnemonic != "ldr")):
+                    continue
+                target_page_add = ins.operands[1].value.imm
+                target_page_reg = ins.operands[0].value.reg
+                ldr_ins = ins_list[tmp_i + 2]
+                ldr_source_reg = ldr_ins.operands[1].mem.base
+                if ldr_source_reg != target_page_reg:
+                    log.error("ldr source reg {} not equal to adrp reg {}".format(ldr_ins.op_str,ins.op_str))
+                    sys.exit()
+                ldr_off_value = ldr_ins.operands[1].mem.disp
+                #print(hex(ldr_off_value))
+                
+                target_mem_add = target_page_add + ldr_off_value
+                
+                #check whether target_mem_add in _data section
+                is_target_in_data_section = False
+                for tmp_section in arm64_binary.sections:
+                    if (target_mem_add > tmp_section.virtual_address) & (target_mem_add < (tmp_section.virtual_address + tmp_section.size)):
+                        if "_data" in tmp_section.name:
+                            is_target_in_data_section = True
+                        break
+                if is_target_in_data_section == False:
+                    continue
+                
+                # read target cfstring to check if the string is correct 
+                cfstring_address =self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(target_mem_add,0x8))
+                #print(hex(target_mem_add))
+                #print(hex(cfstring_address))
+
+                string_address = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(cfstring_address + 0x10,0x8))
+                
+                string_size = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(cfstring_address + 0x18,0x8))
+                key_str = str(bytes(arm64_binary.get_content_from_virtual_address(string_address,string_size)),"utf-8") 
+                #print(key_str)
+                if ((re.match("[a-zA-Z0-9]+",key_str)==None) | (len(key_str) != 8)):
+                    #print(len(key_str))
+                    continue
+                sign_address = target_mem_add
+                break
+                
+
+                
+        
+        key_seed = ""
+        #print(sign_address)
+        # 4 cfstring address in _data
+        # after 4 cfstring is the change_array
+        for tmp_i in range(4):
+            target_cfstring_address = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(sign_address + tmp_i*0x8,0x8))
+
+            tmp_string_address = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(target_cfstring_address + 0x10, 0x8))
+
+            
+            tmp_string_size = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(target_cfstring_address + 0x18, 0x8))
+
+
+            tmp_str = str(bytes(arm64_binary.get_content_from_virtual_address(tmp_string_address, tmp_string_size)),"utf-8")
+            key_seed += tmp_str
+        #print(key_seed)
+        key_Array =  []
+        for tmp_i in range(0x14):
+            #print(hex(sign_address + 0x20 + tmp_i*0x4))
+            tmp_int = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(sign_address + 0x20 + tmp_i*0x4, 0x4))
+            key_Array.append(tmp_int)
+
+        self.app_key = ""
+
+        for tmp_i in range(0x14):
+            tmp_char = key_seed[key_Array[tmp_i]]
+            self.app_key += tmp_char
+        
+        #print(self.app_key)
+
+        self.long_key_list = self.generateiOSLongKey()
+    
+    
+
     def decryptiOSFile(self, target_file_path):
         target_file_content = list(open(target_file_path,"rb").read())
         encrypt_byte = bytes(target_file_content)
         file_length = len(target_file_content)
         result_list = []
-        key_list = self.generateiOSLongKey()
+        key_list = self.long_key_list.copy()
+        #print(key_list)
 
         tmp_v17 = 0 
         tmp_v18 = 0 
         cur_add = 0 
         for tmp_i in range(file_length):
-            tmp_v17 = (tmp_v17+1) % 0x100
-            tmp_v18 = ([tmp_v17] + tmp_v18) % 0x100
+            tmp_v17 = (tmp_v17 + 1) % 0x100
+            tmp_v18 = (key_list[tmp_v17] + tmp_v18) % 0x100
             tmp_v = key_list[tmp_v17]
             key_list[tmp_v17] = key_list[tmp_v18]
             key_list[tmp_v18] = tmp_v 
             tmp_v25 = encrypt_byte[cur_add]
             #print(encrypt_byte[cur_add])
-            cur_add +=1
+            cur_add += 1
             result_list.append((key_list[(key_list[tmp_v17] + tmp_v)%0x100]) ^ tmp_v25)
         
         return result_list
 
-            
+    def isSpecialFile(self,file_path):
+        if ".filelist.txt" in file_path:
+            return True
+        if ".project" in file_path:
+            return True
+        if file_path.endswith(".png"):
+            return True
+        if file_path.endswith(".gif"):
+            return True
+        if file_path.endswith(".json"):
+            is_encrypted = False
+            try:
+                json.loads(open(file_path).read())
+                is_encrypted = False
+            except:
+                is_encrypted = True
+            if is_encrypted == False:
+                return True
+        if file_path.endswith(".xml"):
+            is_encrypted = False
+            try:
+                ET.parse(file_path)
+                is_encrypted = False
+            except:
+                is_encrypted = True
+            if is_encrypted == False:
+                return True
+        return False        
 
     def doExtractiOSEncrypted(self, extract_folder, tmp_folder):
         self.main_macho_path = os.path.join(tmp_folder, self.app_dir, "UZAPP")
@@ -212,8 +289,9 @@ class APICloud(BaseModule):
         self.iOSKeyExtract()
 
         config_result = self.decryptiOSFile(self.widget_config_path)
+        
         try:
-            config_root = ET.fromstring(config_result)
+            config_root = ET.fromstring(str(bytes(config_result),"utf-8"))
         except:
             log.error("key is wrong for iOS version")
             sys.exit()
@@ -229,16 +307,35 @@ class APICloud(BaseModule):
             sys.exit()
         
 
-        for dir_path,dirs, files in os.walk(self.widget_path):
+        for tmp_root, tmp_dirs, files in os.walk(self.widget_path):
+            for tmp_dir in tmp_dirs:
+                tmp_dir_path = os.path.join(tmp_root,tmp_dir)
+                sub_tmp_dir_path = tmp_dir_path.split(self.widget_path)[1]
+                #print(sub_tmp_dir_path)
+                if sub_tmp_dir_path.startswith("/"):
+                    sub_tmp_dir_path = sub_tmp_dir_path[1:]
+                target_dir_path = os.path.join(extract_folder,sub_tmp_dir_path)
+                #print(target_dir_path)
+                if not os.path.exists(target_dir_path):
+                    os.makedirs(target_dir_path)
             for tmp_file in files:
-                target_file_path = os.path.join(dir_path,tmp_file)
+                target_file_path = os.path.join(tmp_root,tmp_file)
+                
                 sub_path = target_file_path.replace(self.widget_path,"")
                 if sub_path.startswith("\\"):
                     sub_path = sub_path[1:]
+                if sub_path.startswith("/"):
+                    sub_path = sub_path[1:]
+                
                 target_extract_path = os.path.join(extract_folder,sub_path)
+                if self.isSpecialFile(target_file_path) == True:
+                    shutil.copy(target_file_path,target_extract_path)
+                    continue
                 file_content = self.decryptiOSFile(target_file_path)
+                #print(target_file_path)
                 target_extract_file = open(target_extract_path,"wb")
-                target_extract_file.write(file_content)
+                #print(str(bytes(file_content),"utf-8"))
+                target_extract_file.write(bytes(file_content))
                 target_extract_file.close()
 
 

@@ -68,7 +68,14 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     # find signature
     def _find_main_activity(self, sig):
-        proc = subprocess.Popen("'{}' dump badging '{}'".format(self._aapt(), self.detect_file), shell=True, stdin=subprocess.PIPE,
+        if platform.system() == 'Darwin':
+            aapt = Config.Config["aapt_osx"]
+        elif platform.system() == 'Linux':
+            aapt = Config.Config["aapt_linux"]
+        elif platform.system() == 'Windows':
+            aapt = Config.Config["aapt_windows"]
+
+        proc = subprocess.Popen("'{}' dump badging '{}'".format(aapt, self.detect_file), shell=True, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()
@@ -149,17 +156,19 @@ class BaseModule(metaclass=abc.ABCMeta):
             tmp_class_data_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(class_list_section.virtual_address+tmp_i*0x8,0x8))
             '''
             struct cd_objc2_class {
-	            uint64_t isa;
+	            uint64_t isa; // point to metaclass need to serch too
 	            uint64_t superclass;
-	            uint64_t cache;
-	            uint64_t vtable;
+	            struct cache_t{
+                    uint64_t buckets;
+                    uint32_t _mask;
+                    uint32_t _occupied
+                } cache;
 	            uint64_t data; // points to class_ro_t
-	            uint64_t reserved1;
-	            uint64_t reserved2;
-	            uint64_t reserved3;
 	        }
             '''
-            tmp_class_ro_t_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_data_add + 0x4*0x8,0x8))
+            #get metaclass from class and search method in the metaclass
+            tmp_class_metaclass_data_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_data_add,0x8))
+            tmp_class_ro_t_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_metaclass_data_add + 0x4*0x8,0x8))
             '''
             struct cd_objc2_class_ro_t {
 	            uint32_t flags;
@@ -177,19 +186,24 @@ class BaseModule(metaclass=abc.ABCMeta):
             '''
             tmp_class_name_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_ro_t_add + 0x3*0x8,0x8))
             tmp_class_baseMethods_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_class_ro_t_add + 0x4*0x8,0x8))
-            print(hex(tmp_class_ro_t_add))
+            
 
             #read class name 
             cur_str_add = tmp_class_name_add
             tmp_class_name = ""
+            #print(hex(tmp_class_data_add))
+            #print(hex(tmp_class_ro_t_add)) 
+            #print(hex(cur_str_add))
             while True:
                 #print(hex(cur_str_add))
                 if (arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0]==0):
                     break
                 tmp_class_name +=str(bytes(arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)),"utf-8")
                 cur_str_add += 0x1
-            print(tmp_class_name)
-            print(hex(tmp_class_baseMethods_add))
+            #print(tmp_class_name)
+            #print(hex(tmp_class_data_add))
+            #print(hex(tmp_class_ro_t_add))  
+            #print(hex(tmp_class_baseMethods_add))
             if tmp_class_name != target_class_name:
                 continue
             if tmp_class_baseMethods_add == 0:
@@ -205,20 +219,36 @@ class BaseModule(metaclass=abc.ABCMeta):
                 sys.exit()
 
             tmp_method_add = None
-            for tmp_j in tmp_method_size:
+            for tmp_j in range(tmp_method_size):
                 tmp_method_name_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_method_array_add + tmp_j*tmp_struct_size,0x8))
                 tmp_method_name = ""
                 cur_str_add = tmp_method_name_add
                 while True:
                     if (arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0]==0):
                         break
-                    tmp_method_name +=str(arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)[0],"utf-8")
+                    tmp_method_name +=str(bytes(arm64_binary.get_content_from_virtual_address(cur_str_add,0x1)),"utf-8")
                     cur_str_add += 0x1
                 if tmp_method_name == target_method_name:
                     tmp_method_add = self._convert_list_to_int(arm64_binary.get_content_from_virtual_address(tmp_method_array_add + tmp_j*tmp_struct_size + 0x10,0x8))
                     return tmp_method_add
         return None
 
+    def _get_cfstring_char(self, target_binary, target_address):
+        is_target_in_cfstring_section = False
+        for tmp_section in target_binary.sections:
+            if (target_address > tmp_section.virtual_address) & (target_address < (tmp_section.virtual_address + tmp_section.size)):
+                if "_cfstring" in tmp_section.name:
+                    is_target_in_cfstring_section = True
+                    break
+        if is_target_in_cfstring_section == False:
+            return None
+        #cfstring  [ CFString PTR
+        #            +8 type
+        #            +0x10 String_address
+        #            +0x18 string_size
+        
+        # get string address 
+        string_add = self._convert_list_to_int(target_binary.get_content_from_virtual_address(target_address))
 
 
 
