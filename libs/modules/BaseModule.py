@@ -123,8 +123,10 @@ class BaseModule(metaclass=abc.ABCMeta):
             return False
         target_zip_file = zipfile.ZipFile(self.detect_file)
         target_file_path = os.path.join(self._ipa_app_path(),target_file_name)
+        #print(target_file_path)
         if is_dir:
             target_file_path +="/"
+        #print(target_file_path  )
         return target_file_path in target_zip_file.namelist() 
     
     def _convert_list_to_int(self, target_list):
@@ -132,6 +134,16 @@ class BaseModule(metaclass=abc.ABCMeta):
         for tmp_i in range(len(target_list)):
             target_int += target_list[tmp_i]*pow(0x100,tmp_i)
         return target_int
+
+    def _convert_int_to_byte_list(self, target_int, target_byte_list_len):
+        target_byte_list = []
+        for tmp_i in range(target_byte_list_len):
+            target_byte_list.append(target_int%0x100)
+            target_int = target_int//0x100
+        return target_byte_list
+
+    def _limit_to_int32(self, target_num):
+        return target_num & 0xffffffff
 
     def _get_target_method_add(self, macho_path,target_class_name,target_method_name):
         if not lief.is_macho(macho_path):
