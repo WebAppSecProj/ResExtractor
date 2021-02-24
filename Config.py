@@ -61,6 +61,7 @@ Config = {
         ("libs.modules.appery.appery", "appery"),
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.AppMachine.AppMachine", "AppMachine"),
     ]),
 
 }
