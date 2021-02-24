@@ -17,8 +17,7 @@ AppMachine框架既支持生成Android应用，也支持生成iOS应用。其应
 
 ## 应用特征描述
 ### Android
-该框架生成的Android应用在包名上不具有明显特征，因此需要通过应用包含的文件进行分析。
-具体而言，该框架的Android应用在assets目录下
+该框架生成的Android应用在包名上不具有明显特征，但是其主Activity名为app.Main，且其在assets目录下包含一个resources.zip文件。
 
 ### iOS
 该框架生成的iOS应用在包名上不具有明显的特征，因此也需要通过应用所包含的文件进行分析。
