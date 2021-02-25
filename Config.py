@@ -44,6 +44,10 @@ Config = {
         ("libs.modules.Biznessapps.Biznessapps", "Biznessapps"),
         ("libs.modules.yunedit.yunedit", "yunedit"),
         ("libs.modules.apkeditor.apkeditor", "apkeditor"),
+        ("libs.modules.AppPark.AppPark", "AppPark"),
+        ("libs.modules.yimen.yimen", "yimen"),
+        ("libs.modules.Mobincube.Mobincube", "Mobincube"),
+        ("libs.modules.MobileRoadie.MobileRoadie", "MobileRoadie"),
         # there are some quirks when using jvm to load different modules.
         # https://jpype.readthedocs.io/en/latest/install.html#known-bugs-limitations
         # enable this module until the problem solved
@@ -57,6 +61,7 @@ Config = {
         ("libs.modules.appery.appery", "appery"),
         # should put the low-level boilerplate framework at the end of this list
         ("libs.modules.Cordova.Cordova", "Cordova"),
+        ("libs.modules.AppMachine.AppMachine", "AppMachine"),
     ]),
 
 }

@@ -78,10 +78,11 @@ class Cordova(BaseModule):
 
 
 def main():
-    f = "./test_case/Cordova/bjgas.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
-    f = "./test_case/Cordova/a39d09b5d96bbe2715acce62c26788eb7b6a84ce0ba67ee619ff1f1c8d7f0713.apk"  # App Yourself：launcher activity start with "net.ays"
-    f = "./test_case/Cordova/a0812e6bc398784bda36979eae895775da42ca3b6958b134784cd4dc7a99455d.apk"  # hk.com.appbuilder: launcher activity start with "hk.com.appbuilder.cms"
-    f = "./test_case/Cordova/3a60fcc118cbbb09b9b0f14fa47e62a35a.apk"  # start page isn't a local source
+    f = "./test_case/Cordova/U878d.apk"  # 后续会将当前脚本路径与之相拼接，得到最终detect_file路径
+   # f = "./test_case/Cordova/a39d09b5d96bbe2715acce62c26788eb7b6a84ce0ba67ee619ff1f1c8d7f0713.apk"  # App Yourself：launcher activity start with "net.ays"
+   # f = "./test_case/Cordova/a0812e6bc398784bda36979eae895775da42ca3b6958b134784cd4dc7a99455d.apk"  # hk.com.appbuilder: launcher activity start with "hk.com.appbuilder.cms"
+   # f = "./test_case/Cordova/3a60fcc118cbbb09b9b0f14fa47e62a35a.apk"  # start page isn't a local source
+    f = "./test_case/Cordova/justep_app.apk"   # example of Justep
     cordova = Cordova(f, "android")
     if cordova.doSigCheck():
         logging.info("cordova signature Match")

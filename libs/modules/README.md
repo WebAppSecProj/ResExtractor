@@ -27,7 +27,7 @@
 |23| [AppYet](http://www.appyet.com/)  | Y(E) | Y | N | N |
 |24| [Como](http://www.como.com/)  | - | - | - | - |
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - |
-|26| [Mobincube](http://www.mobincube.com/)  | - | - | - | - |
+|26| [Mobincube](http://www.mobincube.com/)  | Y | Y | - | - |
 |27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
 |28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
 |29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
@@ -38,7 +38,7 @@
 |34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
 |35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
-|37| [Mobile Roadie](http://mobileroadie.com/)  | - | - | - | - |
+|37| [Mobile Roadie](http://mobileroadie.com/)  | N | Y | - | - |
 |38| [App Gyver](http://www.appgyver.io)  | - | - | - | - |
 |39| [Appconfector](http://www.appconfector.de)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |40| [Rho Mobile Suite](http://rhomobile.com/)  | - | - | - | - |
@@ -58,14 +58,15 @@
 |54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
 |55| [ChuXueYun](https://www.chuxueyun.com/)  | - | Y(E) same to BSL | - | - |  |
 |56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
-|57| [AppPark](http://www.apppark.cn/)  | - | - | - | - |  |
+|57| [AppPark](http://www.apppark.cn/)  | Y | Y | - | - |  |
 |58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
 |59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
-|61| [Justep](https://www.justep.com/)  | - | - | - | - |  |
+|61| [Justep](https://www.justep.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |  |
 |62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
 |63| [yunedit](https://www.yunedit.com/)  | Y | N | - | - |  |
 |63| [apkeditor](https://apkeditor.cn/)  | Y | Y | - | - |  |
+|63| [yimen](https://www.yimenapp.net/)  | Y | Y | - | - |  |
 
 ```
 Y: Module available.
