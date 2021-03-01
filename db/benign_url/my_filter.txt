@@ -94,3 +94,12 @@ lodash.com
 git.io
 www.denso-wave.com
 iosoteric.com
+www.macromedia.com
+caniuse.com
+developer.chrome.com
+chrome.google.com
+w3layouts.com
+help.aliyun.com
+blindsignals.com
+ionicframework.com
+etherscan.io
