@@ -140,7 +140,7 @@ class AppMachine(BaseModule):
 
     def doSigCheck(self):
         if self.host_os == "android":
-            return self._find_main_activity("app.Main")
+            return self._find_main_activity("\'app.Main\'")
         elif self.host_os == "ios":
             AppMachine_ios_sig = os.path.join("Appmachine.SuperPin.IOS.dll")
             #print(AppMachine_ios_sig)
