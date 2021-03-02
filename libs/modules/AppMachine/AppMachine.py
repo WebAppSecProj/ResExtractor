@@ -176,7 +176,8 @@ class AppMachine(BaseModule):
 
         if os.path.exists(self.resource_file_path) == False:
             log.error("no resources.zip in path {} something wrong".format(self.resource_file_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         
         tmp_zip_file = zipfile.ZipFile(self.resource_file_path)
         tmp_zip_file.extractall(extract_folder)
@@ -189,7 +190,8 @@ class AppMachine(BaseModule):
         apps_dat_path = os.path.join(extract_folder,"apps.dat")
         if os.path.exists(apps_dat_path) ==False:
             log.error("no apps.dat in resources.zip {} something wrong".format(apps_dat_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         
         apps_data = ET.parse(apps_dat_path)
         app_drawing_no = None
@@ -198,7 +200,8 @@ class AppMachine(BaseModule):
                 app_drawing_no = tmp_app_info.text
         if app_drawing_no == None:
             log.error("no drawing no in apps.dat {} something wrong".format(apps_dat_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         #print(app_drawing_no)
         # delete all unrelated dir
         for tmp_file in os.listdir(extract_folder):
@@ -254,7 +257,8 @@ class AppMachine(BaseModule):
 
         if os.path.exists(self.resource_file_path) == False:
             log.error("no resources.zip in path {} something wrong".format(self.resource_file_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         
         tmp_zip_file = zipfile.ZipFile(self.resource_file_path)
         tmp_zip_file.extractall(extract_folder)
@@ -267,7 +271,8 @@ class AppMachine(BaseModule):
         apps_dat_path = os.path.join(extract_folder,"apps.dat")
         if os.path.exists(apps_dat_path) ==False:
             log.error("no apps.dat in resources.zip {} something wrong".format(apps_dat_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         
         apps_data = ET.parse(apps_dat_path)
         app_drawing_no = None
@@ -276,7 +281,8 @@ class AppMachine(BaseModule):
                 app_drawing_no = tmp_app_info.text
         if app_drawing_no == None:
             log.error("no drawing no in apps.dat {} something wrong".format(apps_dat_path))
-            sys.exit()
+            #sys.exit()
+            return "", ""
         #print(app_drawing_no)
         # delete all unrelated dir
         for tmp_file in os.listdir(extract_folder):
