@@ -13,12 +13,14 @@ import lief
 import zipfile
 import biplist
 import plistlib
+import re
 
 import Config as Config
 import platform
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(message)s", level=logging.INFO)
 log = logging.getLogger(__name__)
+
 
 class BaseModule(metaclass=abc.ABCMeta):
     def __init__(self, detect_file, host_os):
@@ -31,18 +33,22 @@ class BaseModule(metaclass=abc.ABCMeta):
         self.hash = self._gethash()
 
     def _apktool(self, extract_folder):
-        proc = subprocess.Popen("java -jar '{}' d '{}' -f -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            "java -jar '{}' d '{}' -f -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder),
+            shell=True, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
-        #log.info(r)
+        # log.info(r)
 
         return
 
     def _apktool_no_decode_source(self, extract_folder):
-        proc = subprocess.Popen("java -jar '{}' d '{}' -f -s -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder), shell=True, stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            "java -jar '{}' d '{}' -f -s -o '{}'".format(Config.Config["apktool"], self.detect_file, extract_folder),
+            shell=True, stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
-        #log.info(r)
+        # log.info(r)
 
         return
 
@@ -55,7 +61,8 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     def _dump_info(self, extract_folder, launch_path):
         info = {"detect_file": self.detect_file, "start_page": launch_path}
-        json.dump(info, open(os.path.join(extract_folder, Config.Config["local_res_info"]), 'w', encoding='utf-8'), ensure_ascii=False)
+        json.dump(info, open(os.path.join(extract_folder, Config.Config["local_res_info"]), 'w', encoding='utf-8'),
+                  ensure_ascii=False)
         return
 
     def _aapt(self):
@@ -68,7 +75,8 @@ class BaseModule(metaclass=abc.ABCMeta):
 
     # find signature
     def _find_main_activity(self, sig):
-        proc = subprocess.Popen("'{}' dump badging '{}'".format(self._aapt(), self.detect_file), shell=True, stdin=subprocess.PIPE,
+        proc = subprocess.Popen("'{}' dump badging '{}'".format(self._aapt(), self.detect_file), shell=True,
+                                stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         r = (proc.communicate()[0]).decode()
         # e = (proc.communicate()[1]).decode()
@@ -78,11 +86,21 @@ class BaseModule(metaclass=abc.ABCMeta):
             return True
         return False
 
+    def _get_main_activity(self):
+        proc = subprocess.Popen("'{}' dump badging '{}'".format(self._aapt(), self.detect_file), shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        r = (proc.communicate()[0]).decode()
+        regex = "launchable-activity: name='(.+?)'"
+        main_activity = re.findall(regex, r)
+        return main_activity[0]
+
     def _gethash(self):
         with open(self.detect_file, "rb") as frh:
             sha1obj = hashlib.sha1()
             sha1obj.update(frh.read())
             return sha1obj.hexdigest()
+
 
     def _ipa_extract(self,working_folder):
         if zipfile.is_zipfile(self.detect_file)==False:
@@ -256,7 +274,6 @@ class BaseModule(metaclass=abc.ABCMeta):
         string_add = self._convert_list_to_int(target_binary.get_content_from_virtual_address(target_address))
 
 
-
     def _log_error(self, module, file, msg):
         log_file = os.path.join(Config.Config["log_folder"], "ModuleError.csv")
         if not os.path.exists(log_file):
@@ -280,4 +297,3 @@ class BaseModule(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def doExtract(self, working_folder):
         pass
-
