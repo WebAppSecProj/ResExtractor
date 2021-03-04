@@ -1,18 +1,18 @@
 # Module list
 
-| # |  Framework   | Local Resource (Android)  | Remote Resource (Android) | Local Resource (iOS) | Remote Resource (iOS) | Encrypt (Android) |
+| # |  Framework   | Local Resource (Android)  | Remote Resource (Android) | Local Resource (iOS) | Remote Resource (iOS) | Prerequisites |
 | ---- |  :----:  | :----:  | :----:  | :----:  | :----: | :----: |
-|1| [DCloud](https://dcloud.io/)  | Y | - | - | - | N
-|2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - | Y (Native)
-|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - | Y (JAVA)
-|4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - | N
-|5| [Ionic](https://ionicframework.com/)  | Y | N | - | - |  |
-|6| [Onsen UI](https://onsen.io/)  | Y | N | - | - |  |
-|7| [Framework 7](http://www.idangero.us/framework7)  | Y(same to Cordova) | N(same to Cordova) | - | - |  |
-|8| [React Native](http://www.reactnative.com/)  | - | - | - | - |  | 
-|9| [jQuery Mobile](https://jquerymobile.com/)  | - | - | - | - |  | 
-|10| [Native Script](https://www.nativescript.org/)  | Y | N | Y | N |  |
-|11| [Famous](http://famous.org/)  | Y(same to Cordova) | N(same to Cordova) | - | - |  |
+|1| [DCloud](https://dcloud.io/)  | Y | - | - | - |
+|2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - |
+|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - |
+|4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - |
+|5| [Ionic](https://ionicframework.com/)  | Y | N | - | - | AngularJS (optional) |
+|6| [Onsen UI](https://onsen.io/)  | Y | N | - | - | AngularJS (optional) |
+|7| [Framework 7](http://www.idangero.us/framework7)  | Y(same to Cordova) | N(same to Cordova) | - | - | HTML, CSS and JS only |
+|8| [React Native](http://www.reactnative.com/)  | - | - | - | - | React | 
+|9| [jQuery Mobile](https://jquerymobile.com/)  | - | - | - | - | HTML5, jQuery | 
+|10| [Native Script](https://www.nativescript.org/)  | Y | N | Y | N | JavaScript |
+|11| [Famous](http://famous.org/)  | Y(same to Cordova) | N(same to Cordova) | - | - | WebGL, AngularJS |
 |12| [Intel XDK](https://software.intel.com/en-us/intel-xdk)  | - | - | - | - | depreciated |
 |13| [Sencha Touch](http://www.sencha.com/products/touch/#overview)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |14| [Kendo UI](http://www.telerik.com/kendo-ui)  | Y(same to Cordova) | N(same to Cordova) | - | - |
@@ -47,8 +47,8 @@
 |43| [Applicationcraft](http://www.applicationcraft.com/)  | - | - | - | - |
 |44| [Paradise Apps](http://www.paradiseapps.net/)  | - | - | - | - |
 |45| [Eachscape](http://eachscape.com/)  | - | - | - | - |
-|46| [Xamarin](https://docs.microsoft.com/zh-cn/xamarin/)  | - | - | - | - |  |
-|47| [PhoneGap](https://phonegap.com/)  | - | - | - | - |  |
+|46| [Xamarin](https://docs.microsoft.com/zh-cn/xamarin/)  | - | - | - | - | .NET |
+|47| [PhoneGap](https://phonegap.com/)  | - | - | - | - | HTML, CSS and JavaScript |
 |48| [Ionic Capacitor](https://capacitorjs.com/)  | - | - | - | - |  |
 |49| [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/)  | - | - | - | - |  |
 |50| [bufanapp](https://www.bufanapp.com/)  | N | Y (E) | - | - |  |
