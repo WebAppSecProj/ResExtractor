@@ -2,9 +2,9 @@
 
 | # |  Framework   | Local Resource (Android)  | Remote Resource (Android) | Local Resource (iOS) | Remote Resource (iOS) | Prerequisites | Encrypt Info |
 | ---- |  :----:  | :----:  | :----:  | :----:  | :----: | :----: | :----: |
-|1| [DCloud](https://dcloud.io/)  | Y | - | - | - |
-|2| [APICloud](https://www.apicloud.com/)  | Y (E) | - | - | - | | Java(RC4) |
-|3| [BSLApp](https://www.appbsl.cn/)  | - | Y (E) | - | - |  | Java(AES.CBC) |
+|1| [DCloud](https://dcloud.io/)  | Y | N | - | - |
+|2| [APICloud](https://www.apicloud.com/)  | Y (E) | N | - | - | | Java(RC4) |
+|3| [BSLApp](https://www.appbsl.cn/)  | N | Y (E) | - | - |  | Java(AES.CBC) |
 |4| [Cordova](https://cordova.apache.org/)  | Y | N | - | - |
 |5| [Ionic](https://ionicframework.com/)  | Y | N | - | - | AngularJS (optional) |
 |6| [Onsen UI](https://onsen.io/)  | Y | N | - | - | AngularJS (optional) |
@@ -28,14 +28,14 @@
 |24| [Como](http://www.como.com/)  | - | - | - | - |
 |25| [Tobit Chayns](http://en.tobit.com/chayns)  | - | - | - | - |
 |26| [Mobincube](http://www.mobincube.com/)  | Y | Y | - | - |
-|27| [Appy Pie](http://www.appypie.com/)  | - | - | - | - |
-|28| [Appmachine](http://www.appmachine.com/)  | - | - | - | - |
+|27| [Appy Pie](http://www.appypie.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
+|28| [Appmachine](http://www.appmachine.com/)  | Y(E) | N | Y(E) | N |  | C#(TEA) |
 |29| [Good Barber](http://www.goodbarber.com/)  | Y | Y | - | - |
 |30| [Shoutem](http://www.shoutem.com/)  | N | Y | - | - |
 |31| [App Yourself](http://appyourself.net/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
 |32| [Mippin App Factory](http://www.mippin.com/appfactory/)  | - | - | - | - |
 |33| [Apps Builder](http://www.apps-builder.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |
-|34| [Appmakr](http://appmakr.com/)  | Y | N | - | - |
+|34| [Appmakr](http://appmakr.com/)  | Y | N | Y | N |
 |35| [appery.io](https://appery.io/)  | Y | N | Y | N |
 |36| [Apps Bar](http://www.appsbar.com/)  | - | - | - | - |
 |37| [Mobile Roadie](http://mobileroadie.com/)  | N | Y | - | - |
@@ -56,17 +56,17 @@
 |52| [Dibaqu](https://www.dibaqu.com/)  | - | - | - | - |  |
 |53| [Pgyer](https://www.pgyer.com/)  | - | - | - | - |  |
 |54| [ofcms](https://www.ofcms.com/)  | N | Y | - | - |  |
-|55| [ChuXueYun](https://www.chuxueyun.com/)  | - | Y(E) same to BSL | - | - |  | Java(AES.CBC) |
+|55| [ChuXueYun](https://www.chuxueyun.com/)  | N | Y(E) same to BSL | - | - |  | Java(AES.CBC) |
 |56| [LEFSS](https://leffs.cn/)  | - | - | - | - |  |
 |57| [AppPark](http://www.apppark.cn/)  | Y | Y | - | - |  |
 |58| [DDApp](http://www.ddapp.com/)  | - | - | - | - |  |
-|59| [SuishouApp](http://www.suishouapp.com/)  | - | Y(E) same to BSL | - | - |  | Java(AES.CBC) |
+|59| [SuishouApp](http://www.suishouapp.com/)  | N | Y(E) same to BSL | - | - |  | Java(AES.CBC) |
 |60| [Hema](https://hema.im/)  | - | - | - | - |  |
 |61| [Justep](https://www.justep.com/)  | Y(same to Cordova) | N(same to Cordova) | - | - |  |
 |62| [YunDaBao](http://app.yundabao.cn/index.aspx)  | Y | N | Y | N |  |
 |63| [yunedit](https://www.yunedit.com/)  | Y | N | - | - |  |
 |63| [apkeditor](https://apkeditor.cn/)  | Y | Y | - | - |  |
-|63| [yimen](https://www.yimenapp.net/)  | Y | Y | - | - |  |
+|63| [yimen](https://www.yimenapp.net/)  | Y | Y(E) | Y | Y(E) |  | Java(AES.CBC) |
 
 ```
 Y: Module available.
