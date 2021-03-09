@@ -212,14 +212,15 @@ class DownloadAndExtract:
                             fd.write(chunk)
                     fd.flush()
 
-            if Checker.doAPKCheck(tar_apk_path) == False:
+            new_apk_file = Checker.doAPKCheck(tar_apk_path)
+            if new_apk_file == False:
                 return
 
             stats.add_entity()
             for to_check_module_name in Config["modules"]:
                 target_framework_check_class = getattr(importlib.import_module(to_check_module_name),
                                                        Config["modules"][to_check_module_name])
-                target_check = target_framework_check_class(tar_apk_path, "android")
+                target_check = target_framework_check_class(new_apk_file, "android")
                 if target_check.doSigCheck():
 
                     log.info("module {} found in this application".format(Config["modules"][to_check_module_name]))
@@ -267,7 +268,7 @@ class DownloadAndExtract:
             # log.info("module {} sig not in this application".format(main_config.Config["modules"][to_check_module_name]))
 
             if self._need_to_delete_apk:
-                os.remove(tar_apk_path)
+                os.remove(new_apk_file)
 
     def doDownloadAndExtract(self):
 

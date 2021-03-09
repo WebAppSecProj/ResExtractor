@@ -51,9 +51,10 @@ def main():
             if not os.path.isfile(file_in_check):
                 continue
             log.info(file_in_check)
-            if Checker.doAPKCheck(file_in_check):
+            new_apk_file = Checker.doAPKCheck(file_in_check)
+            if new_apk_file != False:
                 stats.add_entity()
-                doCheck(file_in_check, args.task_name)
+                doCheck(new_apk_file, args.task_name)
 
     stats.doState()
 

@@ -7,6 +7,7 @@ import subprocess
 import zipfile
 import os
 import Config
+import shutil
 
 logging.basicConfig(stream=sys.stdout, format="%(levelname)s: %(asctime)s: %(message)s", level=logging.INFO, datefmt='%a %d %b %Y %H:%M:%S')
 log = logging.getLogger(__name__)
@@ -17,6 +18,9 @@ common checker, app specific checking should reside in related module.
 
 
 def doAPKCheck(f):
+
+    retMe = f
+
     try:
         zf = zipfile.ZipFile(f, "r")
     except:
@@ -41,7 +45,10 @@ def doAPKCheck(f):
                 break
 
     if encrypt_flag == True:
-        with open(f, 'rb+') as fh:
+        retMe = os.path.join(f, ".bak")
+        # to avoid signature corruption, I make a copy
+        shutil.copy(f, retMe)
+        with open(retMe, 'rb+') as fh:
             # scan the file to find sig
             while fh.tell() < os.path.getsize(f) - 10:
                 if fh.read(4) == b'\x50\x4b\x01\x02':
@@ -57,7 +64,7 @@ def doAPKCheck(f):
         log.error("not an APK file.")
         return False
 
-    return True
+    return retMe
 
 def doEnvCheck():
 
