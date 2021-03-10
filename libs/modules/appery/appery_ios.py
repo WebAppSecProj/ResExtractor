@@ -55,10 +55,47 @@ class appery_ios(BaseModule):
             '''
             # appery打包的ios应用，Bundle Identifier的默认值以"io.appery.app"开头
             # 当前匹配规则以默认值为准
-            return self._find_bundle_identifier("io.appery.app")
+            if self._dir_info_plist_from_ipa(self._ipa_app_path())["CFBundleIdentifier"].startswith("io.appery.app"):
+                return True
+            return False
         return False
 
-    def doExtract(self, working_folder):
+    def doExtract(self,working_folder):
+        if self.host_os == "android":
+            return self.doExtractAndroid(working_folder)
+        elif self.host_os == "iOS":
+            return self.doExtractiOS(working_folder)
+        return "",""
+
+    def doExtractAndroid(self, working_folder):
+        extract_folder = self._format_working_folder(working_folder)
+        if os.access(extract_folder, os.R_OK):
+            shutil.rmtree(extract_folder)
+        tmp_folder = os.path.join(extract_folder, "tmp")
+        self._apktool(tmp_folder)
+
+        resource_path = os.path.join(tmp_folder, "assets/www/")
+        shutil.copytree(resource_path, extract_folder, dirs_exist_ok=True)
+        content = "index.html"
+        # if config.xml missing, the default start page is assets/www/index.html
+        if os.path.exists(os.path.join(tmp_folder, "res/xml/config.xml")):
+            t = ET.ElementTree(file=os.path.join(tmp_folder, "res/xml/config.xml"))
+            root = t.getroot()
+            for child in root:
+                if "content" in child.tag:
+                    content = child.attrib['src']
+        launch_path = "assets/www/" + content  # in java code, start page is "file:///android_asset/www/" + content
+        pattern = re.compile(r'^[a-z-]+://')
+        if pattern.match(content):
+            launch_path = content
+
+        self._dump_info(extract_folder, launch_path)
+
+        # clean env
+        shutil.rmtree(tmp_folder)
+        return extract_folder, launch_path
+
+    def doExtractiOS(self, working_folder):
         extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)

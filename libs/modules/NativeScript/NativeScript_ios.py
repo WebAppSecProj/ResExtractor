@@ -30,13 +30,42 @@ class NativeScript_ios(BaseModule):
         if self.host_os == "android":
             return self._find_main_activity("com.tns.NativeScriptActivity")
         elif self.host_os == "ios":
-            # 需要对ios应用的特征进行判断
-            return True
-            # log.error("not support yet.")
-            # return False
+            NativeScript_Engine_path = os.path.join("Frameworks","NativeScript.framework")
+            if self._check_file_exists(NativeScript_Engine_path, is_dir=True):
+                return True
         return False
 
     def doExtract(self, working_folder):
+        if self.host_os == "android":
+            return self.doExtractAndroid(working_folder)
+        elif self.host_os == "ios":
+            return self.doExtractiOS(working_folder)
+        return "",""
+    
+    def doExtractAndroid(self, working_folder):
+        extract_folder = self._format_working_folder(working_folder)
+        if os.access(extract_folder, os.R_OK):
+            shutil.rmtree(extract_folder)
+        tmp_folder = os.path.join(extract_folder, "tmp")
+        self._apktool(tmp_folder)
+
+        # copy resource dir ("assets/app") to working_folder
+        resource_path = os.path.join(tmp_folder, "assets/app")
+        shutil.copytree(resource_path, extract_folder, dirs_exist_ok=True)
+
+        # get assets/app/package.json
+        # package.json是应用的配置信息，描述应用程序的特征和依赖项，json中的"main"标签对应的应用启动文件
+        json_path = os.path.join(tmp_folder, "assets/app/package.json")
+        fo = open(json_path, "r+")
+        fo_file = json.load(fo)
+        launch_path = "assets/app/" + fo_file['main']
+        self._dump_info(extract_folder, launch_path)
+
+        # clean env
+        shutil.rmtree(tmp_folder)
+        return extract_folder, launch_path
+
+    def doExtractiOS(self, working_folder):
         extract_folder = self._format_working_folder(working_folder)
         if os.access(extract_folder, os.R_OK):
             shutil.rmtree(extract_folder)
