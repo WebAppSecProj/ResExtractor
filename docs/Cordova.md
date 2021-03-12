@@ -14,6 +14,7 @@ Apache Cordova是一个开源的移动开发框架。允许你用标准的web技
 <br>
 
 ## 应用特征描述
+
 在进行应用特征分析之前，先简单介绍一下如何通过Cordova命令进行应用开发：
 1. 创建App : cordova create /all/myApp/app1 com.site app1  
    app路径：/all/myApp/app1  
@@ -22,7 +23,7 @@ Apache Cordova是一个开源的移动开发框架。允许你用标准的web技
 2. 添加平台：cordova platform add android
 3. 构建：cordova build android
 4. 运行：cordova run android  
-##
+### Android
 具体参考：<a href="http://cordova.axuer.com/docs/zh-cn/latest/guide/cli/index.html" target="_blank">创建你的第一个应用</a>  
 开发时，应用所在目录内部结构：
 <div align=left><img src="./image/Cordova/cordova_proj.png"/></div>其中www文件夹保存了应用程序代码，也就是开发人员编写的web页面、js、CSS、图片等资源； <br> 
@@ -38,9 +39,17 @@ platforms目录下针对不同平台都具有一个文件夹，例如对于andro
 <div align=left><img src="./image/Cordova/cordova_decompiled.png"/></div>
 <br>
 
+### iOS
+iOS中检测cordova框架的方法则是看Frameworks目录下是否有Cordova相关的文件。
+
 ## 资源数据提取
+### Android
 资源数据是指应用的web页面、JS、CSS、图片等资源，不关注java部分的开发。因此只需要对应用apk文件进行解压缩，然后从assets/www目录下将资源数据读取并保存即可。<br>
 另一方法，我们注意到在开发时，应用目录下存在文件config.xml，该文件中content标签项的属性src里定义了加载web页面时的起始页`<`content src="index.html"`>`，默认是index.html。对这一信息，我们也需要提取和保存。打包之后的apk文件中，config.xml保存在目录res/xml/下，因此通过aapt读取该xml信息，就可以获取起始页地址。
+
+### iOS
+iOS相关的资源文件则是在应用目录下的public文件夹中，其中的起始页面为该文件夹下的index.html。因此进行资源的提取，主要是提取该文件夹的内容即可。
+此外一些cordova衍生的框架也是基于cordova的。因此在iOS下不做进一步的区分，而是也就判定为cordova相关
 
 ## 结论
 Cordova框架支持java开发和web页面开发，但是该框架没有提供加密功能，因此定位到存储资源数据的目录直接解压缩进行提取即可，比较方便。
